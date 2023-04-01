@@ -57,6 +57,7 @@ wordfence-waf.php
 
 web.config
 wp-config.env.php
+license.txt
 
 # Custom
 .php*
