@@ -16,8 +16,8 @@ get_header(); ?>
 		endwhile;
 
 		the_posts_pagination( array(
-			'prev_text' => esc_html__( 'Poprzedni', 'emaus' ),
-			'next_text' => esc_html__( 'Nastepny', 'emaus' ),
+			'prev_text' => esc_html__( 'Poprzedni', 'church' ),
+			'next_text' => esc_html__( 'Nastepny', 'church' ),
 		) );	
 
 	endif;
