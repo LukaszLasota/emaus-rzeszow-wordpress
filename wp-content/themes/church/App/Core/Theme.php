@@ -1,9 +1,10 @@
 <?php
-Namespace Church\Core;
+
+Namespace Church\Core\Theme;
 
 use Church\Interfaces\ActionHookInterface;
 
-class ThemeSetup implements ActionHookInterface 
+class Theme implements ActionHookInterface 
 {
     public function __construct()
     {

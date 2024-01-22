@@ -1,6 +1,6 @@
 <?php
 
-Namespace Church\Core\RegisterMenu;
+Namespace Church\ThemeBasic\RegisterMenu;
 
 use Church\Interfaces\ActionHookInterface;
 

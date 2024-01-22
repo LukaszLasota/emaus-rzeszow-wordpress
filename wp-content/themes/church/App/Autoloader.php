@@ -7,17 +7,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class Autoloader {
-
+	
 	public function __construct() {
 		spl_autoload_register( array( $this, 'autoload' ) );
 	}
 
 	public function autoload( $class_name ) {
 
-		if ( false === strpos( $class_name, 'Church' ) ) {
+		if (0 !== strpos($class_name, 'Church\\')) {
 			return;
 		}
-
+		
 		$file_parts = explode( '\\', $class_name );
 
 		$namespace = '';
@@ -31,16 +31,16 @@ class Autoloader {
 			if ( count( $file_parts ) - 1 === $i ) {
 				$file_name = "$current.php";
 
-				if ( strpos( strtolower( $file_parts[ count( $file_parts ) - 1 ] ), 'interface' ) ) {
+				// if ( strpos( strtolower( $file_parts[ count( $file_parts ) - 1 ] ), 'interface' ) ) {
 
-					$interface_name = explode( '_', $file_parts[ count( $file_parts ) - 1 ] );
-					$interface_name = $interface_name[0];
+				// 	$interface_name = explode( '_', $file_parts[ count( $file_parts ) - 1 ] );
+				// 	$interface_name = $interface_name[0];
 
-					$file_name = "interface-$interface_name.php";
+				// 	$file_name = "interface-$interface_name.php";
 
-				} else {
-					$file_name = "class-$current.php";
-				}
+				// } else {
+				// 	$file_name = "class-$current.php";
+				// }
 			} else {
 				$namespace = '/' . $current . $namespace;
 			}
@@ -48,7 +48,7 @@ class Autoloader {
 
 		$file_path  = trailingslashit( dirname( dirname( __FILE__ ) ) . $namespace );
 		$file_path .= $file_name;
-
+		
 		if ( file_exists( $file_path ) ) {
 			include_once $file_path;
 		} else {

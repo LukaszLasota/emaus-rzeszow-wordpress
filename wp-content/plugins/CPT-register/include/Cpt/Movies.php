@@ -2,7 +2,7 @@
 
 namespace Testapp\Cpt;
 
-use Testapp\Core\CptBuilder;
+use Church\Core\CptBuilder;
 use Testapp\Core\TaxBuilder;
 
 class Movies
