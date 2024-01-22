@@ -1,10 +1,10 @@
 <?php
 
-Namespace Church\ThemeBasic\RegisterMenu;
+Namespace Church\BasicTheme;
 
 use Church\Interfaces\ActionHookInterface;
 
-class RegisterMenu implements ActionHookInterface {
+class Menu implements ActionHookInterface {
 
     public function __construct() {
         $this->register_add_action();

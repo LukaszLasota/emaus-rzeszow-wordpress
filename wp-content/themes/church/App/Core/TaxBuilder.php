@@ -1,5 +1,5 @@
 <?php
-namespace Church\Core\TaxBuilder;
+namespace Church\Core;
 
 class TaxBuilder {
     private $postType;

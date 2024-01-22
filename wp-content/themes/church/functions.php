@@ -1,12 +1,10 @@
 <?php
-/**
- * My Theme functions and definitions
- *
- * @link https://developer.wordpress.org/themes/basics/theme-functions/
- *
- * @package emaus
- */
+
+require_once get_template_directory() . '/vendor/autoload.php';
+
+new Church\BasicTheme\Menu();
+new Church\BasicTheme\Setup();
+new Church\Widgets\RegisterWidgets();
+new Church\Posts\RegisterPosts();
 
 
-
-require_once get_template_directory() . '/App/Autoloader.php';

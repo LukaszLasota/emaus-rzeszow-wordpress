@@ -1,6 +1,6 @@
 <?php
 
-namespace Church\Core\CptBuilder;
+namespace Church\Core;
 
 class CptBuilder
 {
@@ -26,8 +26,8 @@ class CptBuilder
         $labels = array(
             'name'                  => __($this->name, 'church'),
             'singular_name'         => __($this->singular_name, 'church'),
-            'add_new'               => __('Dodaj Nowy', 'church'),
-            'add_new_item'          => __('Dodaj Nowy ' . $this->singular_name, 'church'),
+            'add_new'               => __('Dodaj Nowy Post', 'church'),
+            'add_new_item'          => __('Dodaj Nowy Post' . $this->singular_name, 'church'),
             'edit_item'             => __('Edytuj ' . $this->singular_name, 'church'),
             'new_item'              => __('Nowy ' . $this->singular_name, 'church'),
             'all_items'             => __('Wszystkie ' . $this->name, 'church'),
@@ -35,7 +35,6 @@ class CptBuilder
             'search_items'          => __('Szukaj ' . $this->name, 'church'),
             'not_found'             => __('Nie znaleziono ' . strtolower($this->name), 'church'),
             'not_found_in_trash'    => __('Nie znaleziono ' . strtolower($this->name) . ' w Koszu', 'church'),
-            'parent_item_colon'     => '',
             'menu_name'             => __($this->name, 'church')
         );
 
@@ -52,7 +51,7 @@ class CptBuilder
             'hierarchical'          => true,
             'menu_position'         => $this->position,
             'supports'              => array('title', 'editor', 'thumbnail', 'excerpt', 'comments', 'custom-fields', 'revisions'),
-            'yarpp_support'         => true,
+            'show_in_rest'          => true,
             'taxonomies'            => array('category')
         );
 

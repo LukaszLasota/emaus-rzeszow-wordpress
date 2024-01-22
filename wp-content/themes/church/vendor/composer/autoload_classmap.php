@@ -6,5 +6,15 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Church\\Autoloader' => $baseDir . '/App/Autoloader.php',
+    'Church\\BasicTheme\\Menu' => $baseDir . '/App/BasicTheme/Menu.php',
+    'Church\\BasicTheme\\Setup' => $baseDir . '/App/BasicTheme/Setup.php',
+    'Church\\Core\\CptBuilder' => $baseDir . '/App/Core/CptBuilder.php',
+    'Church\\Core\\TaxBuilder' => $baseDir . '/App/Core/TaxBuilder.php',
+    'Church\\Interfaces\\ActionHookInterface' => $baseDir . '/App/Interfaces/ActionHookInterface.php',
+    'Church\\Interfaces\\ActionHookWithArgsInterface' => $baseDir . '/App/Interfaces/ActionHookWithArgsInterface.php',
+    'Church\\Interfaces\\FilterHookInterface' => $baseDir . '/App/Interfaces/FilterHookInterface.php',
+    'Church\\Posts\\RegisterPosts' => $baseDir . '/App/Posts/RegisterPosts.php',
+    'Church\\Widgets\\RegisterWidgets' => $baseDir . '/App/Widgets/RegisterWidgets.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
 );

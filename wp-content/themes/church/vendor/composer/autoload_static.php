@@ -21,6 +21,16 @@ class ComposerStaticInitc7ccbe0b286faec5490ac3dc7654c1fe
     );
 
     public static $classMap = array (
+        'Church\\Autoloader' => __DIR__ . '/../..' . '/App/Autoloader.php',
+        'Church\\BasicTheme\\Menu' => __DIR__ . '/../..' . '/App/BasicTheme/Menu.php',
+        'Church\\BasicTheme\\Setup' => __DIR__ . '/../..' . '/App/BasicTheme/Setup.php',
+        'Church\\Core\\CptBuilder' => __DIR__ . '/../..' . '/App/Core/CptBuilder.php',
+        'Church\\Core\\TaxBuilder' => __DIR__ . '/../..' . '/App/Core/TaxBuilder.php',
+        'Church\\Interfaces\\ActionHookInterface' => __DIR__ . '/../..' . '/App/Interfaces/ActionHookInterface.php',
+        'Church\\Interfaces\\ActionHookWithArgsInterface' => __DIR__ . '/../..' . '/App/Interfaces/ActionHookWithArgsInterface.php',
+        'Church\\Interfaces\\FilterHookInterface' => __DIR__ . '/../..' . '/App/Interfaces/FilterHookInterface.php',
+        'Church\\Posts\\RegisterPosts' => __DIR__ . '/../..' . '/App/Posts/RegisterPosts.php',
+        'Church\\Widgets\\RegisterWidgets' => __DIR__ . '/../..' . '/App/Widgets/RegisterWidgets.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 

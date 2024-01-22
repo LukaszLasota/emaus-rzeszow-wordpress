@@ -1,17 +1,16 @@
 <?php
-
-Namespace Church\Core\Theme;
+Namespace Church\BasicTheme;
 
 use Church\Interfaces\ActionHookInterface;
 
-class Theme implements ActionHookInterface 
+class Setup implements ActionHookInterface 
 {
     public function __construct()
     {
-        $this->register_actions();
+        $this->register_add_action();
     }
 
-    public function register_actions() {
+    public function register_add_action() {
         add_action( 'after_setup_theme', array($this,'church_setup') );
     }
 

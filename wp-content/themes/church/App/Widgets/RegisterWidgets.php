@@ -1,6 +1,6 @@
 <?php
 
-Namespace Church\Widgets\RegisterWidgets;
+Namespace Church\Widgets;
 
 use Church\Interfaces\ActionHookInterface;
 
