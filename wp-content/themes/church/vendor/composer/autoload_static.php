@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitc7ccbe0b286faec5490ac3dc7654c1fe
+class ComposerStaticInitc7c15da2eee6f993409e83d2ab781763
 {
     public static $prefixLengthsPsr4 = array (
         'C' => 
@@ -21,25 +21,15 @@ class ComposerStaticInitc7ccbe0b286faec5490ac3dc7654c1fe
     );
 
     public static $classMap = array (
-        'Church\\Autoloader' => __DIR__ . '/../..' . '/App/Autoloader.php',
-        'Church\\BasicTheme\\Menu' => __DIR__ . '/../..' . '/App/BasicTheme/Menu.php',
-        'Church\\BasicTheme\\Setup' => __DIR__ . '/../..' . '/App/BasicTheme/Setup.php',
-        'Church\\Core\\CptBuilder' => __DIR__ . '/../..' . '/App/Core/CptBuilder.php',
-        'Church\\Core\\TaxBuilder' => __DIR__ . '/../..' . '/App/Core/TaxBuilder.php',
-        'Church\\Interfaces\\ActionHookInterface' => __DIR__ . '/../..' . '/App/Interfaces/ActionHookInterface.php',
-        'Church\\Interfaces\\ActionHookWithArgsInterface' => __DIR__ . '/../..' . '/App/Interfaces/ActionHookWithArgsInterface.php',
-        'Church\\Interfaces\\FilterHookInterface' => __DIR__ . '/../..' . '/App/Interfaces/FilterHookInterface.php',
-        'Church\\Posts\\RegisterPosts' => __DIR__ . '/../..' . '/App/Posts/RegisterPosts.php',
-        'Church\\Widgets\\RegisterWidgets' => __DIR__ . '/../..' . '/App/Widgets/RegisterWidgets.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitc7ccbe0b286faec5490ac3dc7654c1fe::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitc7ccbe0b286faec5490ac3dc7654c1fe::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitc7ccbe0b286faec5490ac3dc7654c1fe::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitc7c15da2eee6f993409e83d2ab781763::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitc7c15da2eee6f993409e83d2ab781763::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitc7c15da2eee6f993409e83d2ab781763::$classMap;
 
         }, null, ClassLoader::class);
     }
