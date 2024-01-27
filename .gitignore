@@ -4,6 +4,7 @@
 *.swp
 *.sql
 *.log
+.env
 
 # ignore apache and iis config
 .htpasswd
