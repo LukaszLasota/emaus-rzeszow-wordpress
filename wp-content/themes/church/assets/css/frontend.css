@@ -320,7 +320,7 @@ template {
   transition: background-color 0.8s 0.1s ease-in-out;
 }
 .site-nav--bg {
-  background-color: #fffdf8;
+  background-color: linear-gradient(to bottom, #008089 0%, #002432 100%);
 }
 
 .site-logo {
@@ -630,6 +630,10 @@ a:focus-visible span, button:focus-visible span, input:focus-visible span, texta
 }
 a:focus-visible i, a:focus-visible .icon, button:focus-visible i, button:focus-visible .icon, input:focus-visible i, input:focus-visible .icon, textarea:focus-visible i, textarea:focus-visible .icon {
   background-color: #0b0c0c !important;
+}
+
+body {
+  height: 200vh;
 }
 
 /*# sourceMappingURL=frontend.css.map*/

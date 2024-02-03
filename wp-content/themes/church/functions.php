@@ -7,4 +7,4 @@ new Church\BasicTheme\Setup();
 new Church\BasicTheme\RegisterAssets();
 new Church\Widgets\RegisterWidgets();
 new Church\Posts\RegisterPosts();
-
+new Church\Admin\LogoSettings();
