@@ -12,6 +12,54 @@ __webpack_require__.r(__webpack_exports__);
 // extracted by mini-css-extract-plugin
 
 
+/***/ }),
+
+/***/ "./src/js/logo/logo.ts":
+/*!*****************************!*\
+  !*** ./src/js/logo/logo.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MediaUploader: () => (/* binding */ MediaUploader)
+/* harmony export */ });
+class MediaUploader {
+    constructor() {
+        this.uploadButton = document.getElementById('upload-btn');
+        this.imageField = document.getElementById('image_url');
+        this.logoPreview = document.getElementById('logo-preview');
+        this.init();
+    }
+    init() {
+        if (this.uploadButton) {
+            this.uploadButton.addEventListener('click', (e) => this.onClickUploadButton(e));
+        }
+    }
+    onClickUploadButton(e) {
+        e.preventDefault();
+        const mediaUploader = window.wp.media({
+            title: 'Wybierz Logo Strony',
+            button: {
+                text: 'Użyj tego obrazu'
+            },
+            multiple: false
+        });
+        mediaUploader.on('select', () => this.onSelectMedia(mediaUploader));
+        mediaUploader.open();
+    }
+    onSelectMedia(mediaUploader) {
+        const attachment = mediaUploader.state().get('selection').first().toJSON();
+        if (this.imageField) {
+            this.imageField.value = attachment.url;
+        }
+        if (this.logoPreview) {
+            this.logoPreview.src = attachment.url;
+        }
+    }
+}
+
+
 /***/ })
 
 /******/ 	});
@@ -41,6 +89,23 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -61,10 +126,13 @@ var __webpack_exports__ = {};
   \************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sass_backend_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sass/backend.scss */ "./src/sass/backend.scss");
+/* harmony import */ var _js_logo_logo__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/logo/logo */ "./src/js/logo/logo.ts");
 
+
+document.addEventListener('DOMContentLoaded', () => new _js_logo_logo__WEBPACK_IMPORTED_MODULE_1__.MediaUploader());
 
 })();
 
 /******/ })()
 ;
-//# sourceMappingURL=backend.js.map?4f6dd990dcb75174f0ac
+//# sourceMappingURL=backend.js.map?0c364a17a33cc4406778

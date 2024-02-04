@@ -17,7 +17,8 @@ class RegisterAssets implements ActionHookInterface
 
     public function register_church_admin_assets(): void
     {
-        wp_enqueue_style('church-admin-style', get_stylesheet_directory_uri() . '/assets/css/backend'.(($_ENV['ENV_TYPE'] == "production")?'.min':'').'.css');
+        // wp_enqueue_style('church-admin-style', get_stylesheet_directory_uri() . '/assets/css/backend'.(($_ENV['ENV_TYPE'] == "production")?'.min':'').'.css');
+        wp_enqueue_script('church_script_backend',  get_stylesheet_directory_uri() . '/assets/js/backend'.(($_ENV['ENV_TYPE'] == "production")?'.min':'').'.js', false, false, true);
     }
 
     public function register_church_assets(): void

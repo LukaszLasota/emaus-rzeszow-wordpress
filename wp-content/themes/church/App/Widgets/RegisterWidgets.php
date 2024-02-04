@@ -15,14 +15,34 @@ class RegisterWidgets implements ActionHookInterface {
     }
 
     public function church_widgets_init() {
-        register_sidebar( array(
-            'name'          => esc_html__( 'Sidebar', 'my-theme' ),
-            'id'            => 'sidebar-1',
-            'description'   => esc_html__( 'Add widgets here.', 'my-theme' ),
+        register_sidebar(array(
+            'name'          => esc_html__('Menu stopka - Nagłówek 1', 'church'),
+            'id'            => 'footer-header-1',
+            'description'   => esc_html__('Dodaj widgety tutaj.', 'church'),
             'before_widget' => '<section id="%1$s" class="widget %2$s">',
             'after_widget'  => '</section>',
-            'before_title'  => '<h2 class="widget-title">',
-            'after_title'   => '</h2>',
-        ) );
+            'before_title'  => '<h4>',
+            'after_title'   => '</h4>',
+        ));
+    
+        register_sidebar(array(
+            'name'          => esc_html__('Menu stopka - Nagłówek 2', 'church'),
+            'id'            => 'footer-header-2',
+            'description'   => esc_html__('Dodaj widgety tutaj.', 'church'),
+            'before_widget' => '<section id="%1$s" class="widget %2$s">',
+            'after_widget'  => '</section>',
+            'before_title'  => '<h4>',
+            'after_title'   => '</h4>',
+        ));
+    
+        register_sidebar(array(
+            'name'          => esc_html__('Menu stopka - Nagłówek 3', 'church'),
+            'id'            => 'footer-header-3',
+            'description'   => esc_html__('Dodaj widgety tutaj.', 'church'),
+            'before_widget' => '<section id="%1$s" class="widget %2$s">',
+            'after_widget'  => '</section>',
+            'before_title'  => '<h4>',
+            'after_title'   => '</h4>',
+        ));
     }
 }

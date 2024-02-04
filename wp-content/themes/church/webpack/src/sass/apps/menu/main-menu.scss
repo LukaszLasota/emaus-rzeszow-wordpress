@@ -9,7 +9,7 @@
     transition: background-color 0.8s 0.1s ease-in-out;
   
     &--bg {
-      background-color: $body-color;
+      background-color: $BG-D;
     }
   }
   
@@ -17,7 +17,7 @@
     margin: 15px 0 0;
   
     &__image {
-      width: 45%;
+      width: 10%;
       padding-left: 90px;
     }
   }

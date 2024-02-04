@@ -4,7 +4,6 @@
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title><?php wp_title(); ?></title>
 	<?php wp_head(); ?>
 </head>
 
@@ -14,7 +13,8 @@
 
 		<h1 class="site-logo" title="<?php bloginfo( 'name' ); ?>">
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="site-logo__link">
-				<img src="<?php header_image(); ?>" alt="<?php bloginfo( 'name' ); ?>" class="site-logo__image">
+				<?php $logo_url = get_option('my_custom_logo_setting'); ?>
+				<img src="<?php echo esc_url($logo_url); ?>" alt="<?php bloginfo( 'name' ); ?>" class="site-logo__image">
 			</a>
 		</h1>
 
@@ -33,6 +33,7 @@
 						'theme_location' => 'primary',
 						'menu_id' => 'primary-menu',
 						'menu_class' => 'site-nav__menu',
+						'container' => false,
 					));
 				}
 				?>                 
