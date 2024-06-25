@@ -1,6 +1,10 @@
 /*!*****************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/sass/frontend.scss ***!
   \*****************************************************************************************************************/
+@import url(https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap;subset=latin-ext);
+/*!*********************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/sass/frontend.scss (1) ***!
+  \*********************************************************************************************************************/
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
 /* Document
 	 ========================================================================== */
@@ -310,31 +314,34 @@ template {
   display: none;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Raleway";
+  font-size: 10px;
+}
+
+img {
+  max-width: 100%;
+}
+
 .site-nav {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: fixed;
   z-index: 100;
   transition: background-color 0.8s 0.1s ease-in-out;
+  background-color: aqua;
 }
 .site-nav--bg {
   background-color: linear-gradient(to bottom, #008089 0%, #002432 100%);
 }
-
-.site-logo {
-  margin: 15px 0 0;
-}
-.site-logo__image {
-  width: 10%;
-  padding-left: 90px;
-}
-
 .site-nav__navigation {
-  width: 50%;
+  width: 100%;
 }
-
 .site-nav__menu {
   width: 100%;
   display: flex;
@@ -342,7 +349,6 @@ template {
   margin: 0;
   padding: 0;
 }
-
 .site-nav__item {
   width: 20%;
   list-style: none;
@@ -358,6 +364,17 @@ template {
   display: flex;
   justify-content: center;
   font-weight: bold;
+}
+
+.site-logo {
+  margin: 15px 0 0;
+  width: 10%;
+}
+.site-logo__link {
+  display: block;
+}
+.site-logo__image {
+  padding-left: 90px;
 }
 
 .hamburger {
@@ -661,6 +678,11 @@ a:focus-visible i, a:focus-visible .icon, button:focus-visible i, button:focus-v
 .footer .footer__menu h4, .footer .footer__contact h4 {
   color: white;
   margin-bottom: 15px;
+  padding: 1.5rem 0.25rem;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  line-height: 1.2;
 }
 .footer .footer__menu ul, .footer .footer__contact ul {
   list-style: none;
