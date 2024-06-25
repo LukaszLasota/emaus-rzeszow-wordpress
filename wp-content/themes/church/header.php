@@ -11,12 +11,27 @@
 <header class="site-header">
 	<nav class="site-nav">
 
-		<h1 class="site-logo" title="<?php bloginfo( 'name' ); ?>">
-			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="site-logo__link">
-				<?php $logo_url = get_option('my_custom_logo_setting'); ?>
-				<img src="<?php echo esc_url($logo_url); ?>" alt="<?php bloginfo( 'name' ); ?>" class="site-logo__image">
-			</a>
-		</h1>
+	<h1 class="site-logo" title="<?php bloginfo( 'name' ); ?>">
+		<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="site-logo__link">
+			<?php
+				$logo_id = get_option('my_custom_logo_setting_id');
+				if ($logo_id) {
+					$logo_size = 'thumbnail';
+					$logo_data = wp_get_attachment_image_src($logo_id, $logo_size);
+					if ($logo_data) {
+						$logo_url = $logo_data[0];
+						$logo_width = $logo_data[1];
+						$logo_height = $logo_data[2];
+					}
+				} else {
+					$logo_url = get_option('my_custom_logo_setting');
+					$logo_width = '';
+					$logo_height = '';
+				}
+				?>
+			<img src="<?php echo esc_url($logo_url); ?>" alt="<?php bloginfo('name'); ?>" class="site-logo__image" <?php if ($logo_width && $logo_height) echo 'width="' . esc_attr($logo_width) . '" height="' . esc_attr($logo_height) . '"'; ?>>
+		</a>
+	</h1>
 
 		<button class="hamburger" aria-controls="primary-menu" aria-expanded="false">
 			<span class="hamburger__sr-only"><?php _e('Otwórz/zamknij menu', 'church'); ?></span>

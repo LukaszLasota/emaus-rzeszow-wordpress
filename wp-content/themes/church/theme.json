@@ -20,9 +20,14 @@
 			],
 			"gradients": [
 				{
-					"slug": "gradient-1",
-					"gradient": "linear-gradient(to bottom, #cfcabe 0%, #F9F9F9 100%)",
-					"name": "Vertical soft beige to white"
+				  "slug": "gradient-to-left-bottom",
+				  "gradient": "linear-gradient(to left bottom, #008089 0%, #002432 100%)",
+				  "name": "Gradient to Left Bottom"
+				},
+				{
+				  "slug": "gradient-to-bottom",
+				  "gradient": "linear-gradient(to bottom, #008089 0%, #002432 100%)",
+				  "name": "Gradient to Bottom"
 				}
 			],
 			"palette": [
