@@ -17,16 +17,17 @@ class RegisterAssets implements ActionHookInterface
 
     public function register_church_admin_assets(): void
     {
-        // wp_enqueue_style('church-admin-style', get_stylesheet_directory_uri() . '/assets/css/backend'.(($_ENV['ENV_TYPE'] == "production")?'.min':'').'.css');
-        wp_enqueue_script('church_script_backend',  get_stylesheet_directory_uri() . '/assets/js/backend'.(($_ENV['ENV_TYPE'] == "production")?'.min':'').'.js', false, false, true);
+        $env_type = getenv('ENV_TYPE');
+        // wp_enqueue_style('church-admin-style', get_stylesheet_directory_uri() . '/assets/css/backend'.(($env_type == "production")?'.min':'').'.css');
+        wp_enqueue_script('church_script_backend',  get_stylesheet_directory_uri() . '/assets/js/backend'.(($env_type == "production")?'.min':'').'.js', false, false, true);
     }
 
     public function register_church_assets(): void
     {
-        wp_enqueue_script('church_script',  get_stylesheet_directory_uri() . '/assets/js/frontend'.(($_ENV['ENV_TYPE'] == "production")?'.min':'').'.js', false, false, true);
-        wp_enqueue_style('church_styles',  get_stylesheet_directory_uri() . '/assets/css/frontend'.(($_ENV['ENV_TYPE'] == "production")?'.min':'').'.css');
+        $env_type = getenv('ENV_TYPE');
+        wp_enqueue_script('church_script',  get_stylesheet_directory_uri() . '/assets/js/frontend'.(($env_type == "production")?'.min':'').'.js', false, false, true);
+        wp_enqueue_style('church_styles',  get_stylesheet_directory_uri() . '/assets/css/frontend'.(($env_type == "production")?'.min':'').'.css');
         wp_localize_script( 'church_script', 'redlist', ['ajax_url' => get_stylesheet_directory_uri().'/ajax.php']);
-        wp_enqueue_style('church_print_styles',get_stylesheet_directory_uri() . '/assets/css/print'.(($_ENV['ENV_TYPE'] == "production")?'.min':'').'.css',false, false, 'print');
+        wp_enqueue_style('church_print_styles',get_stylesheet_directory_uri() . '/assets/css/print'.(($env_type == "production")?'.min':'').'.css',false, false, 'print');
     }
-
 }
