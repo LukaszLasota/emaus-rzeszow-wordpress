@@ -26,44 +26,91 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 class HamburgerMenu {
     constructor() {
-        this.handleClick = () => {
-            var _a, _b, _c, _d, _e;
-            (_a = this.hamburger) === null || _a === void 0 ? void 0 : _a.classList.toggle('hamburger--active');
-            (_b = this.hamburger) === null || _b === void 0 ? void 0 : _b.setAttribute('aria-expanded', `${(_c = this.hamburger) === null || _c === void 0 ? void 0 : _c.classList.contains('hamburger--active')}`);
-            (_d = this.siteNavNavigation) === null || _d === void 0 ? void 0 : _d.classList.toggle('site-nav__navigation--active');
-            if (this.scrollPos < 10) {
-                (_e = this.siteNav) === null || _e === void 0 ? void 0 : _e.classList.add('site-nav--bg');
-            }
-        };
-        this.addClassOnScroll = () => {
-            var _a;
-            (_a = this.siteNav) === null || _a === void 0 ? void 0 : _a.classList.add('site-nav--bg');
-        };
-        this.removeClassOnScroll = () => {
-            var _a;
-            (_a = this.siteNav) === null || _a === void 0 ? void 0 : _a.classList.remove('site-nav--bg');
-        };
-        this.updateMenuBackground = () => {
-            this.scrollPos = window.scrollY;
-            if (this.scrollPos > 10 || this.actualWidth < 770) {
-                this.addClassOnScroll();
-            }
-            else if (this.scrollPos < 10) {
-                this.removeClassOnScroll();
-            }
-        };
-        this.hamburger = document.querySelector('.hamburger');
-        this.siteNavNavigation = document.querySelector('.site-nav__navigation');
-        this.siteNav = document.querySelector('.site-nav');
+        this.desktopWidth = 1025;
+        this.hamburger = this.getElement('.hamburger');
+        this.siteNavNavigation = this.getElement('.site-nav__navigation');
+        this.siteNavContainer = this.getElement('.site-header__container');
+        this.siteNav = this.getElement('.site-nav');
         this.scrollPos = window.scrollY;
-        this.actualWidth = document.body.clientWidth;
         this.init();
     }
+    getElement(selector) {
+        const element = document.querySelector(selector);
+        if (!element) {
+            throw new Error(`Element not found: ${selector}`);
+        }
+        return element;
+    }
     init() {
-        var _a;
-        (_a = this.hamburger) === null || _a === void 0 ? void 0 : _a.addEventListener('click', this.handleClick);
-        window.addEventListener('scroll', this.updateMenuBackground);
+        this.hamburger.addEventListener('click', this.handleClick.bind(this));
+        window.addEventListener('scroll', this.handleScroll.bind(this));
+        window.addEventListener('resize', this.handleResize.bind(this));
+        window.addEventListener('orientationchange', this.handleOrientationChange.bind(this));
         this.updateMenuBackground();
+        this.updateNavigationPosition();
+    }
+    handleClick() {
+        this.hamburger.classList.toggle('hamburger--active');
+        const expanded = this.hamburger.classList.contains('hamburger--active');
+        this.hamburger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        const isActive = this.siteNavNavigation.classList.toggle('site-nav__navigation--active');
+        this.siteNavContainer.classList.toggle('site-header__container--active');
+        if (this.scrollPos < 10) {
+            this.siteNav.classList.add('site-nav--background');
+        }
+        this.updateNavigationPosition(isActive);
+    }
+    addClassOnScroll() {
+        this.siteNav.classList.add('site-nav--background');
+    }
+    removeClassOnScroll() {
+        this.siteNav.classList.remove('site-nav--background');
+    }
+    handleScroll() {
+        if (window.innerWidth >= this.desktopWidth) {
+            this.updateMenuBackground();
+        }
+    }
+    handleResize() {
+        this.updateNavigationPosition();
+        if (window.innerWidth >= this.desktopWidth) {
+            this.resetMenu();
+        }
+    }
+    handleOrientationChange() {
+        this.resetMenu();
+    }
+    updateMenuBackground() {
+        this.scrollPos = window.scrollY;
+        if (this.scrollPos > 10) {
+            this.addClassOnScroll();
+        }
+        else {
+            this.removeClassOnScroll();
+        }
+    }
+    updateNavigationPosition(isActive = false) {
+        const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        if (width < this.desktopWidth) {
+            const navHeight = this.siteNav.offsetHeight;
+            this.siteNavNavigation.style.top = `${navHeight}px`;
+            if (isActive) {
+                this.siteNavNavigation.style.height = `calc(100vh - ${navHeight}px)`;
+            }
+            else {
+                this.siteNavNavigation.style.removeProperty('height');
+            }
+        }
+        else {
+            this.siteNavNavigation.style.removeProperty('height');
+            this.siteNavNavigation.style.removeProperty('top');
+        }
+    }
+    resetMenu() {
+        this.hamburger.classList.remove('hamburger--active');
+        this.hamburger.setAttribute('aria-expanded', 'false');
+        this.siteNavNavigation.classList.remove('site-nav__navigation--active');
+        this.siteNavContainer.classList.remove('site-header__container--active');
     }
 }
 
@@ -143,4 +190,4 @@ new _js_menu_menu__WEBPACK_IMPORTED_MODULE_1__.HamburgerMenu();
 
 /******/ })()
 ;
-//# sourceMappingURL=frontend.js.map?c590e21092208cc7d831
+//# sourceMappingURL=frontend.js.map?a67ea309509d42b5b111

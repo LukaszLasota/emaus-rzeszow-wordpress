@@ -18,6 +18,11 @@
     justify-content: center;
     align-content: center;
   }
+
+  @mixin flex-center {
+    display: flex;
+    align-content: center;
+  }
   
   @mixin start {
     justify-content: flex-start;
@@ -38,3 +43,14 @@
     background-color: black;
     position: absolute;
   }
+
+  @mixin gradient{
+    text-transform: uppercase;
+    -webkit-background: linear-gradient(to right, #008089 0%, #002432 100%);
+    -moz-background: linear-gradient(to right, #008089 0%, #002432 100%);
+    background: linear-gradient(to right, #008089 0%, #002432 100%);
+	  -webkit-text-fill-color: transparent;
+	  text-fill-color: transparent;
+    -webkit-background-clip: text;
+    font-weight: normal;
+}
