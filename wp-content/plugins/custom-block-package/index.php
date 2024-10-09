@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Custom Block Package
- * Description:       A plugin for adding custom blocks to a theme.
+ * Description:       A plugin for adding custom gutenberg blocks to a theme.
  * Version:           1.0.0
  * Requires at least: 5.9
  * Requires PHP:      7.2
@@ -23,6 +23,7 @@ define('UP_PLUGIN_FILE', __FILE__);
 $rootFiles = glob(UP_PLUGIN_DIR . 'includes/*.php');
 $subdirectoryFiles = glob(UP_PLUGIN_DIR . 'includes/**/*.php');
 $allFiles = array_merge($rootFiles, $subdirectoryFiles);
+
 
 foreach($allFiles as $filename) {
   include_once($filename);

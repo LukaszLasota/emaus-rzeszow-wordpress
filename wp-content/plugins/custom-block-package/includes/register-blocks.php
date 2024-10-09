@@ -2,7 +2,10 @@
 
 function up_register_blocks() {
   $blocks = [
-    [ 'name' => 'pdf-block', ],
+    [ 'name' => 'pdf-block'],
+    // [ 'name' => 'slider-block'],
+    [ 'name' => 'image-text'],
+
 
     // Example
     // [ 'name' => 'daily-recipe',  'options' => [
@@ -10,11 +13,15 @@ function up_register_blocks() {
     // ]],
     
   ];
+  
 
   foreach($blocks as $block) {
+    
     register_block_type(
       UP_PLUGIN_DIR . 'build/blocks/' . $block['name'],
+     
       isset($block['options']) ? $block['options'] : []
     );
   }
 }
+

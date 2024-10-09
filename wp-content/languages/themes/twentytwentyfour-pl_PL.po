@@ -7,16 +7,18 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
-"X-Generator: GlotPress/4.0.0-beta.2\n"
+"X-Generator: GlotPress/4.0.1\n"
 "Language: pl\n"
 "Project-Id-Version: Themes - Twenty Twenty-Four\n"
 
 #. Description of the theme
+#: style.css
 #, gp-priority: high
 msgid "Twenty Twenty-Four is designed to be flexible, versatile and applicable to any website. Its collection of templates and patterns tailor to different needs, such as presenting a business, blogging and writing or showcasing work. A multitude of possibilities open up with just a few adjustments to color and typography. Twenty Twenty-Four comes with style variations and full page designs to help speed up the site building process, is fully compatible with the site editor, and takes advantage of new design tools introduced in WordPress 6.4."
 msgstr "Twenty Twenty-Four został zaprojektowany tak, aby był elastyczny, wszechstronny i odpowiedni dla każdej witryny internetowej. Jego kolekcja szablonów i wzorców dostosowana jest do różnych potrzeb, takich jak wizytówka firmy, blogowanie i pisanie lub prezentacja pracy. Mnóstwo możliwości otwiera się dzięki zaledwie kilku zmianom w kolorystyce i typografii. Twenty Twenty-Four zawiera warianty stylów i pełne projekty stron, aby przyspieszyć proces tworzenia witryny, jest w pełni kompatybilny z edytorem witryn i wykorzystuje nowe narzędzia do projektowania wprowadzone w WordPress 6.4."
 
 #. Theme Name of the theme
+#: style.css
 #, gp-priority: high
 msgid "Twenty Twenty-Four"
 msgstr "Twenty Twenty-Four"
@@ -41,8 +43,8 @@ msgstr "Strony"
 
 #. Author URI of the theme
 #. Translators: WordPress link.
-#: patterns/footer-centered-logo-nav.php:21
-#: patterns/footer-colophon-3-col.php:90 patterns/footer.php:116
+#: style.css patterns/footer-centered-logo-nav.php:22
+#: patterns/footer-colophon-3-col.php:91 patterns/footer.php:117
 msgid "https://wordpress.org"
 msgstr "https://pl.wordpress.org"
 
@@ -61,7 +63,7 @@ msgctxt "Template part name"
 msgid "Post Meta"
 msgstr "Meta dane wpisu"
 
-#: theme.json styles/fossil.json styles/ice.json
+#: styles/fossil.json styles/ice.json theme.json
 msgctxt "Font family name"
 msgid "Inter"
 msgstr "Inter"
@@ -96,29 +98,29 @@ msgctxt "Space size name"
 msgid "1"
 msgstr "1"
 
-#: theme.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
 msgctxt "Font size name"
 msgid "Large"
 msgstr "Duży"
 
-#: theme.json styles/ember.json styles/fossil.json styles/ice.json
-#: styles/maelstrom.json styles/mint.json styles/onyx.json styles/rust.json
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json styles/onyx.json styles/rust.json theme.json
 msgctxt "Color name"
 msgid "Contrast"
 msgstr "Kontrast"
 
-#: theme.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
 msgctxt "Font size name"
 msgid "Extra Large"
 msgstr "Bardzo duży"
 
-#: theme.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
 msgctxt "Font size name"
 msgid "Medium"
 msgstr "Średni"
 
-#: theme.json styles/ember.json styles/fossil.json styles/ice.json
-#: styles/maelstrom.json styles/mint.json styles/onyx.json styles/rust.json
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json styles/onyx.json styles/rust.json theme.json
 msgctxt "Color name"
 msgid "Base"
 msgstr "Bazowy"
@@ -127,16 +129,6 @@ msgstr "Bazowy"
 msgctxt "Custom template name"
 msgid "Single with Sidebar"
 msgstr "Pojedynczy z paskiem bocznym"
-
-#: theme.json
-msgctxt "Custom template name"
-msgid "Page with wide Image"
-msgstr "Strona z szerokim obrazem"
-
-#: theme.json
-msgctxt "Custom template name"
-msgid "Page With Sidebar"
-msgstr "Strona z paskiem bocznym"
 
 #: theme.json
 msgctxt "Template part name"
@@ -193,22 +185,22 @@ msgctxt "Gradient name"
 msgid "Vertical soft rust to white"
 msgstr "Pionowa miękka rdza do bieli"
 
-#: theme.json styles/onyx.json
+#: styles/onyx.json theme.json
 msgctxt "Color name"
 msgid "Accent / Four"
 msgstr "Akcent / Cztery"
 
-#: theme.json styles/onyx.json
+#: styles/onyx.json theme.json
 msgctxt "Color name"
 msgid "Accent / Three"
 msgstr "Akcent / Trzy"
 
-#: theme.json styles/onyx.json
+#: styles/onyx.json theme.json
 msgctxt "Color name"
 msgid "Accent / Two"
 msgstr "Akcent / Dwa"
 
-#: theme.json styles/onyx.json
+#: styles/onyx.json theme.json
 msgctxt "Color name"
 msgid "Accent"
 msgstr "Akcent"
@@ -308,29 +300,29 @@ msgctxt "Style variation name"
 msgid "Ice"
 msgstr "Lód"
 
-#: theme.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
 msgctxt "Font size name"
 msgid "Extra Extra Large"
 msgstr "Bardzo Bardzo Duży"
 
-#: theme.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
 msgctxt "Font size name"
 msgid "Small"
 msgstr "Małe"
 
-#: theme.json styles/fossil.json styles/maelstrom.json
+#: styles/fossil.json styles/maelstrom.json theme.json
 msgctxt "Font family name"
 msgid "Cardo"
 msgstr "Cardo"
 
-#: theme.json styles/fossil.json styles/ice.json styles/mint.json
-#: styles/onyx.json
+#: styles/fossil.json styles/ice.json styles/mint.json styles/onyx.json
+#: theme.json
 msgctxt "Color name"
 msgid "Contrast / Three"
 msgstr "Przeciwieństwo / Trzy"
 
-#: theme.json styles/fossil.json styles/ice.json styles/mint.json
-#: styles/onyx.json
+#: styles/fossil.json styles/ice.json styles/mint.json styles/onyx.json
+#: theme.json
 msgctxt "Color name"
 msgid "Contrast / Two"
 msgstr "Kontrast / Dwa"
@@ -340,8 +332,8 @@ msgctxt "Style variation name"
 msgid "Fossil"
 msgstr "Skamielina"
 
-#: theme.json styles/ember.json styles/fossil.json styles/ice.json
-#: styles/maelstrom.json styles/mint.json
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json theme.json
 msgctxt "Font family name"
 msgid "System Serif"
 msgstr "System Serif"
@@ -361,7 +353,7 @@ msgctxt "Color name"
 msgid "Contrast / 3"
 msgstr "Kontrast / 3"
 
-#: patterns/footer.php:85
+#: patterns/footer.php:86
 msgid "Social"
 msgstr "Media społecznościowe"
 
@@ -369,15 +361,15 @@ msgstr "Media społecznościowe"
 msgid "Popular Categories"
 msgstr "Popularne kategorie"
 
-#: patterns/footer-colophon-3-col.php:59
+#: patterns/footer-colophon-3-col.php:60 patterns/footer.php:94
 msgid "Facebook"
 msgstr "Facebook"
 
-#: patterns/footer-colophon-3-col.php:59
+#: patterns/footer-colophon-3-col.php:60 patterns/footer.php:95
 msgid "Instagram"
 msgstr "Instagram"
 
-#: patterns/footer-colophon-3-col.php:38
+#: patterns/footer-colophon-3-col.php:39
 msgid "Contact"
 msgstr "Kontakt"
 
@@ -385,7 +377,7 @@ msgstr "Kontakt"
 msgid "Pill"
 msgstr "Pigułka"
 
-#: patterns/footer-colophon-3-col.php:81
+#: patterns/footer-colophon-3-col.php:82
 msgid "&copy;"
 msgstr "&copy;"
 
@@ -393,15 +385,15 @@ msgstr "&copy;"
 msgid "Useful Links"
 msgstr "Przydatne linki"
 
-#: patterns/footer.php:91
+#: patterns/footer.php:92
 msgid "Social Media"
 msgstr "Media społecznościowe"
 
-#: patterns/footer-colophon-3-col.php:56
+#: patterns/footer-colophon-3-col.php:57
 msgid "Follow"
 msgstr "Obserwuj"
 
-#: patterns/footer.php:63 patterns/footer.php:69
+#: patterns/footer.php:64 patterns/footer.php:70
 msgid "Privacy"
 msgstr "Prywatność"
 
@@ -415,6 +407,7 @@ msgid "Comments"
 msgstr "Komentarze"
 
 #. Author of the theme
+#: style.css
 #, gp-priority: low
 msgid "the WordPress team"
 msgstr "zespół WordPressa"

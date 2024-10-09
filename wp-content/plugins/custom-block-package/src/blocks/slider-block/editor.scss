@@ -1,0 +1,25 @@
+// Importuj ogólne style, aby edytor i frontend miały tę samą podstawową stylizację
+@import './style.scss';
+
+// Dodatkowe style specyficzne dla edytora
+.wp-block {
+    &-custom-block-package-slider-block {
+        .swiper-container {
+            height: 400px; // Ustaw stałą wysokość dla slidera w edytorze
+            position: relative; // Zapewnia, że nawigacja i paginacja będą poprawnie pozycjonowane
+
+            .swiper-wrapper {
+                height: 100%; // Zapewnia, że wrapper zajmuje pełną wysokość kontenera
+            }
+
+            .swiper-slide {
+                height: 100%; // Zapewnia, że każdy slajd zajmuje pełną wysokość kontenera
+
+                img {
+                    max-height: 100%;
+                    height: auto;
+                }
+            }
+        }
+    }
+}
