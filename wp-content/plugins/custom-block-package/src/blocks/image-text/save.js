@@ -1,24 +1,27 @@
-import { RichText, useBlockProps } from '@wordpress/block-editor';
+import { useBlockProps } from '@wordpress/block-editor';
 import './style.scss';
 
-const Save = (props) => {
-    const { attributes } = props;
-    const { text, imgAlt, imgURL, linkURL } = attributes;
+const Save = ({ attributes }) => {
+    const { text, imgAlt, imgURL, postURL } = attributes;
     const blockProps = useBlockProps.save();
 
     return (
-        <div {...blockProps} className="about-one">
-            <a href={linkURL || "#"}>
+        <div className="about-one" {...blockProps}>
+            {postURL && postURL.url ? (
+                <a href={postURL.url}>
+                    <figure>
+                        {imgURL && <img className="about-one__image" src={imgURL} alt={imgAlt} />}
+                        <h2 className='about-one__caption'>{text}</h2>
+                    </figure>
+                    <div className="about-one__overlay"></div>
+                </a>
+            ) : (
                 <figure>
                     {imgURL && <img className="about-one__image" src={imgURL} alt={imgAlt} />}
-                    <RichText.Content
-                        className="about-one__caption"
-                        tagName="h2"
-                        value={text}
-                    />
+                    <h2 className='about-one__caption'>{text}</h2>
+                    <div className="about-one__overlay"></div>
                 </figure>
-                <div className="about-one__overlay"></div>
-            </a>
+            )}
         </div>
     );
 };

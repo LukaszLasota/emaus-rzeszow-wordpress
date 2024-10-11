@@ -1,11 +1,11 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 2,
+  "apiVersion": 3,
   "name": "custom-block-package/image-text",
-  "title": "Image with text",
+  "title": "Obraz i tekst",
   "icon": "media-document",
-  "category": "common",
-  "description": "Show image with background and text",
+  "category": "media",
+  "description": "Blok z obrazem i tekstem Emaus",
   "keywords": [
     "image",
     "text"
@@ -28,7 +28,7 @@
     },
     "imgID": {
       "type": "number",
-      "default": 0
+      "default": null
     },
     "imgAlt": {
       "type": "string",
@@ -44,12 +44,14 @@
       "selector": "img",
       "attribute": "src"
     },
-    "linkURL": {
-      "type": "string",
-      "default": ""
+    "postURL": {
+      "type": "object",
+      "default": {
+        "url": ""
+      }
     }
   },
   "editorScript": "file:./index.js",
   "style": "file:./style-index.css",
-  "editorStyle": "file:./editor.scss"
+  "editorStyle": "file:./index.css"
 }
