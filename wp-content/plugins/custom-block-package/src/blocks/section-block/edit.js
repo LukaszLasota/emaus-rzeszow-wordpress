@@ -27,6 +27,10 @@ const Edit = ({ attributes, setAttributes }) => {
         backgroundColor,
         padding,
         margin,
+        gridGap,
+        justifyItems,
+        justifyContent,
+        alignContent,
     } = attributes;
 
     const TagName = tagName;
@@ -42,6 +46,10 @@ const Edit = ({ attributes, setAttributes }) => {
             "--columns-small-tablet": `${columnsSmallTablet}`,
             "--columns-large-tablet": `${columnsLargeTablet}`,
             "--columns-desktop": `${columnsDesktop}`,
+            "--grid-gap": `${gridGap}px`,
+            "--justify-items": justifyItems,
+            "--justify-content": justifyContent,
+            "--align-content": alignContent,
         }
     });
 
@@ -77,6 +85,13 @@ const Edit = ({ attributes, setAttributes }) => {
                         min={1}
                         max={6}
                     />
+                    <RangeControl
+                        label={__("Odstęp między elementami (Grid Gap)", "custom-block-package")}
+                        value={gridGap}
+                        onChange={(value) => setAttributes({ gridGap: value })}
+                        min={0}
+                        max={50}
+                    />
                     <SelectControl
                         label={__("Znaczniki HTML", "custom-block-package")}
                         value={tagName}
@@ -90,6 +105,47 @@ const Edit = ({ attributes, setAttributes }) => {
                             { label: __("aside", "custom-block-package"), value: "aside" },
                         ]}
                         onChange={(tagName) => setAttributes({ tagName })}
+                    />
+
+                    <SelectControl
+                        label={__("Justify Items", "custom-block-package")}
+                        value={justifyItems}
+                        options={[
+                            { label: __("Start", "custom-block-package"), value: "start" },
+                            { label: __("End", "custom-block-package"), value: "end" },
+                            { label: __("Center", "custom-block-package"), value: "center" },
+                            { label: __("Stretch", "custom-block-package"), value: "stretch" },
+                        ]}
+                        onChange={(value) => setAttributes({ justifyItems: value })}
+                    />
+
+                    <SelectControl
+                        label={__("Justify Content", "custom-block-package")}
+                        value={justifyContent}
+                        options={[
+                            { label: __("Start", "custom-block-package"), value: "start" },
+                            { label: __("End", "custom-block-package"), value: "end" },
+                            { label: __("Center", "custom-block-package"), value: "center" },
+                            { label: __("Space Between", "custom-block-package"), value: "space-between" },
+                            { label: __("Space Around", "custom-block-package"), value: "space-around" },
+                            { label: __("Space Evenly", "custom-block-package"), value: "space-evenly" },
+                        ]}
+                        onChange={(value) => setAttributes({ justifyContent: value })}
+                    />
+
+                    <SelectControl
+                        label={__("Align Content", "custom-block-package")}
+                        value={alignContent}
+                        options={[
+                            { label: __("Start", "custom-block-package"), value: "start" },
+                            { label: __("End", "custom-block-package"), value: "end" },
+                            { label: __("Center", "custom-block-package"), value: "center" },
+                            { label: __("Stretch", "custom-block-package"), value: "stretch" },
+                            { label: __("Space Between", "custom-block-package"), value: "space-between" },
+                            { label: __("Space Around", "custom-block-package"), value: "space-around" },
+                            { label: __("Space Evenly", "custom-block-package"), value: "space-evenly" },
+                        ]}
+                        onChange={(value) => setAttributes({ alignContent: value })}
                     />
                 </PanelBody>
 

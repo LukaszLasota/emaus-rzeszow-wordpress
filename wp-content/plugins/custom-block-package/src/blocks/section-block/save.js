@@ -12,6 +12,10 @@ const Save = ({ attributes }) => {
         padding,
         margin,
         tagName,
+        gridGap,
+        justifyItems,
+        justifyContent,
+        alignContent,
     } = attributes;
 
     const TagName = tagName;
@@ -27,6 +31,10 @@ const Save = ({ attributes }) => {
             "--columns-small-tablet": `${columnsSmallTablet}`,
             "--columns-large-tablet": `${columnsLargeTablet}`,
             "--columns-desktop": `${columnsDesktop}`,
+            "--grid-gap": `${gridGap}px`,
+            "--justify-items": justifyItems,
+            "--justify-content": justifyContent,
+            "--align-content": alignContent,
         }
     });
 
