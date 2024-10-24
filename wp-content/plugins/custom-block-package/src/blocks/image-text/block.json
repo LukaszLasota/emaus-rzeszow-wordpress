@@ -48,7 +48,8 @@
             }
         }
     },
+   
 	"editorScript": "file:./index.js",
-    "style": "file:./style-index.css",
+    "viewStyle": "file:./style-index.css",
     "editorStyle": "file:./index.css"
   }

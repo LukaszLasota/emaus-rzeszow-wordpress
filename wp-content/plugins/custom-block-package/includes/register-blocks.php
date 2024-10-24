@@ -5,7 +5,7 @@ function up_register_blocks() {
     [ 'name' => 'pdf-block'],
     // [ 'name' => 'slider-block'],
     [ 'name' => 'image-text'],
-
+    [ 'name' => 'section-block'],
 
     // Example
     // [ 'name' => 'daily-recipe',  'options' => [

@@ -58,7 +58,7 @@ registerBlockType("udemy-plus/team-members-group", {
               ["udemy-plus/team-member"],
               ["udemy-plus/team-member"],
             ]}
-            // templateLock="insert"
+          // templateLock="insert"
           />
         </div>
       </>
