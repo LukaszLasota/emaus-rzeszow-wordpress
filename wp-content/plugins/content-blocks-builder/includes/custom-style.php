@@ -39,6 +39,13 @@ if ( ! class_exists( CustomStyle::class ) ) :
 		];
 
 		/**
+		 * Store the ID of query loop with carousel or grid layout
+		 *
+		 * @var array
+		 */
+		private $query_ids = [];
+
+		/**
 		 * The cached styles
 		 *
 		 * @var array
@@ -83,6 +90,9 @@ if ( ! class_exists( CustomStyle::class ) ) :
 			// Build dynamic block background.
 			add_filter( 'render_block', [ $this, 'build_block_background' ], 30, 3 );
 
+			// Build animations.
+			add_filter( 'render_block', [ $this, 'build_block_animations' ], 30, 3 );
+
 			// Render grid style for the query loop block.
 			add_filter( 'render_block_core/query', [ $this, 'render_query_loop_grid_style' ], 10, 3 );
 
@@ -112,6 +122,9 @@ if ( ! class_exists( CustomStyle::class ) ) :
 
 			// Render sticky data for the core/template-part block.
 			add_filter( 'render_block_core/template-part', [ $this, 'render_template_part_sticky' ], 10, 3 );
+
+			// Build preloader for the carousel.
+			add_filter( 'render_block', [ $this, 'build_carousel_preloader' ], 30, 3 );
 		}
 
 		/**
@@ -299,9 +312,9 @@ if ( ! class_exists( CustomStyle::class ) ) :
 			$style            .= $visibility_style;
 
 			// Grid: Columns & gap.
-			$grid_style  = '.sm-cbb-grid-columns > *,.sm-cbb-grid-columns > * + *{margin:0}.sm-cbb-grid-columns{grid-template-columns:var(--cbb--grid-columns);}.sm-cbb-grid-gap-column{column-gap:var(--cbb--grid-gap-column);}.sm-cbb-grid-gap-row{row-gap:var(--cbb--grid-gap-row);}';
-			$grid_style .= "{$md_start}.md-cbb-grid-columns > * {margin:0}.md-cbb-grid-columns{grid-template-columns:var(--cbb--grid-columns);}.md-cbb-grid-gap-column{column-gap:var(--cbb--grid-gap-column);}.md-cbb-grid-gap-row{row-gap:var(--cbb--grid-gap-row);}{$end}";
-			$grid_style .= "{$lg_start}.lg-cbb-grid-columns > * {margin:0}.lg-cbb-grid-columns{grid-template-columns:var(--cbb--grid-columns);}.lg-cbb-grid-gap-column{column-gap:var(--cbb--grid-gap-column);}.lg-cbb-grid-gap-row{row-gap:var(--cbb--grid-gap-row);}{$end}";
+			$grid_style  = '.sm-cbb-grid-columns > *,.sm-cbb-grid-columns > * + *{margin:0}.sm-cbb-grid-columns{grid-template-columns:var(--cbb--grid-columns);}.sm-cbb-grid-rows{grid-template-rows:var(--cbb--grid-rows);}.sm-cbb-grid-gap-column{column-gap:var(--cbb--grid-gap-column);}.sm-cbb-grid-gap-row{row-gap:var(--cbb--grid-gap-row);}';
+			$grid_style .= "{$md_start}.md-cbb-grid-columns > * {margin:0}.md-cbb-grid-columns{grid-template-columns:var(--cbb--grid-columns);}.md-cbb-grid-rows{grid-template-rows:var(--cbb--grid-rows);}.md-cbb-grid-gap-column{column-gap:var(--cbb--grid-gap-column);}.md-cbb-grid-gap-row{row-gap:var(--cbb--grid-gap-row);}{$end}";
+			$grid_style .= "{$lg_start}.lg-cbb-grid-columns > * {margin:0}.lg-cbb-grid-columns{grid-template-columns:var(--cbb--grid-columns);}.lg-cbb-grid-rows{grid-template-rows:var(--cbb--grid-rows);}.lg-cbb-grid-gap-column{column-gap:var(--cbb--grid-gap-column);}.lg-cbb-grid-gap-row{row-gap:var(--cbb--grid-gap-row);}{$end}";
 			$style      .= $grid_style;
 
 			// Grid item: columnSpan & rowSpan.
@@ -339,6 +352,12 @@ if ( ! class_exists( CustomStyle::class ) ) :
 			$modal_style  = "{$md_start}.is-modal > .bb-modal-dialog{width:var(--bb--modal-width--md,32rem);}.is-modal > .bb-modal-dialog[style*=\"--bb--modal-height--md:\"]{height:var(--bb--modal-height--md);}.modal--custom-position{align-items:var(--bb--modal-v-align--md);justify-content:var(--bb--modal-h-align--md);}{$end}";
 			$modal_style .= "{$lg_start}.is-modal > .bb-modal-dialog{width:var(--bb--modal-width--md,50rem);}.is-modal > .bb-modal-dialog[style*=\"--bb--modal-height--lg:\"]{height:var(--bb--modal-height--lg);}.modal--custom-position{align-items:var(--bb--modal-v-align--lg);justify-content:var(--bb--modal-h-align--lg);}{$end}";
 			$style       .= $modal_style;
+
+			// Mobile background.
+			$background_style  = '.cbb-mobile-image > .bb\:block-background--img{display:none !important;}.cbb-mobile-image > .is-mobile-image {display:block !important;}';
+			$background_style .= "@media(min-width:{$md_breakpoint}px){.cbb-mobile-image > .bb\:block-background--img{display:block !important;}.cbb-mobile-image > .is-mobile-image {display:none !important;}}";
+			$background_style .= "@media(max-width:{$md_breakpoint_max}px){.cbb-mobile-background{background-image: var(--cbb-mobile-background) !important;}}";
+			$style            .= $background_style;
 
 			return $style;
 		}
@@ -456,6 +475,11 @@ if ( ! class_exists( CustomStyle::class ) ) :
 				],
 				'columns'           => [
 					'func_build_responsive_style' => [ $this, 'build_columns_style' ],
+					'group'                       => 'grid',
+					'layout_type'                 => 'grid',
+				],
+				'rows'           => [
+					'func_build_responsive_style' => [ $this, 'build_rows_style' ],
 					'group'                       => 'grid',
 					'layout_type'                 => 'grid',
 				],
@@ -1164,6 +1188,22 @@ if ( ! class_exists( CustomStyle::class ) ) :
 		}
 
 		/**
+		 * Build style for grid rows
+		 *
+		 * @param array $args
+		 * @return string
+		 */
+		private function build_rows_style( $args ) {
+			$style_array = [];
+			$value       = $args['value'] ?? null;
+			if ( $this->is_valid_value( $value ) ) {
+				$style_array['--cbb--grid-rows'] = $value;
+			}
+
+			return $style_array;
+		}
+
+		/**
 		 * Build style for grid gap
 		 *
 		 * @param array $args
@@ -1507,15 +1547,24 @@ if ( ! class_exists( CustomStyle::class ) ) :
 		 * @return array
 		 */
 		private function build_image_background( $image_id, $background, $block_class ) {
-			$settings = $background['settings'] ?? [];
-			$media    = $background['image'] ?? [];
-
-			$image_element       = '';
-			$dataset             = [];
+			$settings            = $background['settings'] ?? [];
+			$media               = $background['image'] ?? [];
+			$mobile_background   = ! ( $media['useFeaturedImage'] ?? false ) && ( $media['hasMobileBackground'] ?? false ) && ( $media['mobileBackground']['url'] ?? '' ) ? $media['mobileBackground'] : false;
+			$background_classes  = [ 'bb:block-background bb:block-background--image' ];
 			$background_position = round( ( $settings['focalPoint']['x'] ?? .5 ) * 100 ) . '% ' . round( ( $settings['focalPoint']['y'] ?? .5 ) * 100 ) . '%';
 
-			$image_size = $media['size'] ?? 'full';
-			$image_url  = $image_id ? wp_get_attachment_image_url( $image_id, $image_size ) : $media['url'];
+			$image_element = '';
+			$dataset       = [];
+			$image_size    = $media['size'] ?? 'full';
+
+			$is_internal_image = false;
+			$image_url         = $image_id ? wp_get_attachment_image_url( $image_id, $image_size ) : false;
+			if ( $image_url ) {
+				$is_internal_image = true;
+			} else {
+				$image_url = $media['url'];
+			}
+
 			$alt_text   = $media['customAlt'] ?? wp_get_attachment_caption( $image_id );
 			$object_fit = $settings['objectFit'] ?? 'cover';
 			if ( empty( $object_fit ) ) {
@@ -1539,23 +1588,39 @@ if ( ! class_exists( CustomStyle::class ) ) :
 					}
 				}
 
-				if ( $image_id ) {
+				if ( $is_internal_image ) {
 					$image_element = wp_get_attachment_image(
 						$image_id,
-						'full',
+						$image_size,
 						false,
 						$attrs
 					);
 				} else {
-					$attr_html = '';
-					foreach ( $attrs as $name => $value ) {
-						$attr_html .= " $name=" . '"' . esc_attr( $value ) . '"';
+					$image_element = $this->generate_image_element( $image_url, $attrs );
+				}
+
+				if ( $mobile_background ) {
+					$background_classes[] = 'cbb-mobile-image';
+					$attrs['class']      .= ' is-mobile-image';
+
+					$mobile_image = '';
+					if ( $mobile_background['id'] ?? false ) {
+						$mobile_image = wp_get_attachment_image(
+							$mobile_background['id'],
+							$image_size,
+							false,
+							$attrs
+						);
 					}
 
-					$image_element = sprintf( '<img src="%1$s"%2$s/>', esc_attr( $image_url ), $attr_html );
+					if ( ! $mobile_image ) {
+						$mobile_image = $this->generate_image_element( $mobile_background['url'], $attrs );
+					}
+
+					$image_element .= $mobile_image;
 				}
 			} else {
-				$image_as_background = strpos( $image_url, 'data:image/svg+xml' ) === 0 ? '&quot;' . esc_attr( $image_url ) . '&quot;' : esc_attr( $image_url );
+				$image_as_background = $this->get_background_image_url( $image_url );
 				$background_styles   = [
 					'background-image'    => 'url(' . $image_as_background . ')',
 					'background-position' => $background_position,
@@ -1566,9 +1631,12 @@ if ( ! class_exists( CustomStyle::class ) ) :
 
 				$background_styles['background-repeat'] = $settings['repeat'] ?? 'no-repeat';
 				$background_styles['background-size']   = $settings['size'] ?? 'cover';
+				if ( $mobile_background ) {
+					$background_styles['--cbb-mobile-background'] = "url('{$this->get_background_image_url( $mobile_background['url'] )}')";
+					$background_classes[]                         = 'cbb-mobile-background';
+				}
 			}
 
-			$background_classes = [ 'bb:block-background bb:block-background--image' ];
 			$animation_type     = $settings['animation']['type'] ?? false;
 			$animation_settings = $settings['animation']['settings'] ?? [];
 			if ( $animation_type && 'none' !== $animation_type ) {
@@ -1625,15 +1693,16 @@ if ( ! class_exists( CustomStyle::class ) ) :
 					$background_classes[] = "bg-zoom-{$zoom_event}";
 
 					if ( 'reveal' === $zoom_event ) {
-						$dataset['data-reveal-animation'] = wp_json_encode(
-							[
-								'animationName'        => 'bgZoom',
-								'animateMultipleTimes' => $animation_settings['zoom']['multipleTimes'] ?? false,
-								'forwards'             => true,
-							]
+						$dataset['data-reveal-animation'] = esc_attr(
+							wp_json_encode(
+								[
+									'name'          => 'bgZoom',
+									'animation'     => 'bgZoom var(--cbb--zoom-duration) var(--cbb--zoom-timing-function)',
+									'multipleTimes' => $animation_settings['zoom']['multipleTimes'] ?? false,
+									'forwards'      => true,
+								]
+							)
 						);
-
-						$dataset['data-animate-multiple-times'] = $animation_settings['zoom']['multipleTimes'] ?? false;
 					}
 
 					if ( ! empty( $animation_settings['zoom']['withOpacity'] ) ) {
@@ -1676,6 +1745,193 @@ if ( ! class_exists( CustomStyle::class ) ) :
 		}
 
 		/**
+		 * Generate img tag from an image url
+		 *
+		 * @param string $image_url
+		 * @param array  $attrs
+		 * @return string
+		 */
+		private function generate_image_element( $image_url, $attrs ) {
+			$attr_html = '';
+			foreach ( $attrs as $name => $value ) {
+				$attr_html .= " $name=" . '"' . esc_attr( $value ) . '"';
+			}
+
+			return sprintf( '<img src="%1$s"%2$s/>', esc_attr( $image_url ), $attr_html );
+		}
+
+		/**
+		 * Get image as background url
+		 *
+		 * @param string $image_url
+		 * @return string
+		 */
+		private function get_background_image_url( $image_url ) {
+			return strpos( $image_url, 'data:image/svg+xml' ) === 0 ? '&quot;' . esc_attr( $image_url ) . '&quot;' : esc_attr( $image_url );
+		}
+
+		/**
+		 * Render animations
+		 *
+		 * @param string   $block_content
+		 * @param array    $block
+		 * @param WP_Block $block_instance
+		 * @return string
+		 */
+		public function build_block_animations( $block_content, $block, $block_instance ) {
+			// There is no animations value.
+			if ( ! isset( $block['attrs']['boldblocks'] ) || ! isset( $block['attrs']['boldblocks']['animations'] ) ) {
+				return $block_content;
+			}
+
+			// Get animations.
+			$animations = $block['attrs']['boldblocks']['animations'];
+			if ( ! is_array( $animations ) ) {
+				return $block_content;
+			}
+
+			$animation_names = $this->get_animation_names();
+
+			$animation_object = array_reduce(
+				$animations,
+				function ( $accumulator, $animation ) use ( $animation_names ) {
+					$name     = $animation['name'] ?? '';
+					$duration = $animation['duration'] ?? '';
+
+					if ( ! $name || ! $duration ) {
+						return $accumulator;
+					}
+
+					$delay           = $animation['delay'] ?? 0;
+					$repeat          = $animation['repeat'] ?? 1;
+					$infinite        = $animation['infinite'] ?? false;
+					$timing_function = $animation['timingFunction'] ?? '';
+					$animation_name  = isset( $animation_names[ $name ]['name'] ) ? $animation_names[ $name ]['name'] : $name;
+					if ( ! $timing_function && isset( $animation_names[ $name ]['timingFunction'] ) ) {
+						$timing_function = $animation_names[ $name ]['timingFunction'];
+					}
+					$timing_function = $timing_function ? " $timing_function" : '';
+					$count           = $infinite ? 'infinite' : $repeat;
+
+					$animation_string = "$animation_name {$duration}s{$timing_function} {$delay}s $count";
+
+					// Save animation.
+					$accumulator['animation'] = $accumulator['animation']
+						? "{$accumulator['animation']}, $animation_string"
+						: $animation_string;
+
+					// Save the name.
+					$accumulator['name'] = $accumulator['name']
+						? "{$accumulator['name']},$name"
+						: $name;
+
+					return $accumulator;
+				},
+				[
+					'animation' => '',
+					'name'      => '',
+				]
+			);
+
+			if ( $animation_object['name'] && $animation_object['animation'] ) {
+				$animation_object['multipleTimes'] = $block['attrs']['boldblocks']['animateMultipleTimes'] ?? false;
+
+				$block_content = $this->add_data_to_block( $block_content, 'data-reveal-animation', esc_attr( wp_json_encode( $animation_object ) ) );
+			}
+
+			return $block_content;
+		}
+
+		/**
+		 * Get all predefined animations
+		 *
+		 * @return array
+		 */
+		private function get_animation_names() {
+			$animation_names = [
+				'bounce'            => false,
+				'flash'             => false,
+				'pulse'             => [ 'timingFunction' => 'ease-in-out' ],
+				'rubberBand'        => false,
+				'shakeX'            => false,
+				'shakeY'            => false,
+				'headShake'         => [ 'timingFunction' => 'ease-in-out' ],
+				'swing'             => false,
+				'tada'              => false,
+				'wobble'            => false,
+				'jello'             => false,
+				'heartBeat'         => [ 'timingFunction' => 'ease-in-out' ],
+
+				'backInDown'        => false,
+				'backInLeft'        => false,
+				'backInRight'       => false,
+				'backInUp'          => false,
+
+				'bounceIn'          => false,
+				'bounceInDown'      => false,
+				'bounceInLeft'      => false,
+				'bounceInRight'     => false,
+				'bounceInUp'        => false,
+
+				'fadeIn'            => false,
+				'fadeInDown'        => [ 'name' => 'fadeInXY' ],
+				'fadeInDownBig'     => [ 'name' => 'fadeInXY' ],
+				'fadeInLeft'        => [ 'name' => 'fadeInXY' ],
+				'fadeInLeftBig'     => [ 'name' => 'fadeInXY' ],
+				'fadeInRight'       => [ 'name' => 'fadeInXY' ],
+				'fadeInRightBig'    => [ 'name' => 'fadeInXY' ],
+				'fadeInUp'          => [ 'name' => 'fadeInXY' ],
+				'fadeInUpBig'       => [ 'name' => 'fadeInXY' ],
+				'fadeInTopLeft'     => [ 'name' => 'fadeInXY' ],
+				'fadeInTopRight'    => [ 'name' => 'fadeInXY' ],
+				'fadeInBottomLeft'  => [ 'name' => 'fadeInXY' ],
+				'fadeInBottomRight' => [ 'name' => 'fadeInXY' ],
+
+				'fadeInUpSmall'     => [ 'name' => 'fadeInXY' ],
+				'fadeInRightSmall'  => [ 'name' => 'fadeInXY' ],
+				'fadeInDownSmall'   => [ 'name' => 'fadeInXY' ],
+				'fadeInLeftSmall'   => [ 'name' => 'fadeInXY' ],
+
+				'flip'              => false,
+				'flipInX'           => false,
+				'flipInY'           => false,
+
+				'lightSpeedInRight' => [ 'timingFunction' => 'ease-out' ],
+				'lightSpeedInLeft'  => [ 'timingFunction' => 'ease-out' ],
+
+				'rotateIn'          => [ 'name' => 'rotateInZ' ],
+				'rotateInDownLeft'  => [ 'name' => 'rotateInZ' ],
+				'rotateInDownRight' => [ 'name' => 'rotateInZ' ],
+				'rotateInUpLeft'    => [ 'name' => 'rotateInZ' ],
+				'rotateInUpRight'   => [ 'name' => 'rotateInZ' ],
+
+				'jackInTheBox'      => false,
+				'rollIn'            => false,
+
+				'zoomIn'            => false,
+				'zoomInDown'        => [ 'name' => 'zoomInXY' ],
+				'zoomInLeft'        => [ 'name' => 'zoomInXY' ],
+				'zoomInRight'       => [ 'name' => 'zoomInXY' ],
+				'zoomInUp'          => [ 'name' => 'zoomInXY' ],
+
+				'slideInDown'       => [ 'name' => 'slideInXY' ],
+				'slideInLeft'       => [ 'name' => 'slideInXY' ],
+				'slideInRight'      => [ 'name' => 'slideInXY' ],
+				'slideInUp'         => [ 'name' => 'slideInXY' ],
+
+				'slideInDownSmall'  => [ 'name' => 'slideInXY' ],
+				'slideInLeftSmall'  => [ 'name' => 'slideInXY' ],
+				'slideInRightSmall' => [ 'name' => 'slideInXY' ],
+				'slideInUpSmall'    => [ 'name' => 'slideInXY' ],
+
+				'spin'              => false,
+				'zoomOutIn'         => false,
+			];
+
+			return $animation_names;
+		}
+
+		/**
 		 * Has a animation setting value or not
 		 *
 		 * @param string $type
@@ -1714,8 +1970,9 @@ if ( ! class_exists( CustomStyle::class ) ) :
 		 * @return string
 		 */
 		private function build_video_background( $background, $block_content, $block, $block_instance ) {
-			$settings = $background['settings'] ?? [];
-			$media    = $background['video'] ?? [];
+			$settings    = $background['settings'] ?? [];
+			$media       = $background['video'] ?? [];
+			$block_class = 'bb:has-background bb:has-background--video';
 
 			$background_position = round( ( $settings['focalPoint']['x'] ?? .5 ) * 100 ) . '% ' . round( ( $settings['focalPoint']['y'] ?? .5 ) * 100 ) . '%';
 			$object_fit          = $settings['objectFit'] ?? 'cover';
@@ -1726,7 +1983,12 @@ if ( ! class_exists( CustomStyle::class ) ) :
 			$video_style      = 'object-fit:' . $object_fit . ';object-position:' . $background_position . ';';
 			$block_background = sprintf( '<div class="bb:block-background bb:block-background--video"><video src="%1$s" autoplay="autoplay" muted loop playsinline preload="auto" style="%2$s"/></div>', $media['url'], $video_style );
 
-			$block_class = 'bb:has-background bb:has-background--video';
+			if ( $media['isPausable'] ?? false ) {
+				$block_class      .= ' cbb-has-video-controls';
+				$play_pause_icon   = apply_filters( 'cbb_play_pause_icon', '<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" class="control-play-pause"><g class="icon-pause"><rect width="4.5" height="14" x="3.75" y="3" rx="1.5"></rect><rect width="4.5" height="14" x="11.75" y="3" rx="1.5"></rect></g><path class="icon-play" d="M5 15.25V4.77a1.44 1.44 0 0 1 1.44-1.62 1.86 1.86 0 0 1 1.11.31l8.53 5c.76.44 1.17.8 1.17 1.51s-.41 1.07-1.17 1.51l-8.53 5a1.86 1.86 0 0 1-1.11.31A1.42 1.42 0 0 1 5 15.25Z"></path></svg>' );
+				$block_background .= '<button class="cbb-video-play-pause">' . $play_pause_icon . '</button>';
+			}
+
 			if ( strpos( $block['innerHTML'] ?? '', $block_class ) === false ) {
 				$block_content = $this->add_class_to_block( $block_content, $block_class );
 			}
@@ -1820,7 +2082,7 @@ if ( ! class_exists( CustomStyle::class ) ) :
 			$display_layout = $grid_data['displayType'] ?? '';
 			if ( 'responsiveGrid' === $display_layout && ( $grid_data['grid'] ?? false ) ) {
 				// Buil selector.
-				$selector = 'cbb-query-' . ( $block['attrs']['queryId'] ?? 1 );
+				$selector = 'cbb-query-' . $this->get_query_loop_id( $block );
 
 				// Get responsive settings.
 				$breakpoints = $this->get_breakpoints();
@@ -1849,6 +2111,24 @@ if ( ! class_exists( CustomStyle::class ) ) :
 			}
 
 			return $block_content;
+		}
+
+		/**
+		 * Build an unique ID for a query loop
+		 *
+		 * @param array $block
+		 * @return string
+		 */
+		private function get_query_loop_id( $block ) {
+			$query_id = $block['attrs']['queryId'] ?? 1;
+			$key      = "id_{$query_id}";
+			if ( ! isset( $this->query_ids[ $key ] ) ) {
+				$this->query_ids[ $key ] = 1;
+			} else {
+				$this->query_ids[ $key ]++;
+			}
+
+			return $query_id . '-' . $this->query_ids[ $key ];
 		}
 
 		/**
@@ -1917,6 +2197,44 @@ if ( ! class_exists( CustomStyle::class ) ) :
 							$selector          = $args['selector'];
 							$breakpoints       = $args['breakpoints'] ?? [];
 							$style             = "{$selector}{grid-template-columns:var(--cbb--grid--columns);}";
+
+							foreach ( $responsive_styles as $breakpoint => $attribute_array ) {
+								$media_query = $breakpoints[ $breakpoint ]['minQuery'] ?? '';
+								if ( $media_query ) {
+									$style = \str_replace( '##CONTENT##', $style, $media_query );
+								}
+
+								break;
+							}
+
+							return $style;
+						},
+					]
+				)
+			);
+
+			// Rows style.
+			$style .= $this->build_query_loop_responsive_style(
+				array_merge(
+					$args,
+					[
+						'setting_value'               => $data['rows'] ?? null,
+						'func_build_responsive_style' => function ( $args ) {
+							$style_array = [];
+							$value       = $args['value'];
+							if ( $value ) {
+								$style_array = [
+									'--cbb--grid--rows' => $value,
+								];
+							}
+
+							return $style_array;
+						},
+						'func_build_dependent_style'  => function ( $args ) {
+							$responsive_styles = $args['responsive_styles'] ?? [];
+							$selector          = $args['selector'];
+							$breakpoints       = $args['breakpoints'] ?? [];
+							$style             = "{$selector}{grid-template-rows:var(--cbb--grid--rows);}";
 
 							foreach ( $responsive_styles as $breakpoint => $attribute_array ) {
 								$media_query = $breakpoints[ $breakpoint ]['minQuery'] ?? '';
@@ -2125,7 +2443,7 @@ if ( ! class_exists( CustomStyle::class ) ) :
 		}
 
 		/**
-		 * Render grid style for the query loop's grid layout
+		 * Render carousel layout for query loop blocks
 		 *
 		 * @param string   $block_content
 		 * @param array    $block
@@ -2138,9 +2456,9 @@ if ( ! class_exists( CustomStyle::class ) ) :
 				return $block_content;
 			}
 
-			// If this is a core/query block that has grid layout.
 			$post_template = $this->get_nested_post_template( $block_instance );
 			if ( $post_template ) {
+				// If this has carousel layout.
 				if ( 'carousel' === ( $post_template->attributes['boldblocks']['layout']['type'] ?? '' ) ) {
 					// Build carousel settings.
 					$carousel_settings = $post_template->attributes['boldblocks']['carousel'] ?? [];
@@ -2154,7 +2472,7 @@ if ( ! class_exists( CustomStyle::class ) ) :
 						}
 
 						// Buil selector.
-						$selector = 'cbb-query-' . ( $block['attrs']['queryId'] ?? 1 );
+						$selector = 'cbb-query-' . $this->get_query_loop_id( $block );
 
 						// Get responsive settings.
 						$breakpoints = $this->get_breakpoints();
@@ -2179,6 +2497,17 @@ if ( ! class_exists( CustomStyle::class ) ) :
 							wp_enqueue_style( $handle );
 
 							$carousel_class .= ' ' . $selector;
+						}
+
+						if ( $carousel_settings['displayLoader'] ?? false ) {
+							$carousel_class .= ' has-preloader';
+
+							if ( 'coverflow' === ( $carousel_settings['effect'] ?? '' ) ) {
+								$carousel_class .= ' is-fading-loader';
+							}
+
+							// Add preloader.
+							$block_content = $this->add_inner_content_to_block( $block_content, $this->get_carousel_preloader_markup( $block, $block_instance ) );
 						}
 
 						// Add selector to block wrapper element.
@@ -2474,6 +2803,9 @@ if ( ! class_exists( CustomStyle::class ) ) :
 
 			// centeredSlides.
 			$dataset['centeredSlides'] = $carousel_settings['centeredSlides'] ?? false;
+			if ($dataset['centeredSlides'] && $effect === 'slide' && ($carousel_settings['centeredSlidesSettings']['enable'] ?? '')) {
+				$dataset['centeredSlidesSettings'] = $carousel_settings['centeredSlidesSettings'];
+			}
 
 			// Pagination.
 			$pagination            = $carousel_settings['pagination'] ?? [];
@@ -2800,6 +3132,9 @@ if ( ! class_exists( CustomStyle::class ) ) :
 						if ( $sticky_data['isInFlow'] ?? false ) {
 							$sticky_classes[] = 'is-in-flow';
 						}
+						if ( $sticky_data['isDetectingScroll'] ?? false ) {
+							$sticky_classes[] = 'is-detecting-scroll';
+						}
 					} elseif ( $sticky_data['isDetectingStuck'] ?? false ) {
 						$sticky_classes[] = 'is-detecting-stuck';
 					}
@@ -2813,6 +3148,54 @@ if ( ! class_exists( CustomStyle::class ) ) :
 			}
 
 			return $block_content;
+		}
+
+		/**
+		 * Render preloader for carousel layout blocks
+		 *
+		 * @param string   $block_content
+		 * @param array    $block
+		 * @param WP_Block $block_instance
+		 * @return string
+		 */
+		public function build_carousel_preloader( $block_content, $block, $block_instance ) {
+			// Ignore admin side.
+			if ( is_admin() ) {
+				return $block_content;
+			}
+
+			// There is no carousel layout.
+			if ( ! $this->has_style( $block, $block_instance ) || ( 'carousel' !== ( $block_instance->block_type->supports['layoutType'] ?? '' ) ) ) {
+				return $block_content;
+			}
+
+			// Has preloader?
+			$has_preloader = $block['attrs']['boldblocks']['carousel']['displayLoader'] ?? false;
+			if ( $has_preloader ) {
+				$preloader_class = 'has-preloader';
+				if ( 'coverflow' === ( $block['attrs']['boldblocks']['carousel']['effect'] ?? '' ) ) {
+					$preloader_class .= ' is-fading-loader';
+				}
+
+				// Mark it as having preloader.
+				$block_content = $this->add_class_to_block( $block_content, $preloader_class );
+
+				// Add the loader to the markup.
+				$block_content = $this->add_inner_content_to_block( $block_content, $this->get_carousel_preloader_markup( $block, $block_instance ) );
+			}
+
+			return $block_content;
+		}
+
+		/**
+		 * Get the preloader markup for carousels
+		 *
+		 * @param array    $block
+		 * @param WP_Block $block_instance
+		 * @return string
+		 */
+		private function get_carousel_preloader_markup( $block, $block_instance ) {
+			return apply_filters( 'cbb_carousel_preloader', '<div class="cbb-loader"></div>', $block, $block_instance );
 		}
 
 		/**

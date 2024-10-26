@@ -4,9 +4,9 @@
  * Plugin Name:       Content Blocks Builder
  * Plugin URI:        https://contentblocksbuilder.com?utm_source=CBB&utm_campaign=CBB+visit+site&utm_medium=link&utm_content=Plugin+URI
  * Description:       Design your website directly on the Gutenberg Block Editor without coding using core blocks and block themes.
- * Requires at least: 6.5
+ * Requires at least: 6.6
  * Requires PHP:      7.4
- * Version:           2.6.5
+ * Version:           2.7.1
  * Author:            CBB Team
  * Author URI:        https://contentblocksbuilder.com?utm_source=CBB&utm_campaign=CBB+visit+site&utm_medium=link&utm_content=Author+URI
  *
@@ -34,7 +34,7 @@ if ( !class_exists( ContentBlocksBuilder::class ) ) {
          *
          * @var String
          */
-        public $version = '2.6.5';
+        public $version = '2.7.1';
 
         /**
          * Components

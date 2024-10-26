@@ -84,6 +84,16 @@ if ( ! class_exists( Library::class ) ) :
 
 			// Add rest api endpoint to query all pattern keywords.
 			add_action( 'rest_api_init', [ $this, 'register_get_pattern_keywords_from_library_endpoint' ] );
+
+			// Change the parameter for the rest api.
+			add_filter( 'rest_boldblocks_block_collection_params', [ $this, 'rest_library_item_collection_params' ], 10, 2 );
+			add_filter( 'rest_boldblocks_variation_collection_params', [ $this, 'rest_library_item_collection_params' ], 10, 2 );
+			add_filter( 'rest_boldblocks_pattern_collection_params', [ $this, 'rest_library_item_collection_params' ], 10, 2 );
+
+			// Load all max items.
+			add_filter( 'rest_boldblocks_block_query', [ $this, 'rest_library_item_query' ], 10, 2 );
+			add_filter( 'rest_boldblocks_variation_query', [ $this, 'rest_library_item_query' ], 10, 2 );
+			add_filter( 'rest_boldblocks_pattern_query', [ $this, 'rest_library_item_query' ], 10, 2 );
 		}
 
 		/**
@@ -342,7 +352,7 @@ if ( ! class_exists( Library::class ) ) :
 							'id,slug,meta,menu_order,order,title,description,keywords,thumbnail,boldblocks_block_keywords,keywordIds,is_pro,has_pro_features',
 							'api_version' => 2,
 							'cbb_version' => $this->the_plugin_instance->version,
-							'wp_version' => $wp_version,
+							'wp_version'  => $wp_version,
 						],
 					]
 				);
@@ -777,6 +787,11 @@ if ( ! class_exists( Library::class ) ) :
 				return;
 			}
 
+			// Don't show the pattern inserter.
+			if ( ! apply_filters( 'cbb_has_pattern_inserter', true ) ) {
+				return;
+			}
+
 			// The handle.
 			$pattern_library_handle = 'boldblocks-pattern-library';
 
@@ -875,7 +890,7 @@ if ( ! class_exists( Library::class ) ) :
 							'id,slug,meta,menu_order,order,title,description,keywords,thumbnail,boldblocks_pattern_keywords,keywordIds,is_pro,has_pro_features',
 							'api_version' => 2,
 							'cbb_version' => $this->the_plugin_instance->version,
-							'wp_version' => $wp_version,
+							'wp_version'  => $wp_version,
 						],
 					]
 				);
@@ -885,11 +900,13 @@ if ( ! class_exists( Library::class ) ) :
 				if ( 200 === absint( $response_code ) ) {
 					$data = json_decode( wp_remote_retrieve_body( $response ), true );
 
-					// Re-index the data.
-					$data = array_column( $data, null, 'id' );
+					if ( $data ) {
+						// Re-index the data.
+						$data = array_column( $data, null, 'id' );
 
-					// Update cache.
-					$this->update_library_cache( $data, $cache_key );
+						// Update cache.
+						$this->update_library_cache( $data, $cache_key );
+					}
 				}
 			}
 
@@ -996,6 +1013,61 @@ if ( ! class_exists( Library::class ) ) :
 			}
 
 			return wp_send_json( $data );
+		}
+
+		/**
+		 * Change the rest parameters
+		 *
+		 * @param  array       $params
+		 * @param  WP_PostType $post_type
+		 * @return array
+		 */
+		public function rest_library_item_collection_params( $params, $post_type ) {
+			if ( isset( $params['per_page'] ) ) {
+				$max_items = $this->get_max_items( $post_type->name );
+				if ( $max_items ) {
+					$params['per_page']['maximum'] = $max_items;
+				}
+			}
+
+			return $params;
+		}
+
+		/**
+		 * Load all items.
+		 *
+		 * @param  array      $args
+		 * @param  WP_Request $request
+		 * @return array
+		 */
+		public function rest_library_item_query( $args, $request ) {
+			if ( $request->get_param( '_cbb_load_all' ) ) {
+				$max_items = $this->get_max_items( $args['post_type'] ?? '' );
+				if ( $max_items ) {
+					$args['posts_per_page'] = $max_items;
+				}
+			}
+
+			return $args;
+		}
+
+		/**
+		 * Get max items by post type
+		 *
+		 * @param string $post_type
+		 * @return int
+		 */
+		private function get_max_items( $post_type ) {
+			$max_items = 0;
+			if ( 'boldblocks_block' === $post_type ) {
+				$max_items = $this->the_plugin_instance->get_component( CustomBlocks::class )->get_max_items();
+			} elseif ( 'boldblocks_variation' === $post_type ) {
+				$max_items = $this->the_plugin_instance->get_component( Variations::class )->get_max_items();
+			} elseif ( 'boldblocks_pattern' === $post_type ) {
+				$max_items = $this->the_plugin_instance->get_component( Patterns::class )->get_max_items();
+			}
+
+			return $max_items;
 		}
 	}
 endif;

@@ -123,9 +123,6 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 			// Load custom blocks.
 			add_action( 'init', [ $this, 'load_custom_blocks' ] );
 
-			// Enqueue block editor style.
-			add_action( 'enqueue_block_assets', [ $this, 'enqueue_block_editor_style' ] );
-
 			// Allow creating patterns from custom blocks.
 			add_filter( 'boldblocks_get_pattern_allowed_blocks', [ $this, 'allow_creating_patterns' ] );
 
@@ -201,6 +198,7 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 					'name_admin_bar' => _x( 'Block', 'add new on admin bar', 'content-blocks-builder' ),
 					'all_items'      => __( 'All Blocks', 'content-blocks-builder' ),
 					'add_new'        => __( 'Add New Block', 'content-blocks-builder' ),
+					'add_new_item'   => __( 'Add New Block', 'content-blocks-builder' ),
 				]
 			);
 
@@ -606,6 +604,8 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 			$this->register_meta( 'boldblocks_block_parent' );
 
 			$this->register_meta( 'boldblocks_block_ancestor' );
+
+			$this->register_meta( 'boldblocks_block_allowed_blocks' );
 		}
 
 		/**
@@ -794,7 +794,7 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 				// Styles and scripts.
 				$handles = [
 					'style_handles'         => [ $this->custom_blocks_handle ],
-					'editor_style_handles'  => [],
+					'editor_style_handles'  => [ $this->custom_blocks_editor_handle ],
 					'script_handles'        => [],
 					'editor_script_handles' => [ $this->custom_blocks_handle ],
 					'view_script_handles'   => [ $this->custom_blocks_frontend_handle ],
@@ -1087,10 +1087,18 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 			// Load all variations for registration.
 			wp_add_inline_script( $this->custom_blocks_handle, 'var BoldBlocksVariations=' . wp_json_encode( $this->the_plugin_instance->get_component( Variations::class )->get_all_variations() ), 'before' );
 
-			// Styles.
+			// Frontend styles.
 			wp_register_style(
 				$this->custom_blocks_handle,
 				$this->the_plugin_instance->get_file_uri( "build/custom-blocks{$this->the_plugin_instance->get_script_suffix()}.css" ),
+				[],
+				$this->the_plugin_instance->get_script_version( $custom_blocks_asset )
+			);
+
+			// Editor styles.
+			wp_register_style(
+				$this->custom_blocks_editor_handle,
+				$this->the_plugin_instance->get_file_uri( 'build/custom-blocks-editor.css' ),
 				[],
 				$this->the_plugin_instance->get_script_version( $custom_blocks_asset )
 			);
@@ -1132,25 +1140,6 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 
 			// Add translation.
 			wp_set_script_translations( $this->carousel_blocks_frontend_handle, 'content-blocks-builder' );
-		}
-
-		/**
-		 * Enqueue block editor style
-		 *
-		 * @return void
-		 */
-		public function enqueue_block_editor_style() {
-			if ( ! is_admin() ) {
-				return;
-			}
-
-			// Custom blocks editor styles.
-			wp_enqueue_style(
-				$this->custom_blocks_editor_handle,
-				$this->the_plugin_instance->get_file_uri( 'build/custom-blocks-editor.css' ),
-				[],
-				$this->the_plugin_instance->get_plugin_version()
-			);
 		}
 
 		/**
@@ -1201,7 +1190,7 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 		public function query_posts() {
 			$post_args = [
 				'post_type'      => $this->post_type,
-				'posts_per_page' => $this->max_items,
+				'posts_per_page' => $this->get_max_items(),
 				'orderby'        => [
 					'menu_order' => 'DESC',
 					'date'       => 'DESC',
@@ -1241,6 +1230,8 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 					$block_parent   = $block_parent ? array_filter( explode( ',', $block_parent ) ) : [];
 					$block_ancestor = get_post_meta( $item->ID, 'boldblocks_block_ancestor', true );
 					$block_ancestor = $block_ancestor ? array_filter( explode( ',', $block_ancestor ) ) : [];
+					$allowed_blocks = get_post_meta( $item->ID, 'boldblocks_block_allowed_blocks', true );
+					$allowed_blocks = $allowed_blocks ? array_filter( explode( ',', $allowed_blocks ) ) : [];
 
 					$keywords = get_the_terms( $item->ID, 'boldblocks_block_keywords' );
 					if ( $keywords && ! is_wp_error( $keywords ) ) {
@@ -1273,6 +1264,7 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 						'isTransformable'       => $is_transformable,
 						'isHidden'              => $is_hidden,
 						'isSyncedBlock'         => $is_readonly, // Only for standalone blocks.
+						'allowedBlocks'         => $allowed_blocks,
 					];
 
 					// Get parent block parameters.
@@ -2229,6 +2221,12 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 						$compare       = $refined_query['compare'];
 						$refined_value = $refined_query['value'];
 
+						// Get query string.
+						$query_string = $query['query_string'] ?? '';
+						if ( $query_string && isset( $_GET[ $query_string ] ) ) {
+							$refined_value = sanitize_text_field( $_GET[ $query_string ] );
+						}
+
 						// No value.
 						if ( $refined_value === '' ) {
 							return false;
@@ -2285,9 +2283,10 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 							if ( 'timestamp' === $format ) {
 								$refined_query['type'] = 'NUMERIC';
 							}
-
-							$refined_query['value'] = $refined_value;
 						}
+
+						// Update value.
+						$refined_query['value'] = $refined_value;
 
 						return $refined_query;
 					},
@@ -2454,6 +2453,13 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 			}
 
 			return $posts;
+		}
+
+		/**
+		 * Get max items
+		 */
+		public function get_max_items() {
+			return apply_filters( 'cbb_get_max_items', $this->max_items, $this->post_type );
 		}
 	}
 endif;

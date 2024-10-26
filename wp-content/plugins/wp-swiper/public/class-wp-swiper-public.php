@@ -50,6 +50,7 @@ class WP_Swiper_Public
 	 */
 	private $file_name;
 	private $settings;
+	protected $block_detector = null;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -64,6 +65,7 @@ class WP_Swiper_Public
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->settings = $this->get_options_data();
+		$this->block_detector = new WP_Swiper_Block_Detector();
 	}
 
 	/**
@@ -100,15 +102,42 @@ class WP_Swiper_Public
 		return $settings;
 	}
 
+
 	function enqueue_frontend_assets()
 	{
-		// Check if Gutenberg is active.
-		// if (function_exists('register_block_type')) {
-		// 	// Check if the current post has the custom block.
-		// 	if (has_block('da/wp-swiper-slides')) {
-				
-		// 	}
-		// }
+		global $post;
+		$options = get_option('wp_swiper_options');
+		$load_swiper = isset($options['enqueue_swiper']) && $options['enqueue_swiper'] === 'on';
+		$debug_swiper = isset($options['debug_swiper']) && $options['debug_swiper'] === 'on';
+
+		if ($debug_swiper) {
+			echo '<div class="wp-swiper-debug" style="display:none">';
+			var_dump([
+				'wp_swiper_version' => DAWPS_PLUGIN_VERSION,
+				'load_swiper' => $load_swiper,
+				'has_block_wp_swiper_slides' => has_block('da/wp-swiper-slides'),
+				'found_wp_swiper_class' => isset($post->post_content) ? strpos($post->post_content, 'wp-swiper') : false
+			]);
+			echo '</div>';
+		}
+
+		// Check if the current post contains the Swiper Gutenberg block and the option is enabled
+		if (true === $load_swiper) {
+			$this->loadWpSwiper();
+		} else {
+			if (function_exists('register_block_type')) {
+				if (
+					!$load_swiper &&
+					$this->block_detector->contains_wp_swiper_block($post)
+				) {
+					$this->loadWpSwiper();
+				}
+			}
+		}
+	}
+
+	function loadWpSwiper()
+	{
 		wp_enqueue_style(
 			$this->plugin_name . '-block-frontend',
 			plugin_dir_url(__DIR__) . 'css/frontend_block.css',
@@ -134,12 +163,24 @@ class WP_Swiper_Public
 			$this->plugin_name . '-bundle-js'
 		);
 
-		wp_register_script(
-			$this->plugin_name . '-frontend-js',
-			plugin_dir_url(__DIR__) . 'gutenberg/js/frontend_block.js',
-			array($this->plugin_name . '-bundle-js'),
-			DAWPS_PLUGIN_VERSION
-		);
+		$options = get_option('wp_swiper_options');
+		$legacy_toggle = isset($options['legacy_toggle']) && $options['legacy_toggle'] === 'on';
+
+		if ($legacy_toggle) {
+			wp_register_script(
+				$this->plugin_name . '-frontend-js',
+				plugin_dir_url(__DIR__) . 'gutenberg/js/frontend_block_legacy.js',
+				array($this->plugin_name . '-bundle-js'),
+				DAWPS_PLUGIN_VERSION
+			);
+		} else {
+			wp_register_script(
+				$this->plugin_name . '-frontend-js',
+				plugin_dir_url(__DIR__) . 'gutenberg/js/frontend_block.js',
+				array($this->plugin_name . '-bundle-js'),
+				DAWPS_PLUGIN_VERSION
+			);
+		}
 
 		wp_enqueue_script(
 			$this->plugin_name . '-frontend-js'

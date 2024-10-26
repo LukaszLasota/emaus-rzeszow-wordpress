@@ -1,11 +1,11 @@
 === Content Blocks Builder - Create block, variation, repeater block with carousel, grid, accordion, popup, off-canvas layout ===
 Contributors: Mr2P, freemius
 Donate link:       https://contentblocksbuilder.com?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=CBB+Donate
-Tags:              blocks, patterns, carousel, grid, popup
+Tags:              blocks, block builder, carousel, grid, popup
 Requires PHP:      7.4
-Requires at least: 6.5
-Tested up to:      6.6
-Stable tag:        2.6.5
+Requires at least: 6.6
+Tested up to:      6.7
+Stable tag:        2.7.1
 License:           GPL-3.0
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -21,23 +21,39 @@ The core feature of CBB is to create custom blocks by grouping core blocks or th
 
 The goal of CBB is to help you build a **complex website** with WordPress using only core blocks and native Gutenberg features with any block theme.
 
-=== Key Features ===
+=== Key technical features ===
 
  - **Manage custom blocks**: Create, edit, copy, import, and delete custom blocks.
- - **Create repeater blocks** like ACF repeater fields that support grid, carousel, accordion, and vertical stack layout
- - **Advanced block support features**: Modal, off-canvas, toggle content, sticky, etc.
- - **Manage block variations & block styles**: Create, edit, copy, import, and delete block variations. It works on any block.
+ - **Create repeater blocks** that work similarly to ACF repeater fields. Supports carousel, grid, accordion and vertical stack layouts.
+ - **[[CBB Pro](https://contentblocksbuilder.com/pro/?utm_source=wp.org&utm_campaign=CBB+Upgrade&utm_medium=link&utm_content=CBB)] Extenral CSS/JS and Custom CSS/JS**: You can enqueue external CSS/JS and write custom CSS/JS for your blocks
+ - **Advanced block support features**: Modal, off-canvas, toggle content, sticky, responsive dimensions, spacing, custom attributes, reveal animations, etc.
+ - **Manage block variations & block styles**: Create, edit, copy, import, and delete block variations. It works on any block. [CBB Pro](https://contentblocksbuilder.com/pro/?utm_source=wp.org&utm_campaign=CBB+Upgrade&utm_medium=link&utm_content=CBB) enables you to input custom CSS for variations.
  - **Manage block patterns**: Create, edit, copy, import, and delete custom block patterns.
- - **Enhance the Query Loop block**: Add grid, carousel layouts, and advanced filter and sorting settings.
- - There is a library of pre-built blocks, variations, styles, and patterns
- - Load Google Fonts easily with a few clicks
+ - **Enhance the Query Loop block**: Add grid, carousel layouts, and advanced filter and sorting settings. Works with any post types.
  - **Import/export** custom blocks, variations, and patterns from/to other sites
+ - **Pre-built library**: A library of pre-built blocks, variations, styles, and patterns. This library is not bundled with CBB; only items you import appear on your site.
+ - CBB are built with vanilla JS and CSS. It depends only [SwiperJs](https://swiperjs.com/) for the carousel script.
+
+=== Practical features you can build with CBB ===
+
+ - **Carousel layouts**: Ideal for creating banner slider, posts carousel, gallery, carousel of features or other repeating content, etc. CBB provides one of the best way to create a carousel layout in Gutenberg. Built on top of the popular SwiperJs carousel script, it supports extensive customization. [CBB Pro](https://contentblocksbuilder.com/pro/?utm_source=wp.org&utm_campaign=CBB+Upgrade&utm_medium=link&utm_content=CBB) enables you to create entrance effects, advanced slide effects with effect builder, and further customization like slides per breakpoint, pagination, navigation, and synced carousels.
+ - **Responsive grid layouts**: Perfect for creating equal column grid, mosaic grid, bento grid, posts grid, grid of features or other repeating content, etc. CBB provides the easiest but most flexible and robost grid layout based on CSS Grid layout. You can customize template columns, grid gaps, size, and location for each grid item.
+ - **Accordion layouts**: Good for creating FAQ page, navigations, long features or specications.
+ - **Blog page design, magazine layout, post grid, post carousel**; Work with any post types.
+ - **Modal, off-canvas, popover, toggle content**: Great for creating popups, notification bars, toggle menu, toggle search box, hamburger menu, popover, show/hide content, etc. [CBB Pro](https://contentblocksbuilder.com/pro/?utm_source=wp.org&utm_campaign=CBB+Upgrade&utm_medium=link&utm_content=CBB) allows you to add a custom entrance animation effect, delay to appear of the blocks, and save the closed state of blocks.
+ - **Sticky content**: Great for fixed/sticky header, footer, floating elements, sticky sidebar. [CBB Pro](https://contentblocksbuilder.com/pro/?utm_source=wp.org&utm_campaign=CBB+Upgrade&utm_medium=link&utm_content=CBB) enables you to style blocks based on their stuck state and make blocks sticky only when scrolling up.
+ - **[[CBB Pro](https://contentblocksbuilder.com/pro/?utm_source=wp.org&utm_campaign=CBB+Upgrade&utm_medium=link&utm_content=CBB)] Backgound effect**: Add parallax, infinite scrolling, and zooming effect to image easily. Perfect for hero section designs.
+ - **[[CBB Pro](https://contentblocksbuilder.com/pro/?utm_source=wp.org&utm_campaign=CBB+Upgrade&utm_medium=link&utm_content=CBB)] Reveal animations**: Add stunning effects to blocks when they appear on the viewport the first time.
+ - **[[CBB Pro](https://contentblocksbuilder.com/pro/?utm_source=wp.org&utm_campaign=CBB+Upgrade&utm_medium=link&utm_content=CBB)] Custom layout & style**: With the ability to enqueue external JS/CSS and input custom JS/CSS, you can do anything with your blocks on frontend.
+
+For dynamic data, we recommend using the [Meta Field Block](https://metafieldblock.com) plugin. It's the best way to display dynamic data.
 
 === Why choose CBB? ===
 
- - CBB **adheres to Gutenberg**, making it **user-friendly** and **easy to use**. If you are familiar with the Block Editor then you are already familiar with CBB.
- - CBB **uses core blocks** to build container blocks, ensuring it’s **fast**, **clean**, **flexible**, **bloat-free** and **code-free**.
- - Sites built with CBB are **easier to maintain** as most tasks are accomplished through the Block Editor. You don't need to know React to create a complex block or maintain a code repository for it.
+ - It's **fast**, **clean**, **flexible** and **code-free**. It **uses core blocks** to build container blocks.
+ - It's **bloat-free**. It doesn’t come bundled with a ton of specific-use blocks like other multiple-feature plugins.
+ - It's **easy to use**. It **adheres to Gutenberg** and maintain the primary user experience of Gutenberg, so anyone familiar with the Block Editor is already familiar with CBB.
+ - Sites built with CBB are **easier to maintain** as most tasks are accomplished through the Block Editor. You don't need to know React to create complex blocks or maintain a code repository for them. You can also import/export them from/to other sites.
 
 === How does it help? ===
 
@@ -67,7 +83,7 @@ Below are some video tutorials that demonstrate how you can use this plugin to b
 
 = Create custom layouts =
 
-You can create common layouts with CBB such as grid, carousel, accordion, and vertical stack. CBB includes 5 built-in layout blocks: Advanced Group, Grid, Carousel, Stack and Accordion. You can use them or build your custom blocks easily.
+CBB includes five built-in layout blocks: Advanced Group, Grid, Carousel, Stack and Accordion. You can use them or build your custom layout blocks easily.
 
 Watch the video tutorial to create a simple responsive grid using the built-in Grid block.
 
@@ -83,9 +99,9 @@ Watch the video tutorial to create a FAQ section using the built-in Accordion bl
 
 [youtube https://www.youtube.com/watch?v=YA4-duNF_w4]
 
-= Create popup, off-canvas, and toggle content =
+= Create popup, off-canvas, popover, and toggle content =
 
-With the toggle content feature, you can build a popup, off-canvas, toggle content easily and you can put anything in there.
+With the toggle content feature, you can build a popup, off-canvas, popover, and toggle content easily and you can put anything in there.
 
 Watch the step-by-step video tutorial to create modal, off-canvas content.
 
@@ -108,7 +124,7 @@ CBB provides a bunch of advanced features to add style to custom blocks like res
 
 = Create block variations, block styles, and block patterns =
 
-CBB helps you create custom variations, styles, and patterns directly in the Block Editor without using WordPress API.
+CBB helps you create custom variations, styles, and patterns directly in the Block Editor without using a code editor.
 
 [Create variations and styles for the core image block](https://youtu.be/BAY8_evbyL0).
 [Create variations for any block](https://youtu.be/caiY-YZT7ZY).
@@ -153,27 +169,27 @@ We're still recording video tutorials, so please [subscribe to our YouTube chann
 
 === Pro version ===
 
-The professional version adds more advanced features to your content such as:
+In short, the professional version adds following advanced features to your content such as:
 
- - Custom CSS Editor
- - Copy/Paste styles from one block to another across domains
- - Support multiple edit styles
- - [Parallax](https://youtu.be/nDpeQbpu50s), [infinite scrolling](https://youtu.be/mBleA20caGo), and zooming effects for background image
- - Advanced features for the carousel layout like entrance animations, advanced effects, customized pagination, navigation...
- - Advanced features for the toggle content layout(modal, off-canvas) like custom entrance animations, delay time, and closed state saving.
- - Advanced features for the sticky content.
- - Add custom JS, custom CSS and external scripts and stylesheets for blocks
- - Add custom CSS for custom variations
- - Reveal animation effects
+ - **Custom CSS**: Adjusts layout and style easily right in the inspector settings.
+ - **Premium background effects**: Includes parallax, infinite scrolling, and zooming effect to background image.
+ - **Premium carousel features**: Adds entrance animations, advanced effects, an effect builder, customized pagination, navigation, etc.
+ - **Premium toggle content features**: Enhancements for modal, off-canvas, and popover content with custom entrance animations, delay time, and closed state saving.
+ - **Premium sticky content features**: Detects stuck state and adds the ability to make blocks sticky only on scrolling up.
+ - **Enqueue external JS/CSS** and **add custom JS/CSS** to blocks.
+ - **Add custom CSS** to variations.
+ - **Reveal animations**: Adds stunning effects to blocks when they first appear in the viewport.
 
-Watch our video tutorials to see how the Pro version can help you build advanced features for your sites:
+Watch more video tutorials to see how the Pro version can help you build advanced features for your sites:
 
+[Create a sticky header](https://youtu.be/KEryi1y1UZ4).
 [Create a custom block for the image zooming effect like Medium using an external script](https://youtu.be/WgHuo6jwyN8).
 [Create a page title bar with a parallax background effect](https://youtu.be/0g1SLTq-lQ4).
 [How to create an animated heading block](https://youtu.be/RfPPTg93WcQ).
 [How to create a Back To Top block](https://youtu.be/0aTKpeTvgUY).
 [How to create an image compare block](https://youtu.be/1tmIWXHv4gE).
-[Create a custom variation/style for the core button block](https://youtu.be/rAWeQ2XLQJc).
+[Create the infinite scrolling background effect](https://youtu.be/mBleA20caGo)
+[Create the parallax background effect](https://youtu.be/nDpeQbpu50s)
 
 **[Go premium](https://contentblocksbuilder.com/pro/?utm_source=wp.org&utm_campaign=CBB+Upgrade&utm_medium=link&utm_content=CBB)** to unlock advanced features with CBB Pro.
 
@@ -183,13 +199,13 @@ If this plugin is useful for you, please do a quick review and [rate it](https:/
 
 Please check out my other plugins if you're interested:
 
- - [Meta Field Block](https://wordpress.org/plugins/display-a-meta-field-as-block) - A block to display a meta field, custom field as a block on the front end, supporting ACF fields. It can also be used in the Query Loop block.
- - [SVG Block](https://wordpress.org/plugins/svg-block) - A block to insert inline SVG images easily and safely. It also bundles with more than 3000 icons and some common non-rectangular dividers.
- - [Icon separator](https://wordpress.org/plugins/icon-separator) - A tiny block just like the core/separator block but with the ability to add an icon to it.
- - [Breadcrumb Block](https://wordpress.org/plugins/breadcrumb-block) - A simple breadcrumb trail block that supports JSON-LD structured data.
- - [Block Enhancements](https://wordpress.org/plugins/block-enhancements) - A plugin to add more useful features to blocks like icons, box-shadow, transform...
- - [Counting Number Block](https://wordpress.org/plugins/counting-number-block) - A block to display a number that has the number-counting effect.
- - [Better YouTube Embed Block](https://wordpress.org/plugins/better-youtube-embed-block) - Embed YouTube videos without slowing down your site.
+ - [Meta Field Block](https://wordpress.org/plugins/display-a-meta-field-as-block) - A block to display custom fields as blocks on the front end. It supports custom fields for posts, terms, users, and setting fields. It can also be used in the Query Loop block.
+ - [SVG Block](https://wordpress.org/plugins/svg-block) - A block to display SVG images as blocks. Useful for images, icons, dividers, and buttons. It allows you to upload SVG images and load them into the icon library.
+ - [Icon separator](https://wordpress.org/plugins/icon-separator) - A tiny block just like the core/separator block but with the ability to add an icon.
+ - [Breadcrumb Block](https://wordpress.org/plugins/breadcrumb-block) - A simple breadcrumb trail block that supports JSON-LD structured data and is compatible with WooCommerce.
+ - [Block Enhancements](https://wordpress.org/plugins/block-enhancements) - Adds practical features to blocks like icons, box shadows, transforms, etc.
+ - [Counting Number Block](https://wordpress.org/plugins/counting-number-block) - A block to display numbers with a counting effect
+ - [Better YouTube Embed Block](https://wordpress.org/plugins/better-youtube-embed-block) - A block to solve the performance issue with embedded YouTube videos. It can also embed multiple videos and playlists.
 
 The plugin is developed using @wordpress/scripts.
 
@@ -235,13 +251,18 @@ It is compatible with all block-based themes and some popular classic themes lik
 
 == Changelog ==
 
-= 2.6.5 =
-*Release Date - 15 July 2024*
+= 2.7.1 =
+*Release Date - 24 October 2024*
 
-* Added    - Support colors for headings and buttons to CBB blocks
-* Improved - Reset blocks and variations from the database not from the client cache
-* Added    - Allow copying posts and pages besides blocks, variations, and patterns
-* Improved - Add the copy link to the edit post screen
-* Updated  - Upgrade to Freemius 2.7.3
+* Added    - Allow adding grid template rows to the grid layout
+* Added    - Allow changing transform origin in carousel's effect builder
+* Added    - Allow making the active slide larger in carousels
+* Changed  - Set the default value for carousel transition speed as 500ms instead of 300ms
+* Improved - Don't propagate animation end to parents
+* Improved - Don't show hints on typing on custom editor to improve performance
+* Improved - Hide transform and border panels when they are empty
+* Improved - Hide the block icon's long help text inside a toggle button
+* Improved - Adjust help text for some components
+* Updated  - Upgrade to Freemius SDK 2.9.0
 
 [View all changelog](https://contentblocksbuilder.com/changelog?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=Changelog)

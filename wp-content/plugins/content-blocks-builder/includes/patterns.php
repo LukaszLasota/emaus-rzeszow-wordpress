@@ -381,7 +381,7 @@ if ( ! class_exists( Patterns::class ) ) :
 			$raw_posts = get_posts(
 				[
 					'post_type'      => $this->post_type,
-					'posts_per_page' => $this->max_items,
+					'posts_per_page' => $this->get_max_items(),
 					'orderby'        => [
 						'menu_order' => 'DESC',
 						'date'       => 'DESC',
@@ -592,6 +592,13 @@ if ( ! class_exists( Patterns::class ) ) :
 			}
 
 			return $text;
+		}
+
+		/**
+		 * Get max items
+		 */
+		public function get_max_items() {
+			return apply_filters( 'cbb_get_max_items', $this->max_items, $this->post_type );
 		}
 	}
 endif;
