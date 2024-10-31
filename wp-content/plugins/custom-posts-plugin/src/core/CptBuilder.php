@@ -47,7 +47,7 @@ class CptBuilder
             'query_var'             => true,
             'rewrite'               => ['slug' => $this->type],
             'capability_type'       => 'post',
-            'has_archive'           => true,
+            'has_archive'           => false,
             'hierarchical'          => true,
             'menu_position'         => $this->position,
             'supports'              => ['title', 'editor', 'thumbnail', 'excerpt', 'comments', 'custom-fields', 'revisions'],

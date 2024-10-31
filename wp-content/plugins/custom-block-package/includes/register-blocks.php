@@ -3,15 +3,15 @@
 function up_register_blocks() {
   $blocks = [
     [ 'name' => 'pdf-block'],
-    // [ 'name' => 'slider-block'],
     [ 'name' => 'image-text'],
     [ 'name' => 'section-block'],
-
-    // Example
-    // [ 'name' => 'daily-recipe',  'options' => [
-    //   'render_callback' => 'up_daily_recipe_cb'
+    [ 'name' => 'meeting-list', 'options' => [
+      'render_callback' => 'render_meeting_list_block'
+    ]],
+    // [ 'name' => 'group-block-emaus', 'options' => [
+    //   'render_callback' => 'render_meeting_list_block'
     // ]],
-    
+  
   ];
   
 
@@ -23,5 +23,7 @@ function up_register_blocks() {
       isset($block['options']) ? $block['options'] : []
     );
   }
+
+  
 }
 

@@ -1,0 +1,22 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "custom-block-package/meeting-custom-list",
+    "title": "Lista spotkań Emaus",
+    "icon": "calendar-alt",
+    "category": "media",
+    "description": "Blok wyświetlający listę niestandardowych postów typu spotkania.",
+    "keywords": ["meetings", "events", "list"],
+    "version": "1",
+    "textdomain": "custom-block-package",
+    "attributes": {
+        "numberposts": {
+            "type": "number",
+            "default": -1
+        }
+    },
+    "editorScript": "file:./index.js",
+    "script": "file:./view.js",
+    "viewStyle": "file:./index.css",
+    "editorStyle": "file:./index.css"
+}
