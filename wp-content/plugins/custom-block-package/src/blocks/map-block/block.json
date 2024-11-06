@@ -1,0 +1,30 @@
+{
+    "apiVersion": 2,
+    "name": "custom-block-package/map-block",
+    "title": "Map Block",
+    "category": "widgets",
+    "icon": "location-alt",
+    "description": "A block to display an interactive map using Leaflet.js.",
+    "supports": {
+        "html": false
+    },
+    "attributes": {
+        "latitude": {
+            "type": "number",
+            "default": 50.031562
+        },
+        "longitude": {
+            "type": "number",
+            "default": 21.997937
+        },
+        "zoom": {
+            "type": "number",
+            "default": 13
+        }
+    },
+  "editorScript": "file:./index.js",
+    "script": "file:./frontend.js",
+    "editorStyle": "file:./editor.scss",
+    "style": "file:./style.scss",
+    "dependencies": ["leaflet-js"]
+}

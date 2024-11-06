@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
   \********************************************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"custom-block-package/meeting-custom-list","title":"Lista spotkań Emaus","icon":"calendar-alt","category":"media","description":"Blok wyświetlający listę niestandardowych postów typu spotkania.","keywords":["meetings","events","list"],"version":"1","textdomain":"custom-block-package","attributes":{"numberposts":{"type":"number","default":-1}},"editorScript":"file:./index.js","script":"file:./view.js","viewStyle":"file:./index.css","editorStyle":"file:./index.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"custom-block-package/meeting-custom-list","title":"Lista spotkań Emaus","icon":"calendar-alt","category":"media","description":"Blok wyświetlający listę niestandardowych postów typu spotkania.","keywords":["meetings","events","list"],"version":"1","textdomain":"custom-block-package","attributes":{"numberposts":{"type":"number","default":-1},"blockTitle":{"type":"string"}},"supports":{"color":{"text":true,"background":true,"gradients":true,"link":true},"align":["wide","full"],"typography":{"fontSize":true,"lineHeight":true,"fontWeight":true,"textTransform":true,"letterSpacing":true},"customClassName":true},"editorScript":"file:./index.js","script":"file:./view.js","viewStyle":"file:./index.css","editorStyle":"file:./index.css"}');
 
 /***/ })
 
@@ -192,7 +192,9 @@ __webpack_require__.r(__webpack_exports__);
     setAttributes
   }) {
     const {
-      numberposts
+      numberposts,
+      blockTitle,
+      text
     } = attributes;
     const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)();
     const meetings = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => select("core").getEntityRecords("postType", "meetings", {
@@ -215,7 +217,19 @@ __webpack_require__.r(__webpack_exports__);
       onChange: value => setAttributes({
         numberposts: parseInt(value, 10)
       })
-    }))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)("Lista Spotkań", "custom-block-package")), meetings === null ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Spinner, null) : sortedMeetings.length === 0 ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)("Brak dostępnych spotkań.", "custom-block-package")) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    }))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText, {
+      tagName: "h2",
+      className: "block-title",
+      style: {
+        textAlign: "center",
+        width: "100%"
+      },
+      placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)("Wpisz tytuł bloku", "custom-block-package"),
+      value: blockTitle,
+      onChange: newVal => setAttributes({
+        blockTitle: newVal
+      })
+    }), meetings === null ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Spinner, null) : sortedMeetings.length === 0 ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)("Brak dostępnych spotkań.", "custom-block-package")) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "flipping-cards"
     }, sortedMeetings.map(meeting => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       key: meeting.id,

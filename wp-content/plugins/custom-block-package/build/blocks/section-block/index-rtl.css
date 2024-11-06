@@ -1,6 +1,9 @@
 /*!*************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/blocks/section-block/editor.scss ***!
   \*************************************************************************************************************************************************************************************************************************************************************/
+.wp-block-custom-block-package-section-block {
+  width: 100%;
+}
 .wp-block-custom-block-package-section-block .block-editor-block-list__layout {
   display: grid;
   gap: var(--grid-gap, 0rem);
@@ -8,6 +11,7 @@
   justify-items: var(--justify-items);
   justify-content: var(--justify-content);
   align-content: var(--align-content);
+  width: 100%;
 }
 @media (min-width: 768px) {
   .wp-block-custom-block-package-section-block .block-editor-block-list__layout {
@@ -23,4 +27,8 @@
   .wp-block-custom-block-package-section-block .block-editor-block-list__layout {
     grid-template-columns: repeat(var(--columns-desktop), 1fr);
   }
+}
+
+.block-editor-inner-blocks {
+  width: 100%;
 }

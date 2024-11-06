@@ -8,13 +8,15 @@ class CptBuilder
     private $name;
     private $type;
     private $position;
+    private $archive;
 
-    public function __construct(string $singular, string $plural, string $slug, int $position)
+    public function __construct(string $singular, string $plural, string $slug, int $position, string $archive)
     {
         $this->singular_name = $singular;
         $this->name = $plural;
         $this->type = $slug;
         $this->position = $position;
+        $this->archive = $archive;
 
         add_action('init', [$this, 'register']);
     }
@@ -47,7 +49,7 @@ class CptBuilder
             'query_var'             => true,
             'rewrite'               => ['slug' => $this->type],
             'capability_type'       => 'post',
-            'has_archive'           => false,
+            'has_archive'           => $this->archive,
             'hierarchical'          => true,
             'menu_position'         => $this->position,
             'supports'              => ['title', 'editor', 'thumbnail', 'excerpt', 'comments', 'custom-fields', 'revisions'],

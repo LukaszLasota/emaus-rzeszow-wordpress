@@ -13,7 +13,8 @@ class RegisterPosts
             'Spotkanie',   
             'Spotkania',    
             'meetings',     
-            5               
+            5,
+            'false'              
         );
     }
 }

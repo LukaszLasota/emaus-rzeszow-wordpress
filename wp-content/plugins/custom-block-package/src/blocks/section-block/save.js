@@ -1,5 +1,5 @@
 import { useBlockProps, InnerBlocks } from "@wordpress/block-editor";
-import "./style.scss";
+import './style.scss';
 
 const Save = ({ attributes }) => {
     const {
@@ -7,11 +7,11 @@ const Save = ({ attributes }) => {
         columnsSmallTablet,
         columnsLargeTablet,
         columnsDesktop,
+        tagName,
         backgroundImage,
         backgroundColor,
         padding,
         margin,
-        tagName,
         gridGap,
         justifyItems,
         justifyContent,
@@ -23,8 +23,8 @@ const Save = ({ attributes }) => {
     const blockProps = useBlockProps.save({
         className: `section-block`,
         style: {
+            background: backgroundColor || undefined,
             backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
-            backgroundColor: backgroundColor || undefined,
             padding: padding || undefined,
             margin: margin || undefined,
             "--columns-mobile": `${columnsMobile}`,
@@ -34,12 +34,12 @@ const Save = ({ attributes }) => {
             "--grid-gap": `${gridGap}px`,
             "--justify-items": justifyItems,
             "--justify-content": justifyContent,
-            "--align-content": alignContent,
-        }
+            "--align-content": alignContent
+        },
     });
 
     return (
-        <TagName {...blockProps} >
+        <TagName {...blockProps}>
             <InnerBlocks.Content />
         </TagName>
     );

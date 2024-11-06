@@ -119,10 +119,10 @@ const Edit = ({
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)({
     className: `section-block`,
     style: {
+      background: backgroundColor || undefined,
       backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
-      backgroundColor: backgroundColor || undefined,
-      padding: padding || undefined,
-      margin: margin || undefined,
+      padding: padding ? padding : "",
+      margin: margin ? margin : "",
       "--columns-mobile": `${columnsMobile}`,
       "--columns-small-tablet": `${columnsSmallTablet}`,
       "--columns-large-tablet": `${columnsLargeTablet}`,
@@ -134,7 +134,8 @@ const Edit = ({
     }
   });
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InspectorControls, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
-    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Widok responsywny", "custom-block-package")
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Widok responsywny", "custom-block-package"),
+    initialOpen: false
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.RangeControl, {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Kolumny (Komputer)", "custom-block-package"),
     value: columnsDesktop,
@@ -175,7 +176,10 @@ const Edit = ({
     }),
     min: 0,
     max: 50
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.SelectControl, {
+  })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Grid oraz znacznik", "custom-block-package"),
+    initialOpen: false
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.SelectControl, {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Znaczniki HTML", "custom-block-package"),
     value: tagName,
     options: [{
@@ -311,9 +315,16 @@ const Edit = ({
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.ColorPalette, {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Kolor tła", "custom-block-package"),
     value: backgroundColor,
-    onChange: backgroundColor => setAttributes({
-      backgroundColor
-    }),
+    onChange: color => {
+      setAttributes({
+        backgroundColor: color
+      });
+      if (color) {
+        setAttributes({
+          gradient: ""
+        }); // Wyczyszczenie gradientu, gdy kolor jest ustawiony
+      }
+    },
     clearable: true
   }), backgroundColor && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
     onClick: () => setAttributes({
@@ -394,11 +405,11 @@ const Save = ({
     columnsSmallTablet,
     columnsLargeTablet,
     columnsDesktop,
+    tagName,
     backgroundImage,
     backgroundColor,
     padding,
     margin,
-    tagName,
     gridGap,
     justifyItems,
     justifyContent,
@@ -408,8 +419,8 @@ const Save = ({
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps.save({
     className: `section-block`,
     style: {
+      background: backgroundColor || undefined,
       backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
-      backgroundColor: backgroundColor || undefined,
       padding: padding || undefined,
       margin: margin || undefined,
       "--columns-mobile": `${columnsMobile}`,
@@ -436,7 +447,7 @@ const Save = ({
   \*********************************************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://raw.githubusercontent.com/WordPress/gutenberg/trunk/schemas/json/block.json","apiVersion":3,"name":"custom-block-package/section-block","title":"Blok sekcji Emaus","category":"text","description":"Blok dla sekcji","textdomain":"custom-block-package","attributes":{"columns":{"type":"number","default":3},"tagName":{"type":"string","default":"div"},"backgroundImage":{"type":"string","default":""},"backgroundColor":{"type":"string","default":""},"padding":{"type":"string","default":"0px"},"margin":{"type":"string","default":"0px"},"columnsMobile":{"type":"number","default":1},"columnsSmallTablet":{"type":"number","default":2},"columnsLargeTablet":{"type":"number","default":3},"columnsDesktop":{"type":"number","default":4},"gridGap":{"type":"number","default":10},"justifyItems":{"type":"string","default":"stretch"},"justifyContent":{"type":"string","default":"start"},"alignContent":{"type":"string","default":"start"}},"editorScript":"file:./index.js","viewStyle":"file:./style-index.css","editorStyle":"file:./index.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://raw.githubusercontent.com/WordPress/gutenberg/trunk/schemas/json/block.json","apiVersion":3,"name":"custom-block-package/section-block","title":"Blok sekcji Emaus","category":"text","description":"Blok dla sekcji","textdomain":"custom-block-package","attributes":{"columns":{"type":"number","default":3},"tagName":{"type":"string","default":"div"},"backgroundImage":{"type":"string","default":""},"backgroundColor":{"type":"string","default":""},"padding":{"type":"string","default":""},"margin":{"type":"string","default":""},"columnsMobile":{"type":"number","default":1},"columnsSmallTablet":{"type":"number","default":2},"columnsLargeTablet":{"type":"number","default":3},"columnsDesktop":{"type":"number","default":4},"gridGap":{"type":"number","default":10},"justifyItems":{"type":"string","default":"stretch"},"justifyContent":{"type":"string","default":"start"},"alignContent":{"type":"string","default":"start"},"gradient":{"type":"string","default":""}},"supports":{"color":{"text":true,"background":true,"gradients":true,"link":true},"align":["wide","full"],"typography":{"fontSize":true,"lineHeight":true,"fontWeight":true,"textTransform":true,"letterSpacing":true},"customClassName":true,"anchor":true},"editorScript":"file:./index.js","viewStyle":"file:./style-index.css","editorStyle":"file:./index.css"}');
 
 /***/ })
 

@@ -1,5 +1,5 @@
 import { registerBlockType } from "@wordpress/blocks";
-import { useBlockProps, InspectorControls } from "@wordpress/block-editor";
+import { useBlockProps, InspectorControls, RichText } from "@wordpress/block-editor";
 import { useSelect } from "@wordpress/data";
 import { PanelBody, Spinner, TextControl } from "@wordpress/components";
 import { __ } from '@wordpress/i18n';
@@ -9,7 +9,7 @@ import "./editor.scss";
 
 registerBlockType(block.name, {
     edit({ attributes, setAttributes }) {
-        const { numberposts } = attributes;
+        const { numberposts, blockTitle, text } = attributes;
         const blockProps = useBlockProps();
 
         const meetings = useSelect(
@@ -39,9 +39,20 @@ registerBlockType(block.name, {
                             value={numberposts}
                             onChange={(value) => setAttributes({ numberposts: parseInt(value, 10) })}
                         />
+
                     </PanelBody>
                 </InspectorControls>
-                <h2>{__("Lista Spotkań", "custom-block-package")}</h2>
+
+
+                <RichText
+                    tagName="h2"
+                    className="block-title"
+                    style={{ textAlign: "center", width: "100%" }}
+                    placeholder={__("Wpisz tytuł bloku", "custom-block-package")}
+                    value={blockTitle}
+                    onChange={(newVal) => setAttributes({ blockTitle: newVal })}
+                />
+
                 {meetings === null ? (
                     <Spinner />
                 ) : sortedMeetings.length === 0 ? (

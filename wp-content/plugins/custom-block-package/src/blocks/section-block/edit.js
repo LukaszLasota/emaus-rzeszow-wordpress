@@ -4,7 +4,7 @@ import {
     InnerBlocks,
     MediaUpload,
     MediaUploadCheck,
-    ColorPalette,
+    ColorPalette
 } from "@wordpress/block-editor";
 import {
     PanelBody,
@@ -30,7 +30,7 @@ const Edit = ({ attributes, setAttributes }) => {
         gridGap,
         justifyItems,
         justifyContent,
-        alignContent,
+        alignContent
     } = attributes;
 
     const TagName = tagName;
@@ -38,10 +38,10 @@ const Edit = ({ attributes, setAttributes }) => {
     const blockProps = useBlockProps({
         className: `section-block`,
         style: {
+            background: backgroundColor || undefined,
             backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
-            backgroundColor: backgroundColor || undefined,
-            padding: padding || undefined,
-            margin: margin || undefined,
+            padding: padding ? padding : "",
+            margin: margin ? margin : "",
             "--columns-mobile": `${columnsMobile}`,
             "--columns-small-tablet": `${columnsSmallTablet}`,
             "--columns-large-tablet": `${columnsLargeTablet}`,
@@ -49,14 +49,15 @@ const Edit = ({ attributes, setAttributes }) => {
             "--grid-gap": `${gridGap}px`,
             "--justify-items": justifyItems,
             "--justify-content": justifyContent,
-            "--align-content": alignContent,
+            "--align-content": alignContent
         }
     });
+
 
     return (
         <>
             <InspectorControls>
-                <PanelBody title={__("Widok responsywny", "custom-block-package")}>
+                <PanelBody title={__("Widok responsywny", "custom-block-package")} initialOpen={false}>
                     <RangeControl
                         label={__("Kolumny (Komputer)", "custom-block-package")}
                         value={columnsDesktop}
@@ -92,6 +93,10 @@ const Edit = ({ attributes, setAttributes }) => {
                         min={0}
                         max={50}
                     />
+
+                </PanelBody>
+
+                <PanelBody title={__("Grid oraz znacznik", "custom-block-package")} initialOpen={false}>
                     <SelectControl
                         label={__("Znaczniki HTML", "custom-block-package")}
                         value={tagName}
@@ -189,7 +194,12 @@ const Edit = ({ attributes, setAttributes }) => {
                     <ColorPalette
                         label={__("Kolor tła", "custom-block-package")}
                         value={backgroundColor}
-                        onChange={(backgroundColor) => setAttributes({ backgroundColor })}
+                        onChange={(color) => {
+                            setAttributes({ backgroundColor: color });
+                            if (color) {
+                                setAttributes({ gradient: "" }); // Wyczyszczenie gradientu, gdy kolor jest ustawiony
+                            }
+                        }}
                         clearable
                     />
                     {backgroundColor && (

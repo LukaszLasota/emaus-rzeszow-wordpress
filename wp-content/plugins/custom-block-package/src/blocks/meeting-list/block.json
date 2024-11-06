@@ -13,8 +13,28 @@
         "numberposts": {
             "type": "number",
             "default": -1
+        },
+        "blockTitle": {
+            "type": "string"
         }
     },
+    "supports" : {
+    "color": {
+      "text" : true,
+      "background" : true,
+      "gradients": true,
+      "link": true
+    },
+      "align": ["wide", "full"],
+      "typography": {
+        "fontSize": true,     
+        "lineHeight": true,    
+        "fontWeight": true,    
+        "textTransform": true,  
+        "letterSpacing": true
+    },
+      "customClassName": true
+  },
     "editorScript": "file:./index.js",
     "script": "file:./view.js",
     "viewStyle": "file:./index.css",

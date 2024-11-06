@@ -25,11 +25,11 @@
     },
     "padding": {
       "type": "string",
-      "default": "0px"
+      "default": ""
     },
     "margin": {
       "type": "string",
-      "default": "0px"
+      "default": ""
     },
     "columnsMobile": {
       "type": "number",
@@ -62,7 +62,29 @@
     "alignContent": {
         "type": "string",
         "default": "start"
+    },
+    "gradient": {
+      "type": "string",
+      "default": ""
     }
+  },
+  "supports" : {
+    "color": {
+      "text" : true,
+      "background" : true,
+      "gradients": true,
+      "link": true
+    },
+      "align": ["wide", "full"],
+      "typography": {
+        "fontSize": true,     
+        "lineHeight": true,    
+        "fontWeight": true,    
+        "textTransform": true,  
+        "letterSpacing": true
+    },
+      "customClassName": true,
+      "anchor": true
   },
   "editorScript": "file:./index.js",
   "viewStyle": "file:./style-index.css",
