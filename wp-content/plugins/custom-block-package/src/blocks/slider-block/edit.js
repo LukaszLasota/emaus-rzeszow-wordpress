@@ -7,7 +7,7 @@ import 'swiper/swiper-bundle.css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
-import './editor.scss';
+// import './editor.scss';
 
 const Edit = (props) => {
     const { attributes, setAttributes } = props;

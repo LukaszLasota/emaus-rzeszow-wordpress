@@ -2,7 +2,7 @@
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/swiper/swiper-bundle.css ***!
   \*******************************************************************************************************************************************************************************************/
 /**
- * Swiper 11.1.4
+ * Swiper 11.1.15
  * Most modern mobile touch slider and framework with hardware accelerated transitions
  * https://swiperjs.com
  *
@@ -10,7 +10,7 @@
  *
  * Released under the MIT License
  *
- * Released on: May 30, 2024
+ * Released on: November 18, 2024
  */
 
 /* FONT_START */
@@ -635,7 +635,7 @@ button.swiper-pagination-bullet {
 .swiper-fade .swiper-slide-active .swiper-slide-active {
   pointer-events: auto;
 }
-.swiper-cube {
+.swiper.swiper-cube {
   overflow: visible;
 }
 .swiper-cube .swiper-slide {
@@ -695,7 +695,7 @@ button.swiper-pagination-bullet {
   backface-visibility: hidden;
 }
 /* Cube slide shadows end */
-.swiper-flip {
+.swiper.swiper-flip {
   overflow: visible;
 }
 .swiper-flip .swiper-slide {
@@ -724,7 +724,7 @@ button.swiper-pagination-bullet {
   overflow: hidden;
   transition-property: transform, opacity, height;
 }
-.swiper-cards {
+.swiper.swiper-cards {
   overflow: visible;
 }
 .swiper-cards .swiper-slide {
@@ -1075,72 +1075,5 @@ button.swiper-pagination-bullet {
   display: none;
 }
 
-/*!************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/blocks/slider-block/editor.scss ***!
-  \************************************************************************************************************************************************************************************************************************************************************/
-.swiper-container {
-  margin: 20px 0;
-  width: 100%;
-  height: 400px;
-  position: relative;
-}
-.swiper-container .swiper-wrapper {
-  display: flex;
-  height: 100%;
-}
-.swiper-container .swiper-slide {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-}
-.swiper-container .swiper-slide img {
-  max-width: 100%;
-  max-height: 100%;
-}
-.swiper-container .swiper-slide .components-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-.swiper-container .swiper-pagination {
-  bottom: 10px;
-  text-align: center;
-}
-.swiper-container .swiper-pagination .swiper-pagination-bullet {
-  width: 10px;
-  height: 10px;
-  background: #000;
-  opacity: 0.5;
-  border-radius: 50%;
-  margin: 0 4px;
-  cursor: pointer;
-  transition: opacity 0.3s;
-}
-.swiper-container .swiper-pagination .swiper-pagination-bullet-active {
-  opacity: 1;
-  background: #007cba;
-}
-.swiper-container .swiper-button-next,
-.swiper-container .swiper-button-prev {
-  color: #007cba;
-}
-
-.wp-block-custom-block-package-slider-block .swiper-container {
-  height: 400px;
-  position: relative;
-}
-.wp-block-custom-block-package-slider-block .swiper-container .swiper-wrapper {
-  height: 100%;
-}
-.wp-block-custom-block-package-slider-block .swiper-container .swiper-slide {
-  height: 100%;
-}
-.wp-block-custom-block-package-slider-block .swiper-container .swiper-slide img {
-  max-height: 100%;
-  height: auto;
-}
 
 /*# sourceMappingURL=index.css.map*/

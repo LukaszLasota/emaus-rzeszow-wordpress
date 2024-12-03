@@ -31,12 +31,3 @@ foreach($allFiles as $filename) {
 
 add_action('init', 'up_register_blocks');
 
-// function enqueue_leaflet_assets() {
-//   if ( has_block( 'custom-block-package/map-block' ) ) {
-//       wp_enqueue_style( 'leaflet-css', plugin_dir_url( __FILE__ ) . 'node_modules/leaflet/dist/leaflet.css' );
-//       wp_enqueue_script( 'leaflet-js', plugin_dir_url( __FILE__ ) . 'node_modules/leaflet/dist/leaflet.js', array(), null, true );
-//       wp_enqueue_script( 'map-init-js', plugin_dir_url( __FILE__ ) . 'src/blocks/map-block/map-init.js', array('leaflet-js'), null, true );
-//   }
-// }
-// add_action( 'wp_enqueue_scripts', 'enqueue_leaflet_assets' );
-

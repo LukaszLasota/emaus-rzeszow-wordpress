@@ -1,7 +1,10 @@
 // Importy potrzebne do rejestracji bloku
 import { registerBlockType } from '@wordpress/blocks';
-import Edit from './editor.js'; // Import komponentu Edit
+import { __ } from '@wordpress/i18n';
+import Edit from './edit.js'; // Import komponentu Edit
 import block from './block.json';
+import './style.scss';
+import './frontend.js';
 
 // Rejestracja bloku
 registerBlockType(block.name, {

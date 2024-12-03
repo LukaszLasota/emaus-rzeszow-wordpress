@@ -14522,6 +14522,45 @@
 
 /***/ }),
 
+/***/ "./node_modules/leaflet/dist/leaflet.css":
+/*!***********************************************!*\
+  !*** ./node_modules/leaflet/dist/leaflet.css ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./src/blocks/map-block/edit.scss":
+/*!****************************************!*\
+  !*** ./src/blocks/map-block/edit.scss ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./src/blocks/map-block/style.scss":
+/*!*****************************************!*\
+  !*** ./src/blocks/map-block/style.scss ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
 /***/ "react":
 /*!************************!*\
   !*** external "React" ***!
@@ -14577,10 +14616,21 @@ module.exports = window["wp"]["element"];
 
 /***/ }),
 
-/***/ "./src/blocks/map-block/editor.js":
-/*!****************************************!*\
-  !*** ./src/blocks/map-block/editor.js ***!
-  \****************************************/
+/***/ "@wordpress/i18n":
+/*!******************************!*\
+  !*** external ["wp","i18n"] ***!
+  \******************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = window["wp"]["i18n"];
+
+/***/ }),
+
+/***/ "./src/blocks/map-block/edit.js":
+/*!**************************************!*\
+  !*** ./src/blocks/map-block/edit.js ***!
+  \**************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -14593,10 +14643,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var leaflet__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! leaflet */ "./node_modules/leaflet/dist/leaflet-src.js");
+/* harmony import */ var _edit_scss__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./edit.scss */ "./src/blocks/map-block/edit.scss");
 
 
 
 
+// import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
+ // Import Leaflet JS
+ // Import stylów edytora
 
 const Edit = ({
   attributes,
@@ -14605,15 +14659,18 @@ const Edit = ({
   const {
     latitude,
     longitude,
-    zoom
+    zoom,
+    containerHeight
   } = attributes;
-  const mapContainer = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
-  const mapInstance = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
-  const marker = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+  const mapContainer = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null); // Referencja do kontenera mapy
+  const mapInstance = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null); // Przechowuje instancję mapy
+  const marker = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null); // Przechowuje marker
 
-  // Inicjalizacja mapy przy pierwszym renderowaniu
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current) {
+      console.error('Kontener mapy nie został znaleziony.');
+      return;
+    }
     if (!mapInstance.current) {
       mapInstance.current = leaflet__WEBPACK_IMPORTED_MODULE_4__.map(mapContainer.current).setView([latitude, longitude], zoom);
       leaflet__WEBPACK_IMPORTED_MODULE_4__.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -14622,7 +14679,7 @@ const Edit = ({
       marker.current = leaflet__WEBPACK_IMPORTED_MODULE_4__.marker([latitude, longitude], {
         draggable: true
       }).addTo(mapInstance.current);
-      marker.current.on('dragend', function (e) {
+      marker.current.on('dragend', e => {
         const {
           lat,
           lng
@@ -14632,17 +14689,11 @@ const Edit = ({
           longitude: lng
         });
       });
-
-      // Odśwież mapę, aby poprawnie wyrenderować kafelki
-      setTimeout(() => {
-        mapInstance.current.invalidateSize();
-      }, 0);
+    } else {
+      mapInstance.current.setView([latitude, longitude]);
+      mapInstance.current.setZoom(zoom);
     }
-    mapInstance.current.setView([latitude, longitude], zoom);
-    marker.current.setLatLng([latitude, longitude]);
   }, [latitude, longitude, zoom]);
-
-  // Ustawienia panelu bocznego
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InspectorControls, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
     title: "Map Settings",
     initialOpen: true
@@ -14666,16 +14717,94 @@ const Edit = ({
     }),
     min: 1,
     max: 18
+  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.RangeControl, {
+    label: "Container Height (px)",
+    value: containerHeight,
+    onChange: value => setAttributes({
+      containerHeight: value
+    }),
+    min: 200,
+    max: 800
   }))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    ...(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)()
+    ...(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)(),
+    style: {
+      height: `${containerHeight}px`,
+      width: '100%',
+      position: 'relative'
+    }
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     ref: mapContainer,
+    className: "leaflet-container",
     style: {
-      height: '300px'
+      height: '100%',
+      width: '100%',
+      position: 'relative'
     }
   })));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Edit);
+
+/***/ }),
+
+/***/ "./src/blocks/map-block/frontend.js":
+/*!******************************************!*\
+  !*** ./src/blocks/map-block/frontend.js ***!
+  \******************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var leaflet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! leaflet */ "./node_modules/leaflet/dist/leaflet-src.js");
+/* harmony import */ var leaflet_dist_leaflet_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! leaflet/dist/leaflet.css */ "./node_modules/leaflet/dist/leaflet.css");
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const mapElement = document.getElementById('map');
+  if (mapElement) {
+    const latitude = parseFloat(mapElement.getAttribute('data-lat'));
+    const longitude = parseFloat(mapElement.getAttribute('data-lng'));
+    const zoom = parseInt(mapElement.getAttribute('data-zoom'), 10);
+    const map = leaflet__WEBPACK_IMPORTED_MODULE_0__.map(mapElement).setView([latitude, longitude], zoom);
+    leaflet__WEBPACK_IMPORTED_MODULE_0__.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    leaflet__WEBPACK_IMPORTED_MODULE_0__.marker([latitude, longitude]).addTo(map);
+  }
+});
+
+/***/ }),
+
+/***/ "./src/blocks/map-block/index.js":
+/*!***************************************!*\
+  !*** ./src/blocks/map-block/index.js ***!
+  \***************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _edit_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./edit.js */ "./src/blocks/map-block/edit.js");
+/* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./block.json */ "./src/blocks/map-block/block.json");
+/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./style.scss */ "./src/blocks/map-block/style.scss");
+/* harmony import */ var _frontend_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./frontend.js */ "./src/blocks/map-block/frontend.js");
+// Importy potrzebne do rejestracji bloku
+
+
+ // Import komponentu Edit
+
+
+
+
+// Rejestracja bloku
+(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)(_block_json__WEBPACK_IMPORTED_MODULE_3__.name, {
+  edit: _edit_js__WEBPACK_IMPORTED_MODULE_2__["default"],
+  save: () => {
+    // Renderowanie po stronie frontendu jest dynamiczne,
+    // dlatego funkcja save zwraca null, co oznacza, że blok jest renderowany tylko przez `render_callback`
+    return null;
+  }
+});
 
 /***/ }),
 
@@ -14686,7 +14815,7 @@ const Edit = ({
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":2,"name":"custom-block-package/map-block","title":"Map Block","category":"widgets","icon":"location-alt","description":"A block to display an interactive map using Leaflet.js.","supports":{"html":false},"attributes":{"latitude":{"type":"number","default":50.031562},"longitude":{"type":"number","default":21.997937},"zoom":{"type":"number","default":13}},"editorScript":"file:./index.js","script":"file:./frontend.js","editorStyle":"file:./editor.scss","style":"file:./style.scss","dependencies":["leaflet-js"]}');
+module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":3,"name":"custom-block-package/map-block","title":"Map Block","category":"widgets","icon":"location-alt","description":"A block to display an interactive map using Leaflet.js.","supports":{"html":false},"attributes":{"latitude":{"type":"number","default":50.031562},"longitude":{"type":"number","default":21.997937},"zoom":{"type":"number","default":13},"containerHeight":{"type":"number","default":300}},"editorScript":"file:./index.js","viewScript":"file:./frontend.js","editorStyle":"file:./index-rtl.css","viewStyle":"file:./style-index.css","render":"file:./render.php"}');
 
 /***/ })
 
@@ -14716,7 +14845,44 @@ module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":2,"name":"custom-block-p
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/chunk loaded */
+/******/ 	(() => {
+/******/ 		var deferred = [];
+/******/ 		__webpack_require__.O = (result, chunkIds, fn, priority) => {
+/******/ 			if(chunkIds) {
+/******/ 				priority = priority || 0;
+/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
+/******/ 				deferred[i] = [chunkIds, fn, priority];
+/******/ 				return;
+/******/ 			}
+/******/ 			var notFulfilled = Infinity;
+/******/ 			for (var i = 0; i < deferred.length; i++) {
+/******/ 				var chunkIds = deferred[i][0];
+/******/ 				var fn = deferred[i][1];
+/******/ 				var priority = deferred[i][2];
+/******/ 				var fulfilled = true;
+/******/ 				for (var j = 0; j < chunkIds.length; j++) {
+/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every((key) => (__webpack_require__.O[key](chunkIds[j])))) {
+/******/ 						chunkIds.splice(j--, 1);
+/******/ 					} else {
+/******/ 						fulfilled = false;
+/******/ 						if(priority < notFulfilled) notFulfilled = priority;
+/******/ 					}
+/******/ 				}
+/******/ 				if(fulfilled) {
+/******/ 					deferred.splice(i--, 1)
+/******/ 					var r = fn();
+/******/ 					if (r !== undefined) result = r;
+/******/ 				}
+/******/ 			}
+/******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -14745,34 +14911,70 @@ module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":2,"name":"custom-block-p
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	(() => {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"blocks/map-block/index": 0,
+/******/ 			"blocks/map-block/style-index": 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		__webpack_require__.O.j = (chunkId) => (installedChunks[chunkId] === 0);
+/******/ 		
+/******/ 		// install a JSONP callback for chunk loading
+/******/ 		var webpackJsonpCallback = (parentChunkLoadingFunction, data) => {
+/******/ 			var chunkIds = data[0];
+/******/ 			var moreModules = data[1];
+/******/ 			var runtime = data[2];
+/******/ 			// add "moreModules" to the modules object,
+/******/ 			// then flag all "chunkIds" as loaded and fire callback
+/******/ 			var moduleId, chunkId, i = 0;
+/******/ 			if(chunkIds.some((id) => (installedChunks[id] !== 0))) {
+/******/ 				for(moduleId in moreModules) {
+/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 					}
+/******/ 				}
+/******/ 				if(runtime) var result = runtime(__webpack_require__);
+/******/ 			}
+/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
+/******/ 			for(;i < chunkIds.length; i++) {
+/******/ 				chunkId = chunkIds[i];
+/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 					installedChunks[chunkId][0]();
+/******/ 				}
+/******/ 				installedChunks[chunkId] = 0;
+/******/ 			}
+/******/ 			return __webpack_require__.O(result);
+/******/ 		}
+/******/ 		
+/******/ 		var chunkLoadingGlobal = self["webpackChunkcustom_block_package"] = self["webpackChunkcustom_block_package"] || [];
+/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
+/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
+/******/ 	})();
+/******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-/*!***************************************!*\
-  !*** ./src/blocks/map-block/index.js ***!
-  \***************************************/
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
-/* harmony import */ var _editor_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./editor.js */ "./src/blocks/map-block/editor.js");
-/* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./block.json */ "./src/blocks/map-block/block.json");
-// Importy potrzebne do rejestracji bloku
-
- // Import komponentu Edit
-
-
-// Rejestracja bloku
-(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)(_block_json__WEBPACK_IMPORTED_MODULE_2__.name, {
-  edit: _editor_js__WEBPACK_IMPORTED_MODULE_1__["default"],
-  save: () => {
-    // Renderowanie po stronie frontendu jest dynamiczne,
-    // dlatego funkcja save zwraca null, co oznacza, że blok jest renderowany tylko przez `render_callback`
-    return null;
-  }
-});
-})();
-
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["blocks/map-block/style-index"], () => (__webpack_require__("./src/blocks/map-block/index.js")))
+/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
+/******/ 	
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map

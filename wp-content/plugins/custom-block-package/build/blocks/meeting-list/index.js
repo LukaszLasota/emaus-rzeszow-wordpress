@@ -164,6 +164,8 @@ module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/tru
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+(() => {
 /*!******************************************!*\
   !*** ./src/blocks/meeting-list/index.js ***!
   \******************************************/
@@ -248,6 +250,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   save: () => null
 });
+})();
+
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map

@@ -1,5 +1,5 @@
 {
-    "apiVersion": 2,
+    "apiVersion": 3,
     "name": "custom-block-package/map-block",
     "title": "Map Block",
     "category": "widgets",
@@ -20,11 +20,15 @@
         "zoom": {
             "type": "number",
             "default": 13
+        },
+        "containerHeight": {
+            "type": "number",
+            "default": 300
         }
     },
-  "editorScript": "file:./index.js",
-    "script": "file:./frontend.js",
-    "editorStyle": "file:./editor.scss",
-    "style": "file:./style.scss",
-    "dependencies": ["leaflet-js"]
+    "editorScript": "file:./index.js",
+    "viewScript": "file:./frontend.js",
+    "editorStyle": "file:./index-rtl.css",
+    "viewStyle": "file:./style-index.css",
+    "render": "file:./render.php"
 }
