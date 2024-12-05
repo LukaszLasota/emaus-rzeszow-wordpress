@@ -14520,19 +14520,6 @@
 //# sourceMappingURL=leaflet-src.js.map
 
 
-/***/ }),
-
-/***/ "./node_modules/leaflet/dist/leaflet.css":
-/*!***********************************************!*\
-  !*** ./node_modules/leaflet/dist/leaflet.css ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-
 /***/ })
 
 /******/ 	});
@@ -14583,8 +14570,6 @@ var __webpack_exports__ = {};
   \******************************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var leaflet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! leaflet */ "./node_modules/leaflet/dist/leaflet-src.js");
-/* harmony import */ var leaflet_dist_leaflet_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! leaflet/dist/leaflet.css */ "./node_modules/leaflet/dist/leaflet.css");
-
 
 document.addEventListener('DOMContentLoaded', () => {
   const mapElement = document.getElementById('map');

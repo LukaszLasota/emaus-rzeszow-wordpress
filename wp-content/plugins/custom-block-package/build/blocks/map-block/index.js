@@ -14522,19 +14522,6 @@
 
 /***/ }),
 
-/***/ "./node_modules/leaflet/dist/leaflet.css":
-/*!***********************************************!*\
-  !*** ./node_modules/leaflet/dist/leaflet.css ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-
-/***/ }),
-
 /***/ "./src/blocks/map-block/edit.scss":
 /*!****************************************!*\
   !*** ./src/blocks/map-block/edit.scss ***!
@@ -14648,9 +14635,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-// import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
- // Import Leaflet JS
- // Import stylów edytora
+
 
 const Edit = ({
   attributes,
@@ -14662,15 +14647,20 @@ const Edit = ({
     zoom,
     containerHeight
   } = attributes;
-  const mapContainer = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null); // Referencja do kontenera mapy
-  const mapInstance = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null); // Przechowuje instancję mapy
-  const marker = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null); // Przechowuje marker
-
+  const mapContainer = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+  const mapInstance = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+  const marker = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
     if (!mapContainer.current) {
       console.error('Kontener mapy nie został znaleziony.');
       return;
     }
+    delete leaflet__WEBPACK_IMPORTED_MODULE_4__.Icon.Default.prototype._getIconUrl;
+    leaflet__WEBPACK_IMPORTED_MODULE_4__.Icon.Default.mergeOptions({
+      iconUrl: '/wp-content/plugins/custom-block-package/src/blocks/map-block/images/marker-icon.png',
+      iconRetinaUrl: '/wp-content/plugins/custom-block-package/src/blocks/map-block/images/marker-icon-2x.png',
+      shadowUrl: '/wp-content/plugins/custom-block-package/src/blocks/map-block/images/marker-shadow.png'
+    });
     if (!mapInstance.current) {
       mapInstance.current = leaflet__WEBPACK_IMPORTED_MODULE_4__.map(mapContainer.current).setView([latitude, longitude], zoom);
       leaflet__WEBPACK_IMPORTED_MODULE_4__.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -14755,8 +14745,6 @@ const Edit = ({
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var leaflet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! leaflet */ "./node_modules/leaflet/dist/leaflet-src.js");
-/* harmony import */ var leaflet_dist_leaflet_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! leaflet/dist/leaflet.css */ "./node_modules/leaflet/dist/leaflet.css");
-
 
 document.addEventListener('DOMContentLoaded', () => {
   const mapElement = document.getElementById('map');
@@ -14788,20 +14776,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./block.json */ "./src/blocks/map-block/block.json");
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./style.scss */ "./src/blocks/map-block/style.scss");
 /* harmony import */ var _frontend_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./frontend.js */ "./src/blocks/map-block/frontend.js");
-// Importy potrzebne do rejestracji bloku
-
-
- // Import komponentu Edit
 
 
 
 
-// Rejestracja bloku
+
+
 (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)(_block_json__WEBPACK_IMPORTED_MODULE_3__.name, {
   edit: _edit_js__WEBPACK_IMPORTED_MODULE_2__["default"],
   save: () => {
-    // Renderowanie po stronie frontendu jest dynamiczne,
-    // dlatego funkcja save zwraca null, co oznacza, że blok jest renderowany tylko przez `render_callback`
     return null;
   }
 });
@@ -14815,7 +14798,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":3,"name":"custom-block-package/map-block","title":"Map Block","category":"widgets","icon":"location-alt","description":"A block to display an interactive map using Leaflet.js.","supports":{"html":false},"attributes":{"latitude":{"type":"number","default":50.031562},"longitude":{"type":"number","default":21.997937},"zoom":{"type":"number","default":13},"containerHeight":{"type":"number","default":300}},"editorScript":"file:./index.js","viewScript":"file:./frontend.js","editorStyle":"file:./index-rtl.css","viewStyle":"file:./style-index.css","render":"file:./render.php"}');
+module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":3,"name":"custom-block-package/map-block","title":"Blok mapy","category":"widgets","icon":"location-alt","description":"Blok mapu zbudowanu przu użyciu Leaflet.js.","supports":{"html":false},"attributes":{"latitude":{"type":"number","default":50.031562},"longitude":{"type":"number","default":21.997937},"zoom":{"type":"number","default":13},"containerHeight":{"type":"number","default":300}},"editorScript":"file:./index.js","viewScript":"file:./frontend.js","editorStyle":["my-block-leaflet-style","file:./index-rtl.css"],"viewStyle":["file:./style-index.css","my-block-leaflet-style"]}');
 
 /***/ })
 

@@ -1,21 +1,27 @@
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, RangeControl } from '@wordpress/components';
 import { useEffect, useRef } from '@wordpress/element';
-// import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
-import L from 'leaflet'; // Import Leaflet JS
-import './edit.scss'; // Import stylów edytora
+import L from 'leaflet';
+import './edit.scss';
 
 const Edit = ({ attributes, setAttributes }) => {
     const { latitude, longitude, zoom, containerHeight } = attributes;
-    const mapContainer = useRef(null); // Referencja do kontenera mapy
-    const mapInstance = useRef(null); // Przechowuje instancję mapy
-    const marker = useRef(null); // Przechowuje marker
+    const mapContainer = useRef(null);
+    const mapInstance = useRef(null);
+    const marker = useRef(null);
 
     useEffect(() => {
         if (!mapContainer.current) {
             console.error('Kontener mapy nie został znaleziony.');
             return;
         }
+
+        delete L.Icon.Default.prototype._getIconUrl;
+        L.Icon.Default.mergeOptions({
+            iconUrl: '/wp-content/plugins/custom-block-package/src/blocks/map-block/images/marker-icon.png',
+            iconRetinaUrl: '/wp-content/plugins/custom-block-package/src/blocks/map-block/images/marker-icon-2x.png',
+            shadowUrl: '/wp-content/plugins/custom-block-package/src/blocks/map-block/images/marker-shadow.png',
+        });
 
         if (!mapInstance.current) {
             mapInstance.current = L.map(mapContainer.current).setView([latitude, longitude], zoom);

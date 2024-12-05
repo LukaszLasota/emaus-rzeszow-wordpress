@@ -18,6 +18,7 @@ if(!function_exists('add_action')) {
 // Setup
 define('UP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('UP_PLUGIN_FILE', __FILE__);
+define('UP_PLUGIN_URL', plugin_dir_url( __FILE__ ));
 
 // Includes
 $rootFiles = glob(UP_PLUGIN_DIR . 'includes/*.php');

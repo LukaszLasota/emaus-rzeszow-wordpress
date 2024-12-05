@@ -1,16 +1,10 @@
 <?php
 
-
 function render_map_block( $attributes ) {
     $latitude = $attributes['latitude'];
     $longitude = $attributes['longitude'];
     $zoom = $attributes['zoom'];
     $containerHeight = isset( $attributes['containerHeight'] ) ? $attributes['containerHeight'] : 400;
-
-      // Ładowanie zasobów tylko wtedy, gdy blok występuje
-      wp_enqueue_style( 'leaflet-css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', [], '1.9.4' );
-      wp_enqueue_script( 'leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', [], '1.9.4', true );
-
 
     ob_start();
     ?>

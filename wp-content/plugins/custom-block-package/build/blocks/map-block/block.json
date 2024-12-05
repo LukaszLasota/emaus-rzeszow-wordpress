@@ -1,10 +1,10 @@
 {
   "apiVersion": 3,
   "name": "custom-block-package/map-block",
-  "title": "Map Block",
+  "title": "Blok mapy",
   "category": "widgets",
   "icon": "location-alt",
-  "description": "A block to display an interactive map using Leaflet.js.",
+  "description": "Blok mapu zbudowanu przu użyciu Leaflet.js.",
   "supports": {
     "html": false
   },
@@ -28,7 +28,12 @@
   },
   "editorScript": "file:./index.js",
   "viewScript": "file:./frontend.js",
-  "editorStyle": "file:./index-rtl.css",
-  "viewStyle": "file:./style-index.css",
-  "render": "file:./render.php"
+  "editorStyle": [
+    "my-block-leaflet-style",
+    "file:./index-rtl.css"
+  ],
+  "viewStyle": [
+    "file:./style-index.css",
+    "my-block-leaflet-style"
+  ]
 }
