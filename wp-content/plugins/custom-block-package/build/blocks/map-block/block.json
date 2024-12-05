@@ -19,11 +19,15 @@
     },
     "zoom": {
       "type": "number",
-      "default": 13
+      "default": 16
     },
     "containerHeight": {
       "type": "number",
       "default": 300
+    },
+    "popupText": {
+      "type": "string",
+      "default": "Nasza lokalizacja"
     }
   },
   "editorScript": "file:./index.js",

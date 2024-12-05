@@ -14577,11 +14577,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const latitude = parseFloat(mapElement.getAttribute('data-lat'));
     const longitude = parseFloat(mapElement.getAttribute('data-lng'));
     const zoom = parseInt(mapElement.getAttribute('data-zoom'), 10);
+    const popupText = mapElement.getAttribute('data-popup') || 'Nasza lokalizacja';
     const map = leaflet__WEBPACK_IMPORTED_MODULE_0__.map(mapElement).setView([latitude, longitude], zoom);
     leaflet__WEBPACK_IMPORTED_MODULE_0__.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-    leaflet__WEBPACK_IMPORTED_MODULE_0__.marker([latitude, longitude]).addTo(map);
+    const marker = leaflet__WEBPACK_IMPORTED_MODULE_0__.marker([latitude, longitude]).addTo(map);
+    marker.bindPopup(popupText).openPopup();
   }
 });
 })();

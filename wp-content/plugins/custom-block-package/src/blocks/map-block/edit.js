@@ -5,7 +5,7 @@ import L from 'leaflet';
 import './edit.scss';
 
 const Edit = ({ attributes, setAttributes }) => {
-    const { latitude, longitude, zoom, containerHeight } = attributes;
+    const { latitude, longitude, zoom, containerHeight, popupText } = attributes;
     const mapContainer = useRef(null);
     const mapInstance = useRef(null);
     const marker = useRef(null);
@@ -31,44 +31,53 @@ const Edit = ({ attributes, setAttributes }) => {
             }).addTo(mapInstance.current);
 
             marker.current = L.marker([latitude, longitude], { draggable: true }).addTo(mapInstance.current);
+            marker.current.bindPopup(popupText);
 
             marker.current.on('dragend', (e) => {
                 const { lat, lng } = e.target.getLatLng();
                 setAttributes({ latitude: lat, longitude: lng });
             });
+
         } else {
             mapInstance.current.setView([latitude, longitude]);
             mapInstance.current.setZoom(zoom);
+            marker.current.setLatLng([latitude, longitude]);
+            marker.current.getPopup().setContent(popupText);
         }
-    }, [latitude, longitude, zoom]);
+    }, [latitude, longitude, zoom, popupText]);
 
     return (
         <>
             <InspectorControls>
-                <PanelBody title="Map Settings" initialOpen={true}>
+                <PanelBody title="Ustawienia mapy" initialOpen={true}>
                     <TextControl
-                        label="Latitude"
+                        label="Szerokość geograficzna"
                         value={latitude}
                         onChange={(value) => setAttributes({ latitude: parseFloat(value) || 0 })}
                     />
                     <TextControl
-                        label="Longitude"
+                        label="Długość geograficzna"
                         value={longitude}
                         onChange={(value) => setAttributes({ longitude: parseFloat(value) || 0 })}
                     />
                     <RangeControl
-                        label="Zoom"
+                        label="Powiększenie"
                         value={zoom}
                         onChange={(value) => setAttributes({ zoom: value })}
                         min={1}
                         max={18}
                     />
                     <RangeControl
-                        label="Container Height (px)"
+                        label="Wysokość kontenera (px)"
                         value={containerHeight}
                         onChange={(value) => setAttributes({ containerHeight: value })}
                         min={200}
                         max={800}
+                    />
+                    <TextControl
+                        label="Treść popupu"
+                        value={popupText}
+                        onChange={(value) => setAttributes({ popupText: value })}
                     />
                 </PanelBody>
             </InspectorControls>

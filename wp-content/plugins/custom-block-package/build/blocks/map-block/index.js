@@ -14645,7 +14645,8 @@ const Edit = ({
     latitude,
     longitude,
     zoom,
-    containerHeight
+    containerHeight,
+    popupText
   } = attributes;
   const mapContainer = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
   const mapInstance = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
@@ -14669,6 +14670,7 @@ const Edit = ({
       marker.current = leaflet__WEBPACK_IMPORTED_MODULE_4__.marker([latitude, longitude], {
         draggable: true
       }).addTo(mapInstance.current);
+      marker.current.bindPopup(popupText);
       marker.current.on('dragend', e => {
         const {
           lat,
@@ -14682,25 +14684,27 @@ const Edit = ({
     } else {
       mapInstance.current.setView([latitude, longitude]);
       mapInstance.current.setZoom(zoom);
+      marker.current.setLatLng([latitude, longitude]);
+      marker.current.getPopup().setContent(popupText);
     }
-  }, [latitude, longitude, zoom]);
+  }, [latitude, longitude, zoom, popupText]);
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InspectorControls, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
-    title: "Map Settings",
+    title: "Ustawienia mapy",
     initialOpen: true
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.TextControl, {
-    label: "Latitude",
+    label: "Szeroko\u015B\u0107 geograficzna",
     value: latitude,
     onChange: value => setAttributes({
       latitude: parseFloat(value) || 0
     })
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.TextControl, {
-    label: "Longitude",
+    label: "D\u0142ugo\u015B\u0107 geograficzna",
     value: longitude,
     onChange: value => setAttributes({
       longitude: parseFloat(value) || 0
     })
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.RangeControl, {
-    label: "Zoom",
+    label: "Powi\u0119kszenie",
     value: zoom,
     onChange: value => setAttributes({
       zoom: value
@@ -14708,13 +14712,19 @@ const Edit = ({
     min: 1,
     max: 18
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.RangeControl, {
-    label: "Container Height (px)",
+    label: "Wysoko\u015B\u0107 kontenera (px)",
     value: containerHeight,
     onChange: value => setAttributes({
       containerHeight: value
     }),
     min: 200,
     max: 800
+  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.TextControl, {
+    label: "Tre\u015B\u0107 popupu",
+    value: popupText,
+    onChange: value => setAttributes({
+      popupText: value
+    })
   }))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     ...(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)(),
     style: {
@@ -14752,11 +14762,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const latitude = parseFloat(mapElement.getAttribute('data-lat'));
     const longitude = parseFloat(mapElement.getAttribute('data-lng'));
     const zoom = parseInt(mapElement.getAttribute('data-zoom'), 10);
+    const popupText = mapElement.getAttribute('data-popup') || 'Nasza lokalizacja';
     const map = leaflet__WEBPACK_IMPORTED_MODULE_0__.map(mapElement).setView([latitude, longitude], zoom);
     leaflet__WEBPACK_IMPORTED_MODULE_0__.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-    leaflet__WEBPACK_IMPORTED_MODULE_0__.marker([latitude, longitude]).addTo(map);
+    const marker = leaflet__WEBPACK_IMPORTED_MODULE_0__.marker([latitude, longitude]).addTo(map);
+    marker.bindPopup(popupText).openPopup();
   }
 });
 
@@ -14798,7 +14810,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":3,"name":"custom-block-package/map-block","title":"Blok mapy","category":"widgets","icon":"location-alt","description":"Blok mapu zbudowanu przu użyciu Leaflet.js.","supports":{"html":false},"attributes":{"latitude":{"type":"number","default":50.031562},"longitude":{"type":"number","default":21.997937},"zoom":{"type":"number","default":13},"containerHeight":{"type":"number","default":300}},"editorScript":"file:./index.js","viewScript":"file:./frontend.js","editorStyle":["my-block-leaflet-style","file:./index-rtl.css"],"viewStyle":["file:./style-index.css","my-block-leaflet-style"]}');
+module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":3,"name":"custom-block-package/map-block","title":"Blok mapy","category":"widgets","icon":"location-alt","description":"Blok mapu zbudowanu przu użyciu Leaflet.js.","supports":{"html":false},"attributes":{"latitude":{"type":"number","default":50.031562},"longitude":{"type":"number","default":21.997937},"zoom":{"type":"number","default":16},"containerHeight":{"type":"number","default":300},"popupText":{"type":"string","default":"Nasza lokalizacja"}},"editorScript":"file:./index.js","viewScript":"file:./frontend.js","editorStyle":["my-block-leaflet-style","file:./index-rtl.css"],"viewStyle":["file:./style-index.css","my-block-leaflet-style"]}');
 
 /***/ })
 
