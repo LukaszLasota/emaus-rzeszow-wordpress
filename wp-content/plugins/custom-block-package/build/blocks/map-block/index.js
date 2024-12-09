@@ -14651,9 +14651,9 @@ const Edit = ({
   const mapContainer = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
   const mapInstance = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
   const marker = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useRef)(null);
+  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)();
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
     if (!mapContainer.current) {
-      console.error('Kontener mapy nie został znaleziony.');
       return;
     }
     delete leaflet__WEBPACK_IMPORTED_MODULE_4__.Icon.Default.prototype._getIconUrl;
@@ -14726,7 +14726,7 @@ const Edit = ({
       popupText: value
     })
   }))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    ...(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)(),
+    ...blockProps,
     style: {
       height: `${containerHeight}px`,
       width: '100%',

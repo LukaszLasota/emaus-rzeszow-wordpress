@@ -16,25 +16,37 @@ const Save = ({ attributes }) => {
         justifyItems,
         justifyContent,
         alignContent,
+        layoutType,
+        flexWrap,
+        flexDirection,
+        alignItems
     } = attributes;
 
     const TagName = tagName;
 
     const blockProps = useBlockProps.save({
-        className: `section-block`,
+        className: `section-block ${layoutType === "grid" ? "is-grid" : layoutType === "flex" ? "is-flex" : ""}`,
         style: {
             background: backgroundColor || undefined,
             backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
             padding: padding || undefined,
             margin: margin || undefined,
-            "--columns-mobile": `${columnsMobile}`,
-            "--columns-small-tablet": `${columnsSmallTablet}`,
-            "--columns-large-tablet": `${columnsLargeTablet}`,
-            "--columns-desktop": `${columnsDesktop}`,
-            "--grid-gap": `${gridGap}px`,
-            "--justify-items": justifyItems,
-            "--justify-content": justifyContent,
-            "--align-content": alignContent
+            ...(layoutType === "grid" && {
+                "--columns-mobile": `${columnsMobile}`,
+                "--columns-small-tablet": `${columnsSmallTablet}`,
+                "--columns-large-tablet": `${columnsLargeTablet}`,
+                "--columns-desktop": `${columnsDesktop}`,
+                "--grid-gap": `${gridGap}px`,
+                "--justify-items": justifyItems,
+                "--align-content": alignContent,
+            }),
+            ...(layoutType === "flex" && {
+                "--display": "flex",
+                "--flex-wrap": flexWrap,
+                "--flex-direction": flexDirection,
+                "--align-items": alignItems,
+                "--justify-content": justifyContent,
+            }),
         },
     });
 

@@ -5,12 +5,8 @@
   "title": "Blok sekcji Emaus",
   "category": "text",
   "description": "Blok dla sekcji",
-  "textdomain": "custom-block-package", 
+  "textdomain": "custom-block-package",
   "attributes": {
-    "columns": {
-      "type": "number",
-      "default": 3
-    },
     "tagName": {
       "type": "string",
       "default": "div"
@@ -52,39 +48,55 @@
       "default": 10
     },
     "justifyItems": {
-        "type": "string",
-        "default": "stretch"
+      "type": "string",
+      "default": "stretch"
     },
     "justifyContent": {
-        "type": "string",
-        "default": "start"
+      "type": "string",
+      "default": "start"
     },
     "alignContent": {
-        "type": "string",
-        "default": "start"
+      "type": "string",
+      "default": "start"
+    },
+    "layoutType": {
+      "type": "string",
+      "default": "none"
+    },
+    "flexWrap": {
+      "type": "string",
+      "default": "wrap"
+    },
+    "flexDirection": {
+      "type": "string",
+      "default": "row"
+    },
+    "alignItems": {
+      "type": "string",
+      "default": "stretch"
     },
     "gradient": {
       "type": "string",
       "default": ""
     }
   },
-  "supports" : {
+  "supports": {
     "color": {
-      "text" : true,
-      "background" : true,
+      "text": true,
+      "background": true,
       "gradients": true,
       "link": true
     },
-      "align": ["wide", "full"],
-      "typography": {
-        "fontSize": true,     
-        "lineHeight": true,    
-        "fontWeight": true,    
-        "textTransform": true,  
-        "letterSpacing": true
+    "align": true,
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "fontWeight": true,
+      "textTransform": true,
+      "letterSpacing": true
     },
-      "customClassName": true,
-      "anchor": true
+    "customClassName": true,
+    "anchor": true
   },
   "editorScript": "file:./index.js",
   "viewStyle": "file:./style-index.css",

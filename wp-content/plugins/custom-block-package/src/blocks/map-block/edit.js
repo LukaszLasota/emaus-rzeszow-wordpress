@@ -10,9 +10,10 @@ const Edit = ({ attributes, setAttributes }) => {
     const mapInstance = useRef(null);
     const marker = useRef(null);
 
+    const blockProps = useBlockProps();
+
     useEffect(() => {
         if (!mapContainer.current) {
-            console.error('Kontener mapy nie został znaleziony.');
             return;
         }
 
@@ -82,7 +83,7 @@ const Edit = ({ attributes, setAttributes }) => {
                 </PanelBody>
             </InspectorControls>
             <div
-                {...useBlockProps()}
+                {...blockProps}
                 style={{
                     height: `${containerHeight}px`,
                     width: '100%',

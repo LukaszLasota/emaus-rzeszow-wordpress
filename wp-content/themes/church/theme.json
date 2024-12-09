@@ -28,6 +28,11 @@
 				  "slug": "gradient-to-bottom",
 				  "gradient": "linear-gradient(to bottom, #008089 0%, #002432 100%)",
 				  "name": "Gradient to Bottom"
+				},
+				{
+				  "slug": "gradient-90-deg",
+				  "gradient": "linear-gradient(90deg,#008089 0,#002432)",
+				  "name": "Gradient 90 deg"
 				}
 			],
 			"palette": [

@@ -7,10 +7,6 @@
   "description": "Blok dla sekcji",
   "textdomain": "custom-block-package",
   "attributes": {
-    "columns": {
-      "type": "number",
-      "default": 3
-    },
     "tagName": {
       "type": "string",
       "default": "div"
@@ -63,6 +59,22 @@
       "type": "string",
       "default": "start"
     },
+    "layoutType": {
+      "type": "string",
+      "default": "none"
+    },
+    "flexWrap": {
+      "type": "string",
+      "default": "wrap"
+    },
+    "flexDirection": {
+      "type": "string",
+      "default": "row"
+    },
+    "alignItems": {
+      "type": "string",
+      "default": "stretch"
+    },
     "gradient": {
       "type": "string",
       "default": ""
@@ -75,10 +87,7 @@
       "gradients": true,
       "link": true
     },
-    "align": [
-      "wide",
-      "full"
-    ],
+    "align": true,
     "typography": {
       "fontSize": true,
       "lineHeight": true,

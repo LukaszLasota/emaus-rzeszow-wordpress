@@ -26,6 +26,7 @@
     p{
         font-size: 1.2rem;
         margin: 10px 0;
+        word-break: break-all;
         @media (max-width: 600px){
             font-size: 1.2rem;
         }

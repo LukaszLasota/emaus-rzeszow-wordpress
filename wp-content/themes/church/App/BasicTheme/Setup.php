@@ -35,9 +35,17 @@ class Setup implements ActionHookInterface
 
         add_theme_support( 'automatic-feed-links' );
 
+        add_theme_support('align-wide');
+
+        add_theme_support( 'block-templates' );
+
+        add_theme_support( 'block-template-parts' );
+
         add_theme_support( 'footer-widgets', 3 );
 
         add_theme_support( 'customize-selective-refresh-widgets' );
+
+        add_theme_support( 'editor-styles' );
     }
 
     

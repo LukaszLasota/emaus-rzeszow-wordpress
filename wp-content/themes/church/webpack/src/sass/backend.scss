@@ -1,4 +1,5 @@
 @import url(https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap;subset=latin-ext);
+
 @import 'base/normalize.scss';
 
 @import 'abstracts/variables';
@@ -6,5 +7,13 @@
 @import 'abstracts/mixins';
 
 @import 'apps/main.scss';
+@import 'apps/menu/main-menu.scss';
+@import 'pages/page';
+@import 'pages/news.scss';
+@import 'apps/heading.scss';
+
 @import 'apps/wcag/main';
+@import 'apps/footer.scss';
+@import 'apps/header.scss';
 @import 'apps/contact.scss';
+
