@@ -6,8 +6,20 @@
     "icon": "location-alt",
     "description": "Blok mapu zbudowanu przu użyciu Leaflet.js.",
     "supports": {
-        "html": false
-    },
+    "html": false,
+        "color": {
+        "text": true,
+        "link": true
+        },
+        "spacing": {
+            "margin": true,  
+            "padding": true, 
+            "blockGap": true
+        },
+        "align": true,
+        "customClassName": true,
+        "anchor": true
+  },
     "attributes": {
         "latitude": {
             "type": "number",

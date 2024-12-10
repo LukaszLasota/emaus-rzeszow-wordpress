@@ -46,6 +46,9 @@ class Setup implements ActionHookInterface
         add_theme_support( 'customize-selective-refresh-widgets' );
 
         add_theme_support( 'editor-styles' );
+
+        add_theme_support('wp-block-styles');
+
     }
 
     

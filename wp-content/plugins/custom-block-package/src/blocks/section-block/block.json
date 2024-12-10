@@ -78,6 +78,10 @@
     "gradient": {
       "type": "string",
       "default": ""
+    },
+    "toggleClass": {
+      "type": "boolean",
+      "default": false
     }
   },
   "supports": {
@@ -94,6 +98,11 @@
       "fontWeight": true,
       "textTransform": true,
       "letterSpacing": true
+    },
+    "spacing": {
+      "margin": true,  
+      "padding": true, 
+      "blockGap": true
     },
     "customClassName": true,
     "anchor": true

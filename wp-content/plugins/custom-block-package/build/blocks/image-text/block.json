@@ -28,7 +28,7 @@
     },
     "imgID": {
       "type": "number",
-      "default": null
+      "default": 0
     },
     "imgAlt": {
       "type": "string",
@@ -47,7 +47,8 @@
     "postURL": {
       "type": "object",
       "default": {
-        "url": ""
+        "url": "",
+        "opensInNewTab": false
       }
     }
   },

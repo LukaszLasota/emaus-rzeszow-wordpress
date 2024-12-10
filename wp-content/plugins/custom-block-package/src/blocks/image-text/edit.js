@@ -17,7 +17,9 @@ import './editor.scss';
 
 const Edit = ({ attributes, setAttributes }) => {
     const { text, imgID, imgAlt, imgURL, postURL } = attributes;
-    const blockProps = useBlockProps();
+    const blockProps = useBlockProps({
+        className: "about-one",
+    });
 
     const [isLinkPickerVisible, setIsLinkPickerVisible] = useState(false);
 
@@ -112,7 +114,7 @@ const Edit = ({ attributes, setAttributes }) => {
 
                 </PanelBody>
             </InspectorControls>
-            <div className="about-one" {...blockProps}>
+            <div {...blockProps}>
                 {postURL && postURL.url ? (
                     <a href={postURL.url}>
                         <figure>

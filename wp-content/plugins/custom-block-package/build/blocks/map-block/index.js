@@ -14810,7 +14810,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":3,"name":"custom-block-package/map-block","title":"Blok mapy","category":"widgets","icon":"location-alt","description":"Blok mapu zbudowanu przu użyciu Leaflet.js.","supports":{"html":false},"attributes":{"latitude":{"type":"number","default":50.031562},"longitude":{"type":"number","default":21.997937},"zoom":{"type":"number","default":16},"containerHeight":{"type":"number","default":300},"popupText":{"type":"string","default":"Nasza lokalizacja"}},"editorScript":"file:./index.js","viewScript":"file:./frontend.js","editorStyle":["my-block-leaflet-style","file:./index-rtl.css"],"viewStyle":["file:./style-index.css","my-block-leaflet-style"]}');
+module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":3,"name":"custom-block-package/map-block","title":"Blok mapy","category":"widgets","icon":"location-alt","description":"Blok mapu zbudowanu przu użyciu Leaflet.js.","supports":{"html":false,"color":{"text":true,"link":true},"spacing":{"margin":true,"padding":true,"blockGap":true},"align":true,"customClassName":true,"anchor":true},"attributes":{"latitude":{"type":"number","default":50.031562},"longitude":{"type":"number","default":21.997937},"zoom":{"type":"number","default":16},"containerHeight":{"type":"number","default":300},"popupText":{"type":"string","default":"Nasza lokalizacja"}},"editorScript":"file:./index.js","viewScript":"file:./frontend.js","editorStyle":["my-block-leaflet-style","file:./index-rtl.css"],"viewStyle":["file:./style-index.css","my-block-leaflet-style"]}');
 
 /***/ })
 

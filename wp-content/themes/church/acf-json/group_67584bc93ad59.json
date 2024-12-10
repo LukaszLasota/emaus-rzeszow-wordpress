@@ -1,0 +1,51 @@
+{
+    "key": "group_67584bc93ad59",
+    "title": "Pola dla wpisów",
+    "fields": [
+        {
+            "key": "field_67584bc985ddf",
+            "label": "Pokaż nagłówek używając tytułu strony",
+            "name": "show_header",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "Tak": "Tak",
+                "Nie": "Nie"
+            },
+            "default_value": "Tak",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "allow_in_bindings": 1,
+            "layout": "vertical",
+            "save_other_choice": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "post"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "side",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1733840417
+}

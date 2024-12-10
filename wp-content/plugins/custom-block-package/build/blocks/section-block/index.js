@@ -117,11 +117,12 @@ const Edit = ({
     layoutType,
     flexWrap,
     flexDirection,
-    alignItems
+    alignItems,
+    toggleClass
   } = attributes;
   const TagName = tagName;
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)({
-    className: `section-block ${layoutType === "grid" ? "is-grid" : layoutType === "flex" ? "is-flex" : ""}`,
+    className: `section-block ${layoutType === "grid" ? "is-grid" : layoutType === "flex" ? "is-flex" : ""} ${toggleClass ? 'width-settings' : ''}`,
     style: {
       background: backgroundColor || undefined,
       backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
@@ -434,6 +435,14 @@ const Edit = ({
       margin: value
     }),
     help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Wprowadź wartości marginesu, np. '10px 0' lub '5px 10px 15px 20px'", "custom-block-package")
+  })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Ustawienia szerokosći bloku", "custom-block-package")
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.ToggleControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Przełącz szerokosć strony", "custom-block-package"),
+    checked: toggleClass,
+    onChange: value => setAttributes({
+      toggleClass: value
+    })
   }))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(TagName, {
     ...blockProps
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InnerBlocks, {
@@ -502,11 +511,12 @@ const Save = ({
     layoutType,
     flexWrap,
     flexDirection,
-    alignItems
+    alignItems,
+    toggleClass
   } = attributes;
   const TagName = tagName;
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps.save({
-    className: `section-block ${layoutType === "grid" ? "is-grid" : layoutType === "flex" ? "is-flex" : ""}`,
+    className: `section-block ${layoutType === "grid" ? "is-grid" : layoutType === "flex" ? "is-flex" : ""} ${toggleClass ? 'width-settings' : ''}`,
     style: {
       background: backgroundColor || undefined,
       backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
@@ -544,7 +554,7 @@ const Save = ({
   \*********************************************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://raw.githubusercontent.com/WordPress/gutenberg/trunk/schemas/json/block.json","apiVersion":3,"name":"custom-block-package/section-block","title":"Blok sekcji Emaus","category":"text","description":"Blok dla sekcji","textdomain":"custom-block-package","attributes":{"tagName":{"type":"string","default":"div"},"backgroundImage":{"type":"string","default":""},"backgroundColor":{"type":"string","default":""},"padding":{"type":"string","default":""},"margin":{"type":"string","default":""},"columnsMobile":{"type":"number","default":1},"columnsSmallTablet":{"type":"number","default":2},"columnsLargeTablet":{"type":"number","default":3},"columnsDesktop":{"type":"number","default":4},"gridGap":{"type":"number","default":10},"justifyItems":{"type":"string","default":"stretch"},"justifyContent":{"type":"string","default":"start"},"alignContent":{"type":"string","default":"start"},"layoutType":{"type":"string","default":"none"},"flexWrap":{"type":"string","default":"wrap"},"flexDirection":{"type":"string","default":"row"},"alignItems":{"type":"string","default":"stretch"},"gradient":{"type":"string","default":""}},"supports":{"color":{"text":true,"background":true,"gradients":true,"link":true},"align":true,"typography":{"fontSize":true,"lineHeight":true,"fontWeight":true,"textTransform":true,"letterSpacing":true},"customClassName":true,"anchor":true},"editorScript":"file:./index.js","viewStyle":"file:./style-index.css","editorStyle":"file:./index.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://raw.githubusercontent.com/WordPress/gutenberg/trunk/schemas/json/block.json","apiVersion":3,"name":"custom-block-package/section-block","title":"Blok sekcji Emaus","category":"text","description":"Blok dla sekcji","textdomain":"custom-block-package","attributes":{"tagName":{"type":"string","default":"div"},"backgroundImage":{"type":"string","default":""},"backgroundColor":{"type":"string","default":""},"padding":{"type":"string","default":""},"margin":{"type":"string","default":""},"columnsMobile":{"type":"number","default":1},"columnsSmallTablet":{"type":"number","default":2},"columnsLargeTablet":{"type":"number","default":3},"columnsDesktop":{"type":"number","default":4},"gridGap":{"type":"number","default":10},"justifyItems":{"type":"string","default":"stretch"},"justifyContent":{"type":"string","default":"start"},"alignContent":{"type":"string","default":"start"},"layoutType":{"type":"string","default":"none"},"flexWrap":{"type":"string","default":"wrap"},"flexDirection":{"type":"string","default":"row"},"alignItems":{"type":"string","default":"stretch"},"gradient":{"type":"string","default":""},"toggleClass":{"type":"boolean","default":false}},"supports":{"color":{"text":true,"background":true,"gradients":true,"link":true},"align":true,"typography":{"fontSize":true,"lineHeight":true,"fontWeight":true,"textTransform":true,"letterSpacing":true},"spacing":{"margin":true,"padding":true,"blockGap":true},"customClassName":true,"anchor":true},"editorScript":"file:./index.js","viewStyle":"file:./style-index.css","editorStyle":"file:./index.css"}');
 
 /***/ })
 

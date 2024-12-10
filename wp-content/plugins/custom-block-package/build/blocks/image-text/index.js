@@ -119,7 +119,9 @@ const Edit = ({
     imgURL,
     postURL
   } = attributes;
-  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)();
+  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)({
+    className: "about-one"
+  });
   const [isLinkPickerVisible, setIsLinkPickerVisible] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_4__.useState)(false);
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_4__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Ustawienia", "custom-block-package")
@@ -189,7 +191,6 @@ const Edit = ({
       text: newVal
     })
   }))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "about-one",
     ...blockProps
   }, postURL && postURL.url ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
     href: postURL.url
@@ -264,11 +265,12 @@ const Save = ({
     imgURL,
     postURL
   } = attributes;
-  const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps.save();
+  const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps.save({
+    className: "about-one"
+  });
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "about-one",
     ...blockProps
-  }, postURL && postURL.url ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+  }, postURL?.url ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
     href: postURL.url
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("figure", null, imgURL && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
     className: "about-one__image",
@@ -298,7 +300,7 @@ const Save = ({
   \******************************************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"custom-block-package/image-text","title":"Obraz i tekst","icon":"media-document","category":"media","description":"Blok z obrazem i tekstem Emaus","keywords":["image","text"],"version":"1","textdomain":"custom-block-package","attributes":{"text":{"type":"string","source":"html","selector":"h2"},"background":{"type":"boolean","default":false},"background_color":{"type":"string","default":""},"imgID":{"type":"number","default":null},"imgAlt":{"type":"string","default":"","source":"attribute","selector":"img","attribute":"alt"},"imgURL":{"type":"string","default":"","source":"attribute","selector":"img","attribute":"src"},"postURL":{"type":"object","default":{"url":""}}},"editorScript":"file:./index.js","viewStyle":"file:./style-index.css","editorStyle":"file:./index.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"custom-block-package/image-text","title":"Obraz i tekst","icon":"media-document","category":"media","description":"Blok z obrazem i tekstem Emaus","keywords":["image","text"],"version":"1","textdomain":"custom-block-package","attributes":{"text":{"type":"string","source":"html","selector":"h2"},"background":{"type":"boolean","default":false},"background_color":{"type":"string","default":""},"imgID":{"type":"number","default":0},"imgAlt":{"type":"string","default":"","source":"attribute","selector":"img","attribute":"alt"},"imgURL":{"type":"string","default":"","source":"attribute","selector":"img","attribute":"src"},"postURL":{"type":"object","default":{"url":"","opensInNewTab":false}}},"editorScript":"file:./index.js","viewStyle":"file:./style-index.css","editorStyle":"file:./index.css"}');
 
 /***/ })
 

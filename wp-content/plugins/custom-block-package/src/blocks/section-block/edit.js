@@ -11,7 +11,8 @@ import {
     RangeControl,
     SelectControl,
     Button,
-    TextControl
+    TextControl,
+    ToggleControl
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import "./editor.scss";
@@ -34,14 +35,15 @@ const Edit = ({ attributes, setAttributes }) => {
         layoutType,
         flexWrap,
         flexDirection,
-        alignItems
+        alignItems,
+        toggleClass
     } = attributes;
 
 
     const TagName = tagName;
 
     const blockProps = useBlockProps({
-        className: `section-block ${layoutType === "grid" ? "is-grid" : layoutType === "flex" ? "is-flex" : ""}`,
+        className: `section-block ${layoutType === "grid" ? "is-grid" : layoutType === "flex" ? "is-flex" : ""} ${toggleClass ? 'width-settings' : ''}`,
         style: {
             background: backgroundColor || undefined,
             backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
@@ -294,6 +296,15 @@ const Edit = ({ attributes, setAttributes }) => {
                         help={__("Wprowadź wartości marginesu, np. '10px 0' lub '5px 10px 15px 20px'", "custom-block-package")}
                     />
                 </PanelBody>
+
+                <PanelBody title={__("Ustawienia szerokosći bloku", "custom-block-package")}>
+                    <ToggleControl
+                        label={__("Przełącz szerokosć strony", "custom-block-package")}
+                        checked={toggleClass}
+                        onChange={(value) => setAttributes({ toggleClass: value })}
+                    />
+                </PanelBody>
+
             </InspectorControls>
 
             <TagName {...blockProps}>
