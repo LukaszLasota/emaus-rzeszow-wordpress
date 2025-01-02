@@ -137,7 +137,7 @@ $attributes = array_merge(
 		'isResponsive' => true,
 		'defaultValue' => 100,
 		'hasUnit' => true,
-		'unitDefaultValue' => 'px',
+		'unitDefaultValue' => '%',
 	] ),
 	Range::get_attribute( [
 		'attributeName' => 'thumbnailHeight',
@@ -189,4 +189,5 @@ $attributes = array_merge(
 	] ),
 );
 
-return $attributes;
+return array_merge( $attributes, \ABlocks\Classes\BlockGlobal::get_attributes() );
+

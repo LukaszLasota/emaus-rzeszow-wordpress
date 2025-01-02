@@ -10,6 +10,7 @@ use ABlocks\Controls\TextShadow;
 use ABlocks\Controls\TextStroke;
 use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\Border;
+use ABlocks\Controls\Range;
 use WP_Query;
 
 class Block extends BlockBaseAbstract {
@@ -96,16 +97,18 @@ class Block extends BlockBaseAbstract {
 		return $css_generator->generate_css();
 	}
 	public function get_SearchBar_css( $attributes, $device = '' ) {
-		$css = [];
-		$gap_items = isset( $attributes['gap'][ 'value' . $device ] ) ? $attributes['gap'][ 'value' . $device ] : '';
-		$unit = ! empty( $attributes['gap'][ 'valueUnit' . $device ] ) ? $attributes['gap'][ 'valueUnit' . $device ] : 'px';
-
-		if ( isset( $attributes['gap'] ) && ! empty( $attributes['gap'] ) ) {
-			$css['gap'] = $gap_items . $unit;
-		}
 
 		return array_merge(
-			$css,
+			Range::get_css([
+				'attributeValue' => $attributes['gap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 0,
+				'unitDefaultValue' => 'px',
+				'hasUnit' => true,
+				'property' => 'gap',
+				'device' => $device,
+			]),
 			isset( $attributes['fullscreenButtonAlignment'] ) ? Alignment::get_css( $attributes['fullscreenButtonAlignment'], 'justify-content', $device ) : [],
 		);
 	}
@@ -120,9 +123,9 @@ class Block extends BlockBaseAbstract {
 
 		return array_merge(
 			$css,
-			isset( $attributes['inputTypography'] ) ? Typography::get_css( $attributes['inputTypography'], $device ) : [],
-			isset( $attributes['inputTextStroke'] ) ? TextStroke::get_css( $attributes['inputTextStroke'], $device ) : [],
-			isset( $attributes['inputTextShadow'] ) ? TextShadow::get_css( $attributes['inputTextShadow'], $device ) : [],
+			isset( $attributes['inputTypography'] ) ? Typography::get_css( $attributes['inputTypography'], '', $device ) : [],
+			isset( $attributes['inputTextStroke'] ) ? TextStroke::get_css( $attributes['inputTextStroke'], '', $device ) : [],
+			isset( $attributes['inputTextShadow'] ) ? TextShadow::get_css( $attributes['inputTextShadow'], '', $device ) : [],
 		);
 	}
 	public function get_loading_spinner_css( $attributes, $device = '' ) {
@@ -147,69 +150,87 @@ class Block extends BlockBaseAbstract {
 
 		return array_merge(
 			$css,
-			isset( $attributes['searchResTypography'] ) ? Typography::get_css( $attributes['searchResTypography'], $device ) : [],
+			isset( $attributes['searchResTypography'] ) ? Typography::get_css( $attributes['searchResTypography'], '', $device ) : [],
 		);
 	}
 	public function get_search_result_list( $attributes, $device = '' ) {
 		$css = [];
 		$defaultUnit = 'px';
-		$width_items = isset( $attributes['listWidth'][ 'value' . $device ] ) ? $attributes['listWidth'][ 'value' . $device ] : '';
-		$unit = ! empty( $attributes['listWidth'][ 'valueUnit' . $device ] ) ? $attributes['listWidth'][ 'valueUnit' . $device ] : 'px';
-
-		if ( isset( $attributes['listWidth'] ) && ! empty( $attributes['listWidth'] ) ) {
-			$css['width'] = $width_items . $unit;
-		}
-
-		$gap = isset( $attributes['listGap'][ 'value' . $device ] ) ? $attributes['listGap'][ 'value' . $device ] : '';
-		$unit_gap = ! empty( $attributes['listGap'][ 'valueUnit' . $device ] ) ? $attributes['listGap'][ 'valueUnit' . $device ] : 'px';
-
-		if ( isset( $attributes['listGap'] ) && ! empty( $attributes['listGap'] ) ) {
-			$css['gap'] = $gap . $unit_gap;
-		}
-
+		$offset_top = Range::get_css([
+			'attributeValue' => $attributes['verticalOffset'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => true,
+			'hasUnit' => true,
+			'defaultValue' => 230,
+			'unitDefaultValue' => 'px',
+			'property' => 'top',
+			'device' => $device,
+		]);
+		$offset_bottom = Range::get_css([
+			'attributeValue' => $attributes['verticalOffset'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => true,
+			'hasUnit' => true,
+			'defaultValue' => 230,
+			'unitDefaultValue' => 'px',
+			'property' => 'bottom',
+			'device' => $device,
+		]);
+		$offset_left = Range::get_css([
+			'attributeValue' => $attributes['horizontalOffset'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => true,
+			'hasUnit' => true,
+			'defaultValue' => 230,
+			'unitDefaultValue' => 'px',
+			'property' => 'left',
+			'device' => $device,
+		]);
+		$offset_right = Range::get_css([
+			'attributeValue' => $attributes['horizontalOffset'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => true,
+			'hasUnit' => true,
+			'defaultValue' => 230,
+			'unitDefaultValue' => 'px',
+			'property' => 'right',
+			'device' => $device,
+		]);
 		 // Set the position property
 		if ( ! empty( $attributes['position'] ) ) {
 			$css['position'] = $attributes['position'];
 		}
 
-		// Horizontal alignment (left or right)
-		if ( ! empty( $attributes['horizontalAlignment'] ) ) {
-			$offsetX = ! empty( $attributes['horizontalOffset'][ 'value' . $device ] )
-			? $attributes['horizontalOffset'][ 'value' . $device ]
-			: 0;
-			$unitX = ! empty( $attributes['horizontalOffset'][ 'valueUnit' . $device ] )
-			? $attributes['horizontalOffset'][ 'valueUnit' . $device ]
-			: $defaultUnit;
-
-			if ( $attributes['horizontalAlignment'] === 'left' ) {
-				$css['left'] = $offsetX . $unitX;
-			} elseif ( $attributes['horizontalAlignment'] === 'right' ) {
-				$css['right'] = $offsetX . $unitX;
-			}
-		}
-
-		// Vertical alignment (top or bottom)
-		if ( ! empty( $attributes['verticalAlignment'] ) ) {
-			$offsetY = ! empty( $attributes['verticalOffset'][ 'value' . $device ] )
-			? $attributes['verticalOffset'][ 'value' . $device ]
-			: 0;
-			$unitY = ! empty( $attributes['verticalOffset'][ 'valueUnit' . $device ] )
-			? $attributes['verticalOffset'][ 'valueUnit' . $device ]
-			: $defaultUnit;
-
-			if ( $attributes['verticalAlignment'] === 'top' ) {
-				$css['top'] = $offsetY . $unitY;
-			} elseif ( $attributes['verticalAlignment'] === 'bottom' ) {
-				$css['bottom'] = $offsetY . $unitY;
-			}
-		}
-
 		// Ensure offsets only apply when the position is not "default"
 		if ( ! empty( $attributes['position'] ) && $attributes['position'] === 'default' ) {
-			unset( $css['left'], $css['right'], $css['top'], $css['bottom'] );
+			unset( $offset_left['left'], $offset_right['right'], $offset_top['top'], $offset_bottom['bottom'] );
 		}
 		return array_merge(
 			$css,
+			Range::get_css([
+				'attributeValue' => $attributes['listWidth'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'defaultValue' => 230,
+				'unitDefaultValue' => 'px',
+				'property' => 'width',
+				'device' => $device,
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['listGap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'defaultValue' => 0,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			]),
+			$offset_top,
+			$offset_bottom,
+			$offset_left,
+			$offset_right,
 			isset( $attributes['listPadding'] ) ? Dimensions::get_css( $attributes['listPadding'], 'padding', $device ) : [],
 			isset( $attributes['listBorder'] ) ? Border::get_css( $attributes['listBorder'], '', $device ) : [],
 		);
@@ -224,23 +245,27 @@ class Block extends BlockBaseAbstract {
 	}
 
 	public function get_search_result_item( $attributes, $device = '' ) {
-		$css = [];
-		$width_items = isset( $attributes['itemWidth'][ 'value' . $device ] ) ? $attributes['itemWidth'][ 'value' . $device ] : '';
-		$unit = ! empty( $attributes['itemWidth'][ 'valueUnit' . $device ] ) ? $attributes['itemWidth'][ 'valueUnit' . $device ] : 'px';
-
-		if ( isset( $attributes['itemWidth'] ) && ! empty( $attributes['itemWidth'] ) ) {
-			$css['width'] = $width_items . $unit;
-		}
-
-		$gap = isset( $attributes['itemGap'][ 'value' . $device ] ) ? $attributes['itemGap'][ 'value' . $device ] : '';
-		$unit_gap = ! empty( $attributes['itemGap'][ 'valueUnit' . $device ] ) ? $attributes['itemGap'][ 'valueUnit' . $device ] : 'px';
-
-		if ( isset( $attributes['itemGap'] ) && ! empty( $attributes['itemGap'] ) ) {
-			$css['gap'] = $gap . $unit_gap;
-		}
-
 		return array_merge(
-			$css,
+			Range::get_css([
+				'attributeValue' => $attributes['itemWidth'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'defaultValue' => 230,
+				'unitDefaultValue' => 'px',
+				'property' => 'width',
+				'device' => $device,
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['itemGap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'defaultValue' => 0,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			]),
 			isset( $attributes['itemPadding'] ) ? Dimensions::get_css( $attributes['itemPadding'], 'padding', $device ) : [],
 			isset( $attributes['itemBorder'] ) ? Border::get_css( $attributes['itemBorder'], '', $device ) : [],
 		);
@@ -256,22 +281,27 @@ class Block extends BlockBaseAbstract {
 	}
 
 	public function get_search_result_img_css( $attributes, $device = '' ) {
-		$css = [];
-
-		$width_items = isset( $attributes['thumbnailWidth'][ 'value' . $device ] ) ? $attributes['thumbnailWidth'][ 'value' . $device ] : '';
-		$unitW = ! empty( $attributes['thumbnailWidth'][ 'valueUnit' . $device ] ) ? $attributes['thumbnailWidth'][ 'valueUnit' . $device ] : 'px';
-		$height_items = isset( $attributes['thumbnailHeight'][ 'value' . $device ] ) ? $attributes['thumbnailHeight'][ 'value' . $device ] : '';
-		$unitH = ! empty( $attributes['thumbnailHeight'][ 'valueUnit' . $device ] ) ? $attributes['thumbnailHeight'][ 'valueUnit' . $device ] : 'px';
-
-		if ( isset( $attributes['thumbnailWidth'] ) && ! empty( $attributes['thumbnailWidth'] ) ) {
-			$css['width'] = $width_items . $unitW;
-		}
-		if ( isset( $attributes['thumbnailWidth'] ) && ! empty( $attributes['thumbnailWidth'] ) ) {
-			$css['height'] = $height_items . $unitH;
-		}
-
 		return array_merge(
-			$css,
+			Range::get_css([
+				'attributeValue' => $attributes['thumbnailWidth'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'defaultValue' => 100,
+				'unitDefaultValue' => '%',
+				'property' => 'width',
+				'device' => $device,
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['thumbnailHeight'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'defaultValue' => 70,
+				'unitDefaultValue' => 'px',
+				'property' => 'height',
+				'device' => $device,
+			]),
 		);
 	}
 
@@ -285,23 +315,27 @@ class Block extends BlockBaseAbstract {
 
 		return array_merge(
 			$css,
-			isset( $attributes['buttonTypography'] ) ? Typography::get_css( $attributes['buttonTypography'], $device ) : [],
-			isset( $attributes['buttonTextStroke'] ) ? TextStroke::get_css( $attributes['buttonTextStroke'], $device ) : [],
-			isset( $attributes['buttonTextShadow'] ) ? TextStroke::get_css( $attributes['buttonTextShadow'], $device ) : [],
+			isset( $attributes['buttonTypography'] ) ? Typography::get_css( $attributes['buttonTypography'], '', $device ) : [],
+			isset( $attributes['buttonTextStroke'] ) ? TextStroke::get_css( $attributes['buttonTextStroke'], '', $device ) : [],
+			isset( $attributes['buttonTextShadow'] ) ? TextStroke::get_css( $attributes['buttonTextShadow'], '', $device ) : [],
 		);
 	}
 
 
 	public function get_Icon_css( $attributes, $device = '' ) {
-		$css = [];
-		$width_items = isset( $attributes['iconWidth'][ 'value' . $device ] ) ? $attributes['iconWidth'][ 'value' . $device ] : '';
-		$unit = ! empty( $attributes['iconWidth'][ 'valueUnit' . $device ] ) ? $attributes['iconWidth'][ 'valueUnit' . $device ] : 'px';
 
-		if ( isset( $attributes['iconWidth'] ) && ! empty( $attributes['iconWidth'] ) ) {
-			$css['width'] = $width_items . $unit;
-		}
-
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['iconWidth'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 18,
+				'unitDefaultValue' => 'px',
+				'hasUnit' => true,
+				'property' => 'width',
+				'device' => $device,
+			]),
+		);
 	}
 
 

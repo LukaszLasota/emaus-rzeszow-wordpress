@@ -40,24 +40,22 @@ class Block extends BlockBaseAbstract {
 			$css['background-color'] = $attributes['backgroundColor'];
 		}
 
-		// Set width
-		$width = isset( $attributes['contentWidth'] ) ? $attributes['contentWidth'] : '';
-
-		if ( isset( $width[ 'value' . $device ] ) && ! empty( $width[ 'value' . $device ] ) ) {
-
-			if ( ! empty( $width[ 'valueUnit' . $device ] ) ) {
-					$css['width'] = $width[ 'value' . $device ] . $width[ 'valueUnit' . $device ];
-			} else {
-					$css['width'] = $width[ 'value' . $device ] . 'px';
-			}
-		}
-
 		// Add border and padding styles
 		$border_css = isset( $attributes['contentBorder'] ) ? Border::get_css( $attributes['contentBorder'], '', $device ) : [];
 		$padding_css = isset( $attributes['contentPadding'] ) ? Dimensions::get_css( $attributes['contentPadding'], 'padding', $device ) : [];
 
 		// Merge border and padding styles with the main CSS
-		$css = array_merge( $css, $border_css, $padding_css );
+		$css = array_merge( $css, $border_css, $padding_css ,
+		Range::get_css([
+			'attributeValue' => $attributes['contentWidth'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => true,
+			'defaultValue' => '',
+			'hasUnit' => true,
+			'unitDefaultValue' => 'px',
+			'property' => 'width',
+			'device' => $device,
+		]),);
 
 		return $css;
 	}

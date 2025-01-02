@@ -6,6 +6,7 @@ use ABlocks\Classes\CssGenerator;
 use ABlocks\Controls\Background;
 use ABlocks\Controls\Border;
 use ABlocks\Controls\Dimensions;
+use ABlocks\Controls\Range;
 
 
 class Block extends BlockBaseAbstract {
@@ -53,12 +54,16 @@ class Block extends BlockBaseAbstract {
 	}
 
 	public function get_flipbox_wrapper_css( $attributes ) {
-		$css = [];
-		$transition_speed = isset( $attributes['transitionSpeed'] ) ? $attributes['transitionSpeed'] : 0.6;
 
-		$css['transition'] = $transition_speed . 's linear !important';
-
-		return $css;
+		return (
+			Range::get_css([
+				'attributeValue' => $attributes['transitionSpeed'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 0.6,
+				'unitDefaultValue' => 's',
+				'property' => 'transition',
+			])
+		);
 	}
 
 	public function get_front_card_css( $attributes, $device = '' ) {

@@ -8,6 +8,7 @@ use ABlocks\Controls\Alignment;
 use ABlocks\Controls\TextStroke;
 use ABlocks\Controls\Typography;
 use ABlocks\Controls\Icon;
+use ABlocks\Controls\Range;
 
 class Block extends BlockBaseAbstract {
 
@@ -75,32 +76,51 @@ class Block extends BlockBaseAbstract {
 	}
 
 	public function get_divider_element_text_css( $attributes, $device = '' ) {
-		$divider_text_styles = [];
-		if ( ! empty( $attributes['elementTextColor'] ) ) {
-			$divider_text_styles['color'] = $attributes['elementTextColor'];
-		}
-		$text_spacing_value = isset( $attributes['elementTextSpacing'][ 'value' . $device ] ) ? $attributes['elementTextSpacing'][ 'value' . $device ] : '';
-		$text_spacing_unit = ! empty( $attributes['elementTextSpacing'][ 'valueUnit' . $device ] ) ? $attributes['elementTextSpacing'][ 'valueUnit' . $device ] : 'px';
-		$divider_text_styles['padding-left'] = $text_spacing_value . $text_spacing_unit;
-		$divider_text_styles['padding-right'] = $text_spacing_value . $text_spacing_unit;
+
 		return array_merge(
-			$divider_text_styles,
-			isset( $attributes['elementTextTypography'] ) ? Typography::get_css( $attributes['elementTextTypography'], $device ) : [],
-			isset( $attributes['elementTextStroke'] ) ? TextStroke::get_css( $attributes['elementTextStroke'], $device ) : [],
+			Range::get_css([
+				'attributeValue' => $attributes['elementTextSpacing'],
+				'attributeObjectKey' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 0,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'padding-right',
+				'device' => $device,
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['elementTextSpacing'],
+				'attributeObjectKey' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 0,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'padding-left',
+				'device' => $device,
+			]),
+			Typography::get_css( $attributes['elementTextTypography'], '', $device ),
+			TextStroke::get_css( $attributes['elementTextStroke'], '', $device ),
 		);
 	}
 
 
 	public function get_divider_container_css( $attributes, $device = '' ) {
 		$divider_container_css = [];
-		if ( ! empty( $attributes['gap'][ 'value' . $device ] ) ) {
-			$divider_container_css['padding-block-start'] = $attributes['gap'][ 'value' . $device ] . 'px';
-			$divider_container_css['padding-block-end'] = $attributes['gap'][ 'value' . $device ] . 'px';
-		}
 		if ( ! empty( $attributes['alignment'][ 'value' . $device ] ) ) {
 			$divider_container_css['justify-content'] = $attributes['alignment'][ 'value' . $device ];
 		}
-		return $divider_container_css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['gap'],
+				'attributeObjectKey' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 10,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			]),
+			$divider_container_css
+		);
 	}
 
 	public function get_divider_css( $attributes, $device = '' ) {
@@ -108,21 +128,47 @@ class Block extends BlockBaseAbstract {
 		$width = isset( $attributes['width'] ) ? $attributes['width'] : array();
 		$key = 'value' . $device;
 		if ( ! empty( $width[ $key ] ) ) {
-			$value_unit = isset( $width['valueUnit'] ) ? $width['valueUnit'] : 'px';
+			$value_unit = isset( $width['valueUnit'] ) ? $width['valueUnit'] : '%';
 			$divider_css['width'] = $width[ $key ] . $value_unit;
 		}
-		return $divider_css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['width'],
+				'attributeObjectKey' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 100,
+				'hasUnit' => true,
+				'unitDefaultValue' => '%',
+				'property' => 'width',
+				'device' => $device,
+			]),
+		);
 	}
 
 	public function get_icon_spacing_margins( $attributes, $device = '' ) {
-
-		$icon_spacing_value = isset( $attributes['elementIconSpacing'][ 'value' . $device ] ) ? $attributes['elementIconSpacing'][ 'value' . $device ] : '';
-		$icon_spacing_unit = ! empty( $attributes['elementIconSpacing'][ 'valueUnit' . $device ] ) ? $attributes['elementIconSpacing'][ 'valueUnit' . $device ] : 'px';
-		$icon_spacing = $icon_spacing_value . $icon_spacing_unit;
-
+		$marginLeft = Range::get_css([
+			'attributeValue' => $attributes['elementIconSpacing'],
+			'attributeObjectKey' => 'value',
+			'isResponsive' => true,
+			'defaultValue' => 0,
+			'hasUnit' => true,
+			'unitDefaultValue' => 'px',
+			'property' => 'margin-left',
+			'device' => $device,
+		]);
+		$marginRight = Range::get_css([
+			'attributeValue' => $attributes['elementIconSpacing'],
+			'attributeObjectKey' => 'value',
+			'isResponsive' => true,
+			'defaultValue' => 0,
+			'hasUnit' => true,
+			'unitDefaultValue' => 'px',
+			'property' => 'margin-right',
+			'device' => $device,
+		]);
 		return [
-			'margin-left'  => $icon_spacing,
-			'margin-right' => $icon_spacing
+			...$marginLeft,
+			...$marginRight
 		];
 	}
 }

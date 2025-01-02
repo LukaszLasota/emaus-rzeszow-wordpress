@@ -4,6 +4,7 @@ namespace ABlocks\Blocks\DualButton;
 use ABlocks\Classes\BlockBaseAbstract;
 use ABlocks\Controls\Alignment;
 use ABlocks\Classes\CssGenerator;
+use ABlocks\Controls\Range;
 
 
 class Block extends BlockBaseAbstract {
@@ -37,14 +38,17 @@ class Block extends BlockBaseAbstract {
 			$css['flex-direction'] = 'row';
 			$css['display'] = 'flex';
 		}
-		$gap_items = isset( $attributes['gap'][ 'value' . $device ] ) ? $attributes['gap'][ 'value' . $device ] : '';
-		$unit = ! empty( $attributes['gap'][ 'valueUnit' . $device ] ) ? $attributes['gap'][ 'valueUnit' . $device ] : 'px';
-
-		if ( isset( $attributes['gap'] ) && ! empty( $attributes['gap'] ) ) {
-			$css['gap'] = $gap_items . $unit;
-		}
-
 		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['gap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 20,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			]),
 			$css,
 			isset( $attributes['alignment'] ) ? Alignment::get_css( $attributes['alignment'], $attributes['stack'] === 'horizontal' ? 'justify-content' : 'align-items', $device ) : [],
 		);

@@ -20,7 +20,7 @@ $attributes = [
 	],
 	'variationSelected' => [
 		'type' => 'boolean',
-		'default' => true,
+		'default' => false,
 	],
 	'containerWidthType' => [
 		'type' => 'string',
@@ -85,8 +85,32 @@ $attributes = [
 
 ];
 
+$columnGap = Range::get_attribute([
+	'attributeName' => 'gap',
+	'attributeObjectKey' => 'columnGap',
+	'isResponsive' => true,
+	'defaultValue' => 0,
+	'hasUnit' => true,
+	'unitDefaultValue' => 'px',
+]);
+$rowGap = Range::get_attribute([
+	'attributeName' => 'gap',
+	'attributeObjectKey' => 'rowGap',
+	'isResponsive' => true,
+	'defaultValue' => 0,
+	'hasUnit' => true,
+	'unitDefaultValue' => 'px',
+]);
+
+
 $attributes = array_merge(
 	$attributes,
+	[
+		'gap' => [
+			'type' => 'object',
+			'default' => array_merge( $columnGap['gap']['default'], $rowGap['gap']['default'] ),
+		]
+	],
 	Range::get_attribute( [
 		'attributeName' => 'minimumHeight',
 		'attributeObjectKey' => 'value',
@@ -107,18 +131,11 @@ $attributes = array_merge(
 		'attributeName' => 'containerContentWidth',
 		'attributeObjectKey' => 'value',
 		'isResponsive' => true,
-		'defaultValue' => \ABlocks\Helper::get_settings( 'default_container_width', 1140 ),
-		'hasUnit' => true,
-		'unitDefaultValue' => 'px',
-	]),
-	Range::get_attribute([
-		'attributeName' => 'gap',
-		'isResponsive' => true,
-		'defaultValue' => null,
+		'defaultValue' => '',
 		'hasUnit' => true,
 		'unitDefaultValue' => 'px',
 	]),
 	BackgroundOverlay::get_attribute( '_backgroundOverlay', true ),
 );
 
-return $attributes;
+return array_merge( $attributes, \ABlocks\Classes\BlockGlobal::get_attributes() );

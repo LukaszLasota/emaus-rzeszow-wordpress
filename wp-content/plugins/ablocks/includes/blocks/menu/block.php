@@ -6,6 +6,7 @@ use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\Border;
 use ABlocks\Classes\BlockBaseAbstract;
 use ABlocks\Classes\CssGenerator;
+use ABlocks\Controls\Range;
 
 class Block extends BlockBaseAbstract {
 	protected $block_name = 'menu';
@@ -89,7 +90,7 @@ class Block extends BlockBaseAbstract {
 		$menu_border_css = ! empty( $attributes['menuItemBorder'] ) ? Border::get_css( $attributes['menuItemBorder'], '', $device ) : array();
 		$css = array_merge(
 			$menu_border_css,
-			Typography::get_css( isset( $attributes['menuItemTypography'] ) ? $attributes['menuItemTypography'] : [], $device ),
+			Typography::get_css( isset( $attributes['menuItemTypography'] ) ? $attributes['menuItemTypography'] : [], '', $device ),
 			Dimensions::get_css( isset( $attributes['menuItemPadding'] ) ? $attributes['menuItemPadding'] : [], 'padding', $device ),
 			Dimensions::get_css( isset( $attributes['menuItemMargin'] ) ? $attributes['menuItemMargin'] : [], 'margin', $device )
 		);
@@ -190,9 +191,9 @@ class Block extends BlockBaseAbstract {
 		if ( isset( $attributes['hamburgerBackground'] ) ) {
 			$css['background'] = $attributes['hamburgerBackground'];
 		}
-		$height_huber = 30 + ( isset( $attributes['hamburgerHeight'] ) ? $attributes['hamburgerHeight'] : 0 );
-		if ( $height_huber ) {
-			$css['height'] = "{$height_huber}px";
+		$height_humber = 30 + ( isset( $attributes['hamburgerHeight.value'] ) ? $attributes['hamburgerHeight.value'] : 0 );
+		if ( $height_humber ) {
+			$css['height'] = "{$height_humber}px";
 		}
 
 		return $css;
@@ -203,19 +204,35 @@ class Block extends BlockBaseAbstract {
 	}
 
 
-	public function get_hamburger_menu_item_css( $attributes ) {
+	public function get_hamburger_menu_item_css( $attributes, $device = '' ) {
 		$css = [];
 		if ( isset( $attributes['hamburgerColor'] ) ) {
 			$css['background'] = $attributes['hamburgerColor'];
 		}
-		if ( isset( $attributes['hamburgerHeight'] ) ) {
-			$css['height'] = $attributes['hamburgerHeight'] . 'px';
-		}
-		if ( isset( $attributes['hamburgerWidth'] ) ) {
-			$css['width'] = $attributes['hamburgerWidth'] . 'px';
-		}
 
-		return $css;
+		return array_merge(
+			$css,
+			Range::get_css([
+				'attributeValue' => $attributes['hamburgerHeight'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'defaultValue' => 3,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'height',
+				'device' => $device,
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['hamburgerWidth'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'defaultValue' => 30,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'width',
+				'device' => $device,
+			])
+		);
 	}
 
 }

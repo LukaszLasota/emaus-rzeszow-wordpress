@@ -14,6 +14,8 @@ use ABlocks\Controls\Typography;
 use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\TextShadow;
 use ABlocks\Controls\Icon;
+use ABlocks\Controls\Range;
+
 class Block extends BlockBaseAbstract {
 	protected $block_name = 'button';
 
@@ -110,24 +112,22 @@ class Block extends BlockBaseAbstract {
 			$css['width'] = '100%';
 		}
 
-		if ( ! empty( $attributes['transition'] ) ) {
-			$css['transition-duration'] = $attributes['transition'] . 's';
-		}
-
-		$defaultUnit = 'px';
-
-			$unit = ! empty( $attributes['iconSpace'][ 'valueUnit' . $device ] ) ? $attributes['iconSpace'][ 'valueUnit' . $device ] : $defaultUnit;
-
-		if ( ! empty( $attributes['iconSpace'][ 'value' . $device ] ) ) {
-			$css['column-gap'] = $attributes['iconSpace'][ 'value' . $device ] . $unit;
-		}
-
 		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['iconSpace'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 10,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'column-gap',
+				'device' => $device,
+			]),
 			$css,
 			[ 'color' => $attributes['textColor'] ?? '#000000' ],
 			Border::get_css( $attributes['border'], '', $device ),
 			BoxShadow::get_css( $attributes['boxShadow'], '', $device ),
-			Typography::get_css( $attributes['typography'], $device ),
+			Typography::get_css( $attributes['typography'], '', $device ),
 			Dimensions::get_css( $attributes['padding'], 'padding', $device ),
 		);
 	}
@@ -143,6 +143,14 @@ class Block extends BlockBaseAbstract {
 		}
 
 		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['transition'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 10,
+				'unitDefaultValue' => 's',
+				'property' => 'transition-duration',
+				'device' => $device,
+			]),
 			$css,
 			Border::get_hover_css( $attributes['border'], '', $device ),
 			BoxShadow::get_hover_css( $attributes['boxShadow'], '', $device )

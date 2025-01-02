@@ -1,0 +1,6 @@
+.ablocks-block--menu-child-mega{
+    white-space: nowrap;
+}
+.ablocks-block--menu-child-mega > div{
+    padding: 0px;
+}

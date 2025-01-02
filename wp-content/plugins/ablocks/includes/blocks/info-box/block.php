@@ -14,6 +14,7 @@ use ABlocks\Controls\TextStroke;
 use ABlocks\Controls\Border;
 use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\Icon;
+use ABlocks\Controls\Range;
 
 class Block extends BlockBaseAbstract {
 	protected $block_name = 'info-box';
@@ -60,21 +61,21 @@ class Block extends BlockBaseAbstract {
 
 		// Icon Style
 		$css_generator->add_class_styles(
-			'{{WRAPPER}}.ablocks-block--info-box > .ablocks-block-container > .ablocks-icon-wrap',
+			'{{WRAPPER}}.ablocks-block--info-box .ablocks-block-container > .ablocks-icon-wrap, {{WRAPPER}}.ablocks-block--info-box .ablocks-block-container > a .ablocks-icon-wrap',
 			Icon::get_wrapper_css( $attributes ),
 			Icon::get_wrapper_css( $attributes, 'Tablet' ),
 			Icon::get_wrapper_css( $attributes, 'Mobile' )
 		);
 		$css_generator->add_class_styles(
-			'{{WRAPPER}}.ablocks-block--info-box > .ablocks-block-container > .ablocks-icon-wrap > img.ablocks-image-icon',
+			'{{WRAPPER}}.ablocks-block--info-box .ablocks-block-container > .ablocks-icon-wrap img.ablocks-image-icon , {{WRAPPER}}.ablocks-block--info-box .ablocks-block-container > a .ablocks-icon-wrap img.ablocks-image-icon',
 			Icon::get_element_image_css( $attributes )
 		);
 		$css_generator->add_class_styles(
-			'{{WRAPPER}}.ablocks-block--info-box > .ablocks-block-container > .ablocks-icon-wrap > svg.ablocks-svg-icon',
+			'{{WRAPPER}}.ablocks-block--info-box .ablocks-block-container > .ablocks-icon-wrap svg.ablocks-svg-icon , {{WRAPPER}}.ablocks-block--info-box .ablocks-block-container > a .ablocks-icon-wrap svg.ablocks-svg-icon',
 			Icon::get_element_css( $attributes ),
 		);
 		$css_generator->add_class_styles(
-			'{{WRAPPER}}.ablocks-block--info-box:hover > .ablocks-block-container > .ablocks-icon-wrap > svg.ablocks-svg-icon',
+			'{{WRAPPER}}.ablocks-block--info-box:hover .ablocks-block-container > .ablocks-icon-wrap svg.ablocks-svg-icon , {{WRAPPER}}.ablocks-block--info-box:hover .ablocks-block-container > a .ablocks-icon-wrap svg.ablocks-svg-icon',
 			$this->get_icon_css_hover( $attributes ),
 		);
 
@@ -254,12 +255,19 @@ class Block extends BlockBaseAbstract {
 			$css['align-items'] = $attributes['iconAlignment'][ 'value' . $device ];
 		}
 
-		if ( ! empty( $attributes['iconGap'][ 'value' . $device ] ) ) {
-			$defaultUnit = $attributes['iconGap'][ 'valueUnit' . $device ] ?? 'px';
-			$css['gap'] = $attributes['iconGap'][ 'value' . $device ] . $defaultUnit;
-		}
-
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['iconGap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 16,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			]),
+			$css,
+		);
 	}
 
 	public function get_badge_css( $attributes, $device = '' ) {
@@ -289,9 +297,6 @@ class Block extends BlockBaseAbstract {
 				$css['left'] = 'auto';
 			}//end if
 		}//end if
-		if ( ! empty( $attributes['badgeTransition'] ) ) {
-			$css['transition-duration'] = $attributes['badgeTransition'] . 's';
-		}
 		if ( ! empty( $attributes['badgeTextColor'] ) ) {
 			$css['color'] = $attributes['badgeTextColor'];
 		}
@@ -302,9 +307,17 @@ class Block extends BlockBaseAbstract {
 		}
 
 		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['badgeTransition'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 0,
+				'unitDefaultValue' => 's',
+				'property' => 'transition-duration',
+				'device' => $device,
+			]),
 			$css,
 			Border::get_css( $attributes['badgeBorder'], '', $device ),
-			Typography::get_css( $attributes['badgeTypography'], $device ),
+			Typography::get_css( $attributes['badgeTypography'], '', $device ),
 			Dimensions::get_css( $attributes['badgePadding'], 'padding', $device ),
 		);
 	}
@@ -334,11 +347,17 @@ class Block extends BlockBaseAbstract {
 		if ( ! empty( $attributes['iconPrimaryColorH'] ) ) {
 			$css['fill'] = $attributes['iconPrimaryColorH'];
 		}
-		if ( ! empty( $attributes['iconTransition'] ) ) {
-			$css['transition-duration'] = $attributes['iconTransition'] . 's';
-		}
-
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['iconTransition'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 0,
+				'unitDefaultValue' => 's',
+				'property' => 'transition-duration',
+				'device' => $device,
+			]),
+			$css
+		);
 	}
 
 	public function get_info_box_content( $attributes, $device = '' ) {
@@ -348,12 +367,19 @@ class Block extends BlockBaseAbstract {
 			$css['align-items'] = $attributes['alignment'][ 'value' . $device ];
 		}
 
-		if ( ! empty( $attributes['contentGap'][ 'value' . $device ] ) ) {
-			$defaultUnit = $attributes['contentGap'][ 'valueUnit' . $device ] ?? 'px';
-			$css['gap'] = $attributes['contentGap'][ 'value' . $device ] . $defaultUnit;
-		}
-
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['contentGap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 10,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			]),
+			$css,
+		);
 	}
 
 	public function get_heading_text_css( $attributes, $device = '' ) {
@@ -361,7 +387,19 @@ class Block extends BlockBaseAbstract {
 		$textShadowCss = ! empty( $attributes['headingTextShadow'] ) ? TextShadow::get_css( $attributes['headingTextShadow'], '', $device ) : array();
 		$textStrokeCss = ! empty( $attributes['headingTextStroke'] ) ? TextStroke::get_css( $attributes['headingTextStroke'], '', $device ) : array();
 
-		return array_merge( $typography_css, $textShadowCss, $textStrokeCss );
+		$css = [];
+
+		if ( ! empty( $attributes['alignment'][ 'value' . $device ] ) ) {
+			if ( $attributes['alignment'][ 'value' . $device ] === 'flex-start' ) {
+				$css['text-align'] = 'left';
+			} elseif ( $attributes['alignment'][ 'value' . $device ] === 'flex-end' ) {
+				$css['text-align'] = 'right';
+			} else {
+				$css['text-align'] = $attributes['alignment'][ 'value' . $device ];
+			}
+		}
+
+		return array_merge( $css, $typography_css, $textShadowCss, $textStrokeCss );
 	}
 	public function get_heading_text_css_hover( $attributes, $device = '' ) {
 		$css = [];
@@ -372,7 +410,17 @@ class Block extends BlockBaseAbstract {
 			$css['transition-duration'] = $attributes['headingTransition'] . 's';
 		}
 
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['headingTransition'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 0,
+				'unitDefaultValue' => 's',
+				'property' => 'transition-duration',
+				'device' => $device,
+			]),
+			$css
+		);
 	}
 
 
@@ -381,23 +429,40 @@ class Block extends BlockBaseAbstract {
 		$textShadowCss = ! empty( $attributes['subHeadingTextShadow'] ) ? TextShadow::get_css( $attributes['subHeadingTextShadow'], '', $device ) : array();
 		$textStrokeCss = ! empty( $attributes['subHeadingTextStroke'] ) ? TextStroke::get_css( $attributes['subHeadingTextStroke'], '', $device ) : array();
 
-		return array_merge( $typography_css, $textShadowCss, $textStrokeCss );
+		$css = [];
+
+		if ( ! empty( $attributes['alignment'][ 'value' . $device ] ) ) {
+			if ( $attributes['alignment'][ 'value' . $device ] === 'flex-start' ) {
+				$css['text-align'] = 'left';
+			} elseif ( $attributes['alignment'][ 'value' . $device ] === 'flex-end' ) {
+				$css['text-align'] = 'right';
+			} else {
+				$css['text-align'] = $attributes['alignment'][ 'value' . $device ];
+			}
+		}
+
+		return array_merge( $css, $typography_css, $textShadowCss, $textStrokeCss );
 	}
 	public function get_sub_heading_text_css_hover( $attributes, $device = '' ) {
 		$css = [];
 		if ( ! empty( $attributes['subHeadingTextColorHover'] ) ) {
 			$css['color'] = $attributes['subHeadingTextColorHover'];
 		}
-		if ( ! empty( $attributes['subHeadingTransition'] ) ) {
-			$css['transition-duration'] = $attributes['subHeadingTransition'] . 's';
-		}
-
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['subHeadingTransition'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 0,
+				'unitDefaultValue' => 's',
+				'property' => 'transition-duration',
+				'device' => $device,
+			]),
+			$css
+		);
 	}
 
 	public function get_des_text_css( $attributes, $device = '' ) {
 		$css = [];
-		$alignmentKey = 'value' . $device;
 
 		if ( ! empty( $attributes['alignment'][ 'value' . $device ] ) ) {
 			if ( $attributes['alignment'][ 'value' . $device ] === 'flex-start' ) {
@@ -410,9 +475,9 @@ class Block extends BlockBaseAbstract {
 		}
 		return array_merge(
 			$css,
-			isset( $attributes['desTypography'] ) ? Typography::get_css( $attributes['desTypography'], $device ) : [],
-			isset( $attributes['desTextStroke'] ) ? TextStroke::get_css( $attributes['desTextStroke'], $device ) : [],
-			isset( $attributes['desTextShadow'] ) ? TextShadow::get_css( $attributes['desTextShadow'] ) : [],
+			isset( $attributes['desTypography'] ) ? Typography::get_css( $attributes['desTypography'], '', $device ) : [],
+			isset( $attributes['desTextStroke'] ) ? TextStroke::get_css( $attributes['desTextStroke'], '', $device ) : [],
+			isset( $attributes['desTextShadow'] ) ? TextShadow::get_css( $attributes['desTextShadow'], '', $device ) : [],
 		);
 	}
 	public function get_des_text_css_hover( $attributes, $device = '' ) {
@@ -420,11 +485,17 @@ class Block extends BlockBaseAbstract {
 		if ( ! empty( $attributes['desTextColorHover'] ) ) {
 			$css['color'] = $attributes['desTextColorHover'];
 		}
-		if ( ! empty( $attributes['desTransition'] ) ) {
-			$css['transition-duration'] = $attributes['desTransition'] . 's';
-		}
-
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['desTransition'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 0,
+				'unitDefaultValue' => 's',
+				'property' => 'transition-duration',
+				'device' => $device,
+			]),
+			$css
+		);
 	}
 	public function get_des_drop_text_css( $attributes, $device = '' ) {
 		$css = [];
@@ -437,13 +508,17 @@ class Block extends BlockBaseAbstract {
 	public function get_container_css( $attributes, $device = '' ) {
 		$css = [];
 
-		$ratingNumberGap = isset( $attributes['ratingNumberGap'][ 'value' . $device ] ) ? $attributes['ratingNumberGap'][ 'value' . $device ] : '';
-		$unit = ! empty( $attributes['ratingNumberGap'][ 'valueUnit' . $device ] ) ? $attributes['ratingNumberGap'][ 'valueUnit' . $device ] : 'px';
-
-		if ( isset( $attributes['ratingNumberGap'] ) && ! empty( $attributes['ratingNumberGap'] ) ) {
-			$css['gap'] = $ratingNumberGap . $unit;
-		}
 		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['ratingNumberGap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 0,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			]),
 			$css,
 			isset( $attributes['alignment'] ) ? Alignment::get_css( $attributes['alignment'], 'justify-content', $device ) : [],
 		);
@@ -462,71 +537,114 @@ class Block extends BlockBaseAbstract {
 		}
 		return array_merge(
 			$css,
-			isset( $attributes['ratingNumberTypography'] ) ? Typography::get_css( $attributes['ratingNumberTypography'], $device ) : [],
+			isset( $attributes['ratingNumberTypography'] ) ? Typography::get_css( $attributes['ratingNumberTypography'], '', $device ) : [],
 		);
 	}
 	public function get_rating_css( $attributes, $device = '' ) {
 		$rating_css = [];
-		$size_value = $attributes['size'][ 'value' . $device ] ?? '';
-		$size_unit = $attributes['size'][ 'valueUnit' . $device ] ?? 'px';
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['size'] ?? [],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 0,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'font-size',
+				'device' => $device,
+			]),
+			$rating_css,
+		);
+	}
 
-		if ( ! empty( $size_value ) ) {
-			$rating_css['font-size'] = $size_value . $size_unit;
-		}
-		return $rating_css;
-	}
+
 	public function get_rating_icon_spacing_css( $attributes, $device = '' ) {
-		$spacing_value = $attributes['spacing'][ 'value' . $device ] ?? '';
-		$spacing_unit = ! empty( $attributes['spacing'][ 'valueUnit' . $device ] ) ? $attributes['spacing'][ 'valueUnit' . $device ] : 'px';
 		$rating_icon_spacing_css = [];
-		if ( $spacing_value ) {
-			$rating_icon_spacing_css['gap'] = $spacing_value . $spacing_unit;
-		}
-		return $rating_icon_spacing_css;
+
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['spacing'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 0,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			]),
+			$rating_icon_spacing_css
+		);
 	}
+
 	public function get_fill_rating_css( $attributes, $device = '' ) {
 		$css = [];
 		if ( ! empty( $attributes['ratingColor'] ) ) {
 			$css['fill'] = $attributes['ratingColor'];
 		}
-		if ( ! empty( $attributes['ratingTransition'] ) ) {
-			$css['transition-duration'] = $attributes['ratingTransition'] . 's';
-		}
 
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['ratingTransition'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 0,
+				'unitDefaultValue' => 's',
+				'property' => 'transition-duration',
+				'device' => $device,
+			]),
+			$css
+		);
 	}
 	public function get_unfill_rating_css( $attributes, $device = '' ) {
 		$css = [];
 		if ( ! empty( $attributes['ratingColor'] ) ) {
 			$css['fill'] = $attributes['ratingUnmarkedColor'];
 		}
-		if ( ! empty( $attributes['ratingTransition'] ) ) {
-			$css['transition-duration'] = $attributes['ratingTransition'] . 's';
-		}
-
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['ratingTransition'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 0,
+				'unitDefaultValue' => 's',
+				'property' => 'transition-duration',
+				'device' => $device,
+			]),
+			$css
+		);
 	}
 	public function get_fill_rating_css_hover( $attributes, $device = '' ) {
 		$css = [];
 		if ( ! empty( $attributes['ratingColorHover'] ) ) {
 			$css['fill'] = $attributes['ratingColorHover'];
 		}
-		if ( ! empty( $attributes['ratingTransition'] ) ) {
-			$css['transition-duration'] = $attributes['ratingTransition'] . 's';
-		}
 
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['ratingTransition'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 0,
+				'unitDefaultValue' => 's',
+				'property' => 'transition-duration',
+				'device' => $device,
+			]),
+			$css
+		);
 	}
 	public function get_unfill_rating_css_hover( $attributes, $device = '' ) {
 		$css = [];
 		if ( ! empty( $attributes['ratingColorHover'] ) ) {
 			$css['fill'] = $attributes['ratingUnmarkedColorHover'];
 		}
-		if ( ! empty( $attributes['ratingTransition'] ) ) {
-			$css['transition-duration'] = $attributes['ratingTransition'] . 's';
-		}
-
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['ratingTransition'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 0,
+				'unitDefaultValue' => 's',
+				'property' => 'transition-duration',
+				'device' => $device,
+			]),
+			$css
+		);
 	}
 
 	public function get_button_css( $attributes, $device = '' ) {
@@ -542,19 +660,26 @@ class Block extends BlockBaseAbstract {
 			$css['justify-content'] = $attributes['btnAlignment'][ 'value' . $device ];
 		}
 
-		if ( ! empty( $attributes['btnTransition'] ) ) {
-			$css['transition-duration'] = $attributes['btnTransition'] . 's';
-		}
-
-		if ( ! empty( $attributes['btnIconSpace'] ) ) {
-			$css['column-gap'] = $attributes['btnIconSpace'] . 'px';
-		}
-
 		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['btnIconSpace'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 10,
+				'property' => 'column-gap',
+				'device' => $device,
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['btnTransition'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 0,
+				'unitDefaultValue' => 's',
+				'property' => 'transition-duration',
+				'device' => $device,
+			]),
 			$css,
 			[ 'color' => $attributes['btnTextColor'] ?? '#000000' ],
 			Border::get_css( $attributes['btnBorder'], '', $device ),
-			Typography::get_css( $attributes['btnTypography'], $device ),
+			Typography::get_css( $attributes['btnTypography'], '', $device ),
 			Dimensions::get_css( $attributes['btnPadding'], 'padding', $device ),
 		);
 	}

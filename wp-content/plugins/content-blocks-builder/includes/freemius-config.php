@@ -18,20 +18,10 @@ if ( ! class_exists( FreemiusConfig::class ) ) :
 	 */
 	class FreemiusConfig extends CoreComponent {
 		/**
-		 * The premium title
-		 *
-		 * @var string
-		 */
-		private $premium_title;
-
-		/**
 		 * The constructor
 		 */
 		public function __construct( $the_plugin_instance ) {
 			parent::__construct( $the_plugin_instance );
-
-			// Set value for labels.
-			$this->premium_title = __( 'Go Premium', 'content-blocks-builder' );
 		}
 
 		/**
@@ -60,7 +50,7 @@ if ( ! class_exists( FreemiusConfig::class ) ) :
 			if ( cbb_fs()->is_not_paying() ) {
 				$links[] = [
 					'url'    => 'https://contentblocksbuilder.com/pro/?utm_source=CBB+Free&utm_campaign=CBB+Upgrade&utm_medium=link&utm_content=header',
-					'title'  => $this->premium_title,
+					'title'  => $this->get_premium_label(),
 					'target' => '_blank',
 					'icon'   => '<span class="dashicons dashicons-superhero-alt"></span> ',
 					'class'  => 'go-premium',
@@ -91,7 +81,7 @@ if ( ! class_exists( FreemiusConfig::class ) ) :
 			array_unshift( $links, "<a href='edit.php?post_type=boldblocks_block&page={$slug}'>{$label}</a>" );
 
 			if ( cbb_fs()->is_not_paying() ) {
-				$links[] = sprintf( '<a href="%1$s" target="_blank" style="color: #d20962">%2$s</a>', 'https://contentblocksbuilder.com/pro/?utm_source=CBB+Free&utm_campaign=CBB+Upgrade&utm_medium=link&utm_content=action-link', $this->premium_title );
+				$links[] = sprintf( '<a href="%1$s" target="_blank" style="color: #d20962">%2$s</a>', 'https://contentblocksbuilder.com/pro/?utm_source=CBB+Free&utm_campaign=CBB+Upgrade&utm_medium=link&utm_content=action-link', $this->get_premium_label() );
 			}
 
 			return $links;
@@ -114,6 +104,15 @@ if ( ! class_exists( FreemiusConfig::class ) ) :
 					}
 				}
 			}
+		}
+
+		/**
+		 * Get the labels
+		 *
+		 * @return string
+		 */
+		private function get_premium_label() {
+			return __( 'Go Premium', 'display-a-meta-field-as-block' );
 		}
 	}
 endif;

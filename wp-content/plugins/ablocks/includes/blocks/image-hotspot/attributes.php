@@ -23,7 +23,7 @@ $attributes = [
 	),
 	'activeIndex' => array(
 		'type' => 'number',
-		'default' => null,
+		'default' => 0,
 	),
 // image size option
 	'imageSizes' => array(
@@ -105,11 +105,11 @@ $attributes = array_merge(
 		'attributeName' => 'childWidth',
 		'attributeObjectKey' => 'value',
 		'isResponsive' => true,
-		'defaultValue' => '',
+		'defaultValue' => 200,
 		'hasUnit' => true,
 		'unitDefaultValue' => 'px',
 	]),
 	BoxShadow::get_attribute( 'commonBoxShadow' ),
 );
 
-return $attributes;
+return  array_merge($attributes, \ABlocks\Classes\BlockGlobal::get_attributes());

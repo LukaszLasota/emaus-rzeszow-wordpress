@@ -10,6 +10,7 @@ use ABlocks\Classes\CssGenerator;
 use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\BackgroundOverlay;
 use ABlocks\Helper;
+use ABlocks\Controls\Range;
 
 class Block extends BlockBaseAbstract {
 	protected $block_name = 'container';
@@ -63,12 +64,6 @@ class Block extends BlockBaseAbstract {
 	public function get_inner_blocks_closest_parent_css( $attributes, $device = '' ) {
 		$css = [];
 
-		$minimum_height = isset( $attributes['minimumHeight'] ) ? $attributes['minimumHeight'] : [];
-		if ( ! empty( $minimum_height[ 'value' . $device ] ) ) {
-			$css['min-height'] = $minimum_height[ 'value' . $device ]
-				. ( ! empty( $minimum_height[ 'valueUnit' . $device ] ) ? $minimum_height[ 'valueUnit' . $device ] : 'px' );
-		}
-
 		if ( ! empty( $attributes[ 'direction' . $device ] ) ) {
 			$css['flex-direction'] = $attributes[ 'direction' . $device ];
 		}
@@ -81,23 +76,44 @@ class Block extends BlockBaseAbstract {
 		if ( ! empty( $attributes[ 'wrap' . $device ] ) ) {
 			$css['flex-wrap'] = $attributes[ 'wrap' . $device ];
 		}
+		return array_merge(
+			$css,
+			$preparedRowGap = Range::get_css([
+				'attributeValue' => $attributes['minimumHeight'],
+				'attributeObjectKey' => 'value',
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'defaultValue' => 0,
+				'property' => 'min-height',
+				'unitDefaultValue' => 'px',
+				'device' => $device,
+			]),
+			$preparedRowGap = Range::get_css([
+				'attributeValue' => $attributes['gap'],
+				'attributeObjectKey' => 'rowGap',
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'defaultValue' => 0,
+				'property' => 'row-gap',
+				'unitDefaultValue' => 'px',
+				'device' => $device,
+			]),
+			$preparedColumnGap = Range::get_css([
+				'attributeValue' => $attributes['gap'],
+				'attributeObjectKey' => 'columnGap',
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'defaultValue' => 0,
+				'property' => 'column-gap',
+				'unitDefaultValue' => 'px',
+				'device' => $device,
+			]),
+		);
 
-		$gap = isset( $attributes['gap'] ) ? $attributes['gap'] : [];
-		if ( ! empty( $gap[ 'columnGap' . $device ] ) ) {
-			$css['column-gap'] = $gap[ 'columnGap' . $device ]
-			. ( ! empty( $gap[ 'columnGapUnit' . $device ] ) ? $gap[ 'columnGapUnit' . $device ] : 'px' );
-		}
-
-		if ( ! empty( $gap[ 'rowGap' . $device ] ) ) {
-			$css['row-gap'] = $gap[ 'rowGap' . $device ]
-				. ( ! empty( $gap[ 'rowGapUnit' . $device ] ) ? $gap[ 'rowGapUnit' . $device ] : 'px' );
-		}
-
-		return $css;
 	}
 	public function get_container_inner_blocks_row_column_display_css( $attributes, $device = '' ) {
 		$css = [];
-		if ( 'row' === $attributes[ 'direction' . $device ] ) {
+		if ( 'row' === $attributes[ 'direction' . $device ] || 'row-reverse' === $attributes[ 'direction' . $device ] ) {
 			$css['display'] = 'inline-block';
 			$css['width'] = 'auto';
 		}
@@ -106,9 +122,18 @@ class Block extends BlockBaseAbstract {
 
 	public function get_block_container_css( $attributes, $device = '' ) {
 		$css = [];
-
-		$content_box_width_value = $attributes['containerContentWidth'][ "value{$device}" ] ?? '';
-		$content_box_width_unit = $attributes['containerContentWidth'][ "valueUnit{$device}" ] ?? 'px';
+		$preparedContentWidth = Range::get_css([
+			'attributeValue' => $attributes['containerContentWidth'],
+			'attributeObjectKey' => 'value',
+			'isResponsive' => true,
+			'hasUnit' => true,
+			'defaultValue' => 1140,
+			'property' => 'value',
+			'unitDefaultValue' => 'px',
+			'device' => $device,
+		]);
+		$content_box_width_value = $preparedContentWidth['value'] ?? 1140;
+		$content_box_width_unit = $preparedContentWidth['valueUnit'] ?? 'px';
 
 		if ( $attributes['containerWidthType'] === 'boxed' ) {
 			$css['max-width'] = "min(100%, {$content_box_width_value}{$content_box_width_unit})";
@@ -121,23 +146,21 @@ class Block extends BlockBaseAbstract {
 
 	public function get_main_wrapper_css( $attributes, $device = '' ) {
 		$css = [];
-
-		$containerWidth = wp_parse_args( $attributes['containerWidth'], [
-			'value' => 100,
-			'valueUnit' => '%',
-		] );
-
-		$custom_width = ! empty( $containerWidth[ 'value' . $device ] )
-				? $containerWidth[ 'value' . $device ]
-				: false;
+		$preparedContainer = Range::get_css([
+			'attributeValue' => $attributes['containerWidth'],
+			'attributeObjectKey' => 'value',
+			'isResponsive' => true,
+			'hasUnit' => true,
+			'defaultValue' => 100,
+			'property' => 'value',
+			'unitDefaultValue' => '%',
+			'device' => $device,
+		]);
 
 		$is_root_container = isset( $attributes['isRootContainer'] ) ? $attributes['isRootContainer'] : false;
 		$container_width_type = isset( $attributes['containerWidthType'] ) ? $attributes['containerWidthType'] : '';
-		if ( $custom_width && ( ! $is_root_container || 'full' === $container_width_type ) ) {
-			$custom_width_unit = ! empty( $containerWidth[ 'valueUnit' . $device ] )
-					? $containerWidth[ 'valueUnit' . $device ]
-					: '%';
-			$css['max-width'] = "min(100%, {$custom_width}{$custom_width_unit})";
+		if ( ! empty( $preparedContainer['value'] ) && ( ! $is_root_container || 'full' === $container_width_type ) ) {
+			$css['max-width'] = "min(100%, {$preparedContainer['value']}{$preparedContainer['valueUnit']})";
 
 		}
 

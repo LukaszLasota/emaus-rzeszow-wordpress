@@ -4,7 +4,7 @@ Tags: block, blocks, editor, gutenberg, gutenberg blocks
 Requires at least: 5.4
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.5.7
+Stable tag: 1.5.10
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -139,6 +139,39 @@ Yes, each block in aBlocks offers extensive customization options. You can adjus
 8. Instant Style Copy-Paste
 
 == Changelog ==
+
+= 1.5.10 - 25/12/2024 =
+* Update - Revamped Range Control 
+* Fixed - Range Control responsive issue
+* Fixed - Carousel Block issue
+* Fixed - Typography Reset 
+* Fixed - Alignment Control Responsive Selected issues
+* Fixed - Image Hotspot child Position issue
+* Fixed - Image comparison issue
+* Fixed - Menu Block Toggle issue improved
+* Fixed - Transform PHP warning issue
+* Fixed - Redux Toolkit implement
+* Fixed - Typography, Border, TextStoke responsive issue solved
+* Fixed - Select Control Responsive issue
+* Fixed - Info box icon css issue
+
+
+= 1.5.9 - 11/12/2024 =
+* Added - Map Block default marker option
+* Fixed - Figma copy/paste typography not worked for variable font family
+* Fixed - Info Box variation picker not show and sub heading styling not worked
+* Fixed - Mega Menu width not worked
+
+= 1.5.8 - 06/12/2024 =
+* Update - Revamped block attribute maintaining
+* Fixed - Divider Block issue
+* Fixed - Price Menu Divider issue
+* Fixed - Unit control hide issue for responsive
+* Fixed - List Block alignment issue
+* Fixed - Social Share Block alignment issue
+* Fixed - Typography Reset not working issue
+* Fixed - Dual Button CSS issue
+* Fixed - Advance Position issue
 
 = 1.5.7 - 30/11/2024 =
 * Added - CSSFilter Responsive control

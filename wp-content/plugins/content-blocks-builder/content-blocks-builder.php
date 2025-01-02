@@ -6,9 +6,10 @@
  * Description:       Design your website directly on the Gutenberg Block Editor without coding using core blocks and block themes.
  * Requires at least: 6.6
  * Requires PHP:      7.4
- * Version:           2.7.1
+ * Version:           2.7.6
  * Author:            CBB Team
  * Author URI:        https://contentblocksbuilder.com?utm_source=CBB&utm_campaign=CBB+visit+site&utm_medium=link&utm_content=Author+URI
+ * License:           GPL-3.0
  *
  * @package           BoldBlocks
  * @copyright         Copyright(c) 2022, Phi Phan
@@ -34,7 +35,7 @@ if ( !class_exists( ContentBlocksBuilder::class ) ) {
          *
          * @var String
          */
-        public $version = '2.7.1';
+        public $version = '2.7.6';
 
         /**
          * Components
@@ -78,7 +79,10 @@ if ( !class_exists( ContentBlocksBuilder::class ) ) {
 
         /**
          * Kick start function.
-         * Define constants, load dependencies
+         * Define constants
+         * Load dependencies
+         * Register components
+         * Run the main hooks
          *
          * @return void
          */
@@ -170,7 +174,7 @@ if ( !class_exists( ContentBlocksBuilder::class ) ) {
          */
         public function run() {
             // Load translations.
-            add_action( 'plugins_loaded', [$this, 'load_textdomain'] );
+            add_action( 'init', [$this, 'load_textdomain'] );
             // Main hooks.
             add_action( 'init', [$this, 'init'], 5 );
             // Enqueue scripts for editor.

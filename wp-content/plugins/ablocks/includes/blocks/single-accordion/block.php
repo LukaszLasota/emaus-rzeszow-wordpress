@@ -14,6 +14,7 @@ use ABlocks\Controls\TextStroke;
 use ABlocks\Controls\Background;
 use ABlocks\Controls\Border;
 use ABlocks\Controls\Dimensions;
+use ABlocks\Controls\Range;
 
 class Block extends BlockBaseAbstract {
 	protected $parent_block_name = 'accordion';
@@ -92,10 +93,17 @@ class Block extends BlockBaseAbstract {
 	}
 	public function get_item_css( $attributes, $device = '' ) {
 		$css = [];
-		if ( ! empty( $attributes['itemSpace'] ) ) {
-			$css['margin-bottom'] = $attributes['itemSpace'] . 'px';
-		}
+	
 		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['itemSpace'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'property' => 'margin-bottom',
+				'hasUnit' => false,
+				'unitDefaultValue'=> 'px',
+				'device' => $device,
+			]),
 			$css,
 			Border::get_css( $attributes['itemBorder'], '', $device )
 		);
@@ -110,13 +118,17 @@ class Block extends BlockBaseAbstract {
 		if ( ! empty( $attributes['headerTextColor'] ) ) {
 			$css['color'] = $attributes['headerTextColor'];
 		}
+		$typography_css = Typography::get_css( $attributes['headerTypography'], '', $device );
+		$textShadowCss = TextShadow::get_css( $attributes['headerTextShadow'], '', $device );
+		$textStrokeCss = TextStroke::get_css( $attributes['headerTextStroke'], '', $device );
 		return array_merge(
 			$css,
-			Typography::get_css( $attributes['headerTypography'], $device ),
-			TextShadow::get_css( $attributes['headerTextShadow'], $device ),
-			TextStroke::get_css( $attributes['headerTextStroke'], $device ),
+			$typography_css,
+			$textShadowCss,
+			$textStrokeCss
 		);
 	}
+
 	public function get_title_hover_css( $attributes, $device = '' ) {
 		$css = [];
 		if ( ! empty( $attributes['headerTextColorH'] ) ) {
@@ -165,15 +177,20 @@ class Block extends BlockBaseAbstract {
 			$css,
 		);
 	}
-	public function get_icon_css( $attributes ) {
+	public function get_icon_css( $attributes ,$device = '') {
 		$css = [];
-		if ( ! empty( $attributes['iconSize'] ) ) {
-			$css['font-size'] = $attributes['iconSize'] . 'px !important';
-		}
+		
 		if ( ! empty( $attributes['iconColor'] ) ) {
 			$css['fill'] = $attributes['iconColor'] . ' !important';
 		}
-		return array_merge( $css );
+		return array_merge( $css ,
+		Range::get_css([
+			'attributeValue' => $attributes['iconSize'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => false,
+			'property' => 'font-size',
+			'device' => $device,
+		]),);
 	}
 
 	public function get_icon_hover_css( $attributes ) {

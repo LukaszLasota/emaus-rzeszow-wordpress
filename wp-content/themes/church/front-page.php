@@ -1,9 +1,9 @@
 <?php
 /**
- * The template for main page
+ * The template for displaying the front page
  */
 
-get_header(); ?>
+ get_header(); ?>
 
 <main id="primary" class="site-main">
     <section>

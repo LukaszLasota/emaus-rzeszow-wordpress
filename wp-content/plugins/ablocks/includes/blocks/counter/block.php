@@ -7,6 +7,8 @@ use ABlocks\Controls\Alignment;
 use ABlocks\Controls\Typography;
 use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\Icon;
+use ABlocks\Controls\Range;
+
 class Block extends BlockBaseAbstract {
 	protected $block_name = 'counter';
 
@@ -116,8 +118,8 @@ class Block extends BlockBaseAbstract {
 			$css['display'] = 'block';
 		}
 		return array_merge(
-			isset( $attributes['numberTypography'] ) ? Typography::get_css( $attributes['numberTypography'], $device ) : [],
-			isset( $attributes['numberMargin'] ) ? Dimensions::get_css( $attributes['numberMargin'], 'margin', $device ) : [],
+			isset( $attributes['numberTypography'] ) ? Typography::get_css( $attributes['numberTypography'], '', $device ) : [],
+			isset( $attributes['numberMargin'] ) ? Dimensions::get_css( $attributes['numberMargin'], 'margin', '', $device ) : [],
 			$css
 		);
 	}
@@ -148,10 +150,6 @@ class Block extends BlockBaseAbstract {
 
 	public function get_counter_bar_progress_css( $attributes, $device = '' ) {
 		$counter_bar_progress_css = [];
-		if ( ! empty( $attributes['barSize'] ) && ! empty( $attributes['barSize'][ 'value' . $device ] ) ) {
-			$counter_bar_progress_css['height'] = $attributes['barSize'][ 'value' . $device ] .
-				( ! empty( $attributes['barSize']['valueUnit'] ) ? $attributes['barSize']['valueUnit'] : 'px' );
-		}
 		if ( ! empty( $attributes['barProgressColor'] ) ) {
 			$counter_bar_progress_css['background'] = $attributes['barProgressColor'];
 		}
@@ -166,7 +164,19 @@ class Block extends BlockBaseAbstract {
 			}
 		}
 
-		return $counter_bar_progress_css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['barSize'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 40,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'height',
+				'device' => $device,
+			]),
+			$counter_bar_progress_css,
+		);
 	}
 
 	public function get_counter_circle_css( $attributes, $device = '' ) {
@@ -197,7 +207,15 @@ class Block extends BlockBaseAbstract {
 			$counter_circle_bg_css['stroke-width'] = $attributes['circleStrokeSize'];
 		}
 
-		return $counter_circle_bg_css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['circleStrokeSize'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 20,
+				'property' => 'stroke-width',
+			]),
+			$counter_circle_bg_css,
+		);
 	}
 
 	public function get_counter_circle_progress_css( $attributes ) {
@@ -207,11 +225,15 @@ class Block extends BlockBaseAbstract {
 			$counter_circle_progress_css['stroke'] = $attributes['circleProgressColor'];
 		}
 
-		if ( ! empty( $attributes['circleStrokeSize'] ) ) {
-			$counter_circle_progress_css['stroke-width'] = $attributes['circleStrokeSize'];
-		}
-
-		return $counter_circle_progress_css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['circleStrokeSize'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 20,
+				'property' => 'stroke-width',
+			]),
+			$counter_circle_progress_css,
+		);
 	}
 
 }

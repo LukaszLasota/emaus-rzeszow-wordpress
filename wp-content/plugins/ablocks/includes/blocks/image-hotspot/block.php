@@ -1,6 +1,8 @@
 <?php
 namespace ABlocks\Blocks\ImageHotspot;
 
+use ABlocks\Controls\Range;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -260,8 +262,6 @@ class Block extends BlockBaseAbstract {
 			$css['background-color'] = $attributes['backgroundColor'];
 		}
 
-		$width = isset( $attributes['childWidth'] ) ? $attributes['childWidth'] : '';
-
 		if ( isset( $width[ 'value' . $device ] ) && ! empty( $width[ 'value' . $device ] ) ) {
 
 			if ( ! empty( $width[ 'valueUnit' . $device ] ) ) {
@@ -271,7 +271,18 @@ class Block extends BlockBaseAbstract {
 			}
 		}
 
-		$css = array_merge( $css, isset( $attributes['commonBoxShadow'] ) ? BoxShadow::get_css( $attributes['commonBoxShadow'], '', $device ) : [] );
+		$css = array_merge( $css,
+			Range::get_css([
+				'attributeValue' => $attributes['childWidth'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 200,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'width',
+				'device' => $device,
+			]),
+		isset( $attributes['commonBoxShadow'] ) ? BoxShadow::get_css( $attributes['commonBoxShadow'], '', $device ) : [] );
 
 		return $css;
 	}

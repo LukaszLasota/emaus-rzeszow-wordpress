@@ -13,6 +13,7 @@ use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\Typography;
 use ABlocks\Controls\TextShadow;
 use ABlocks\Controls\TextStroke;
+use ABlocks\Controls\Range;
 class Block extends BlockBaseAbstract {
 	protected $block_name = 'social-shares';
 
@@ -69,9 +70,10 @@ class Block extends BlockBaseAbstract {
 		);
 		$css_generator->add_class_styles(
 			'{{WRAPPER}} .ablocks-social-share-item--icon>.ablocks-svg-icon',
-			[
-				'height' => $attributes['shareItemIconSize'] . 'px !important',
-			]
+		
+			$this->shareItemIconSVG( $attributes ),
+			$this->shareItemIconSVG( $attributes, 'Tablet' ),
+			$this->shareItemIconSVG( $attributes, 'Mobile' ),
 		);
 		$css_generator->add_class_styles(
 			'{{WRAPPER}} .ablocks-social-share-item--text',
@@ -84,35 +86,73 @@ class Block extends BlockBaseAbstract {
 
 	public function get_share_css( $attributes, $device = '' ) {
 		$css = [];
-
-		if ( isset( $attributes['spaceBetween'][ 'value' . $device ] ) && ! empty( $attributes['spaceBetween'][ 'value' . $device ] ) ) {
-			$css['gap'] = $attributes['spaceBetween'][ 'value' . $device ] . 'px';
-		}
-
-		$stack = $attributes['stack'] ?? '';
-		if ( $stack === 'vertical' && ! empty( $attributes['verticalAlignment'] ) ) {
-			$css['align-items'] = $attributes['verticalAlignment'];
+		$stack = $attributes[ 'stack' . $device ] ?? $attributes['stack'] ?? '';
+		if ( $stack === 'vertical' ) {
+			$css['flex-direction'] = 'column';
+			if ( ! empty( $attributes[ 'verticalAlignment' . $device ] ) ) {
+				$css['align-items'] = $attributes[ 'verticalAlignment' . $device ];
+			}
 		} elseif ( $stack === 'horizontal' ) {
 			$css['flex-direction'] = 'row';
-			if ( ! empty( $attributes['horizontalAlignment'] ) ) {
-				$css['justify-content'] = $attributes['horizontalAlignment'];
+			$horizontal_alignment = $attributes[ 'horizontalAlignment' . $device ] ?? $attributes['horizontalAlignment'] ?? '';
+			if ( ! empty( $horizontal_alignment ) ) {
+				$css['justify-content'] = $horizontal_alignment;
+			}
+		}
+		$alignment_css = isset( $attributes['horizontalAlignment'] )
+			? Alignment::get_css( $attributes['horizontalAlignment'], 'justify-content', $device )
+			: [];
+		$css = array_merge( $css, $alignment_css );
+
+		foreach ( $css as $property => $value ) {
+			if ( ! is_string( $value ) || empty( $value ) ) {
+				unset( $css[ $property ] );
 			}
 		}
 		return array_merge(
 			$css,
-			isset( $attributes['width'] ) ? Width::get_css( $attributes['width'], 'width', $device ) : []
+			Range::get_css([
+				'attributeValue' => $attributes['spaceBetween'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 20,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			])
 		);
 	}
+
+
 	public function get_social_share_bar_css( $attributes, $device = '' ) {
 		$css = [
 			'background' => $attributes['buttonBackground'],
-			'width' => $attributes['shareSize'] . 'px',
-			'height' => $attributes['shareSize'] . 'px',
 		];
 
 		return array_merge(
 			$css,
-			Border::get_css( $attributes['border'], $device )
+			Border::get_css( $attributes['border'], $device ),
+			Range::get_css([
+				'attributeValue' => $attributes['shareSize'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'defaultValue' => 48,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'height',
+				'device' => $device,
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['shareSize'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'defaultValue' => 48,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'width',
+				'device' => $device,
+			]),
 		);
 	}
 
@@ -129,36 +169,90 @@ class Block extends BlockBaseAbstract {
 	public function get_share_icon_css( $attributes, $device = '' ) {
 		$css = [];
 
-		if ( ! empty( $attributes['shareIconSize'] ) ) {
-			$css['width'] = $attributes['shareIconSize'] . 'px';
-			$css['height'] = $attributes['shareIconSize'] . 'px';
-		}
-
 		if ( ! empty( $attributes['shareButtonIconColor'] ) ) {
 			$css['fill'] = $attributes['shareButtonIconColor'] . ' !important';
 		}
-
-		return $css;
+	
+	
+		return array_merge( $css, 
+		Range::get_css([
+			'attributeValue' => $attributes['shareIconSize'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => false,
+			'defaultValue' => 16,
+			'hasUnit' => true,
+			'unitDefaultValue' => 'px',
+			'property' => 'width',
+			'device' => $device,
+		]),
+		Range::get_css([
+			'attributeValue' => $attributes['shareIconSize'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => false,
+			'defaultValue' => 16,
+			'hasUnit' => true,
+			'unitDefaultValue' => 'px',
+			'property' => 'height',
+			'device' => $device,
+		]) );
 	}
-
+	public function shareItemIconSVG( $attributes, $device = '' ) {
+		return 
+			Range::get_css([
+				'attributeValue' => $attributes['shareItemIconSize'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'defaultValue' => 42,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'height',
+				'device' => $device,
+			]);
+		
+	}
+	
 	public function get_share_item_css( $attributes, $device = '' ) {
 		$css = [];
-		if ( isset( $attributes['itemIconHeight'] ) ) {
-			$css['height'] = $attributes['itemIconHeight'] . 'px';
-		}
-		if ( isset( $attributes['itemIconWidth'] ) ) {
-			$css['width'] = $attributes['itemIconWidth'] . 'px';
-		}
-		return $css;
+	
+		$range_width = Range::get_css([
+			'attributeValue' => $attributes['itemIconWidth'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => false,
+			'defaultValue' => 43,
+			'hasUnit' => true,
+			'unitDefaultValue' => 'px',
+			'property' => 'width',
+			'device' => $device,
+		]);
+		$range_height = Range::get_css([
+			'attributeValue' => $attributes['itemIconHeight'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => false,
+			'defaultValue' => 42,
+			'hasUnit' => true,
+			'unitDefaultValue' => 'px',
+			'property' => 'height',
+			'device' => $device,
+		]);
+		
+		return array_merge( $css, $range_width, $range_height );
 	}
 	public function get_item_border_css( $attributes, $device = '' ) {
 		$css = [];
-		if ( isset( $attributes['itemTextHeigh'] ) ) {
-			$css['height'] = $attributes['itemTextHeigh'] . 'px';
-		}
+		$range_height = Range::get_css([
+			'attributeValue' => $attributes['itemTextHeight'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => false,
+			'defaultValue' => 42,
+			'hasUnit' => true,
+			'unitDefaultValue' => 'px',
+			'property' => 'height',
+			'device' => $device,
+		]);
 
 		return array_merge(
 			$css,
+			$range_height,
 			( isset( $attributes['itemBorder'] )
 			? Border::get_css( $attributes['itemBorder'], '', $device )
 			: [] )
@@ -171,16 +265,30 @@ class Block extends BlockBaseAbstract {
 	}
 	public function get_share_item_text_css( $attributes, $device = '' ) {
 		$css = [];
-
-		if ( isset( $attributes['itemTextHeight'] ) ) {
-			$css['height'] = $attributes['itemTextHeight'] . 'px';
-		}
-
-		if ( isset( $attributes['itemTextWidth'] ) ) {
-			$css['width'] = $attributes['itemTextWidth'] . 'px';
-		}
+		$range_width = Range::get_css([
+			'attributeValue' => $attributes['itemTextWidth'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => false,
+			'defaultValue' => 80,
+			'hasUnit' => true,
+			'unitDefaultValue' => 'px',
+			'property' => 'width',
+			'device' => $device,
+		]);
+		$range_height = Range::get_css([
+			'attributeValue' => $attributes['itemTextHeight'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => false,
+			'defaultValue' => 42,
+			'hasUnit' => true,
+			'unitDefaultValue' => 'px',
+			'property' => 'height',
+			'device' => $device,
+		]);
 		return array_merge(
 			$css,
+			$range_width, 
+			$range_height,
 			isset( $attributes['alignment'] ) ? Alignment::get_css( $attributes['alignment'], 'text-align', $device ) : [],
 			isset( $attributes['typography'] ) ? Typography::get_css( $attributes['typography'], '', $device ) : [],
 			isset( $attributes['textShadow'] ) ? TextShadow::get_css( $attributes['textShadow'], '', $device ) : [],

@@ -5,7 +5,7 @@ Tags:              blocks, block builder, carousel, grid, popup
 Requires PHP:      7.4
 Requires at least: 6.6
 Tested up to:      6.7
-Stable tag:        2.7.1
+Stable tag:        2.7.6
 License:           GPL-3.0
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -137,7 +137,7 @@ This feature does a really simple job, it loads a font for headings text and ano
 [How to use Google Fonts and be GDPR compliant](https://www.youtube.com/watch?v=rhd4SEKUcHU).
 
 === Which theme should I use with this plugin? ===
-It is compatible with all Gutenberg-ready themes, but our recommended themes are default themes such as [Twenty Twenty Four](https://wordpress.org/themes/twentytwentyfour/), [Twenty Twenty Three](https://wordpress.org/themes/twentytwentythree/), [Twenty Twenty Two](https://wordpress.org/themes/twentytwentytwo/), or [Astra](https://wordpress.org/themes/astra/) theme.
+It is compatible with all Gutenberg-ready themes, but our recommended themes are default themes such as [Twenty Twenty Four](https://wordpress.org/themes/twentytwentyfour/), [Twenty Twenty Five](https://wordpress.org/themes/twentytwentyfive/), [Twenty Twenty Three](https://wordpress.org/themes/twentytwentythree/), [Twenty Twenty Two](https://wordpress.org/themes/twentytwentytwo/), or [Astra](https://wordpress.org/themes/astra/) theme.
 
 === How does it work with other blocks/plugins? ===
 This plugin works with all third-party blocks but we recommend using single-block plugins for lightweight and performance. We also develop several single block plugins, that work great with this plugin, please see them in the below section.
@@ -199,13 +199,13 @@ If this plugin is useful for you, please do a quick review and [rate it](https:/
 
 Please check out my other plugins if you're interested:
 
- - [Meta Field Block](https://wordpress.org/plugins/display-a-meta-field-as-block) - A block to display custom fields as blocks on the front end. It supports custom fields for posts, terms, users, and setting fields. It can also be used in the Query Loop block.
- - [SVG Block](https://wordpress.org/plugins/svg-block) - A block to display SVG images as blocks. Useful for images, icons, dividers, and buttons. It allows you to upload SVG images and load them into the icon library.
- - [Icon separator](https://wordpress.org/plugins/icon-separator) - A tiny block just like the core/separator block but with the ability to add an icon.
- - [Breadcrumb Block](https://wordpress.org/plugins/breadcrumb-block) - A simple breadcrumb trail block that supports JSON-LD structured data and is compatible with WooCommerce.
- - [Block Enhancements](https://wordpress.org/plugins/block-enhancements) - Adds practical features to blocks like icons, box shadows, transforms, etc.
- - [Counting Number Block](https://wordpress.org/plugins/counting-number-block) - A block to display numbers with a counting effect
- - [Better YouTube Embed Block](https://wordpress.org/plugins/better-youtube-embed-block) - A block to solve the performance issue with embedded YouTube videos. It can also embed multiple videos and playlists.
+ - **[Meta Field Block](https://wordpress.org/plugins/display-a-meta-field-as-block)** - A block to display custom fields as blocks on the front end. It supports custom fields for posts, terms, users, and setting fields. It can also be used in the Query Loop block.
+ - **[SVG Block](https://wordpress.org/plugins/svg-block)** - A block to display SVG images as blocks. Useful for images, icons, dividers, and buttons. It allows you to upload SVG images and load them into the icon library.
+ - **[Icon separator](https://wordpress.org/plugins/icon-separator)** - A tiny block just like the core/separator block but with the ability to add an icon.
+ - **[Breadcrumb Block](https://wordpress.org/plugins/breadcrumb-block)** - A simple breadcrumb trail block that supports JSON-LD structured data and is compatible with WooCommerce.
+ - **[Block Enhancements](https://wordpress.org/plugins/block-enhancements)** - Adds practical features to blocks like icons, box shadows, transforms, etc.
+ - **[Counting Number Block](https://wordpress.org/plugins/counting-number-block)** - A block to display numbers with a counting effect
+ - **[Better YouTube Embed Block](https://wordpress.org/plugins/better-youtube-embed-block)** - A block to solve the performance issue with embedded YouTube videos. It can also embed multiple videos and playlists.
 
 The plugin is developed using @wordpress/scripts.
 
@@ -243,26 +243,68 @@ Besides the five above block types, we have built an external library of content
 
 = Which themes does it support?
 
-It is compatible with all block-based themes and some popular classic themes like Astra, but our recommended themes are default themes such as [Twenty Twenty Four](https://wordpress.org/themes/twentytwentyfour/), [Twenty Twenty-Three](https://wordpress.org/themes/twentytwentythree/), [Twenty Twenty-Two](https://wordpress.org/themes/twentytwentytwo/), and [Astra](https://wordpress.org/themes/astra/) theme. If you find it doesn't work with your theme, please let us know. We'll work on it.
+It is compatible with all block-based themes and some popular classic themes like Astra, but our recommended themes are default themes such as [Twenty Twenty Four](https://wordpress.org/themes/twentytwentyfour/), [Twenty Twenty Five](https://wordpress.org/themes/twentytwentyfive/), [Twenty Twenty-Three](https://wordpress.org/themes/twentytwentythree/), [Twenty Twenty-Two](https://wordpress.org/themes/twentytwentytwo/), and [Astra](https://wordpress.org/themes/astra/) theme. If you find it doesn't work with your theme, please let us know. We'll work on it.
 
 == Screenshots ==
+
+1. Block list screen
+
+2. Block edit screen
+
+3. Register block: synced overrides, template lock, description, CSS class, block icon
+
+4. Register block: extended supports, variations
+
+5. Register block: parent, ancestor, allowed, transformable, hidden, hide on frontend, enable repeater, scripts, stylesheets
+
+6. Register repeater block: layout, title, description, CSS class, block icon
+
+7. Register repeater block: extended supports, variations, limit child blocks
+
+8. Carousel layout settings
+
+9. Grid layout settings
+
+10. Accordion layout settings
+
+11. Toggle content settings
+
+12. Sticky content settings
+
+13. Background settings
+
+14. Block library
+
+15. Variation list screen
+
+16. Variation edit screen
+
+17. Register variation
+
+18. Variation library
+
+19. Pattern inserter popup
+
+20. General settings
+
+21. Typography settings
+
+22. Import export settings
+
+23. Developer settings
 
 == Upgrade Notice ==
 
 == Changelog ==
 
-= 2.7.1 =
-*Release Date - 24 October 2024*
+= 2.7.6 =
+*Release Date - 16 December 2024*
 
-* Added    - Allow adding grid template rows to the grid layout
-* Added    - Allow changing transform origin in carousel's effect builder
-* Added    - Allow making the active slide larger in carousels
-* Changed  - Set the default value for carousel transition speed as 500ms instead of 300ms
-* Improved - Don't propagate animation end to parents
-* Improved - Don't show hints on typing on custom editor to improve performance
-* Improved - Hide transform and border panels when they are empty
-* Improved - Hide the block icon's long help text inside a toggle button
-* Improved - Adjust help text for some components
-* Updated  - Upgrade to Freemius SDK 2.9.0
+* Added    - A new setting to allow disabling pagination on the Query Loop block to improve performance
+* Changed  - Don't allow transforming between variations for the Query Loop block
+* Changed  - Only allow inserting Query Loop variations from the inserter
+* Improved - Don't register variations of the same block when editing a variation
+* Fixed    - Import an existing variation don't override the local one
+* Updated  – Freemius SDK 2.10.1
 
 [View all changelog](https://contentblocksbuilder.com/changelog?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=Changelog)

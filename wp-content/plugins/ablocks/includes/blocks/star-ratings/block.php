@@ -8,6 +8,7 @@ use ABlocks\Controls\TextShadow;
 use ABlocks\Controls\TextStroke;
 use ABlocks\Controls\Typography;
 use ABlocks\Controls\Icon;
+use ABlocks\Controls\Range;
 
 class Block extends BlockBaseAbstract {
 	protected $block_name = 'star-ratings';
@@ -74,16 +75,17 @@ class Block extends BlockBaseAbstract {
 
 
 	public function get_container_css( $attributes, $device = '' ) {
-		$css = [];
-
-		$ratingNumberGap = isset( $attributes['ratingNumberGap'][ 'value' . $device ] ) ? $attributes['ratingNumberGap'][ 'value' . $device ] : '';
-		$unit = ! empty( $attributes['ratingNumberGap'][ 'valueUnit' . $device ] ) ? $attributes['ratingNumberGap'][ 'valueUnit' . $device ] : 'px';
-
-		if ( isset( $attributes['ratingNumberGap'] ) && ! empty( $attributes['ratingNumberGap'] ) ) {
-			$css['gap'] = $ratingNumberGap . $unit;
-		}
 		return array_merge(
-			$css,
+			Range::get_css([
+				'attributeValue' => $attributes['ratingNumberGap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 0,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			]),
 			isset( $attributes['alignment'] ) ? Alignment::get_css( $attributes['alignment'], 'justify-content', $device ) : [],
 		);
 	}
@@ -106,12 +108,16 @@ class Block extends BlockBaseAbstract {
 
 
 	public function get_rating_icon_spacing_css( $attributes, $device = '' ) {
-		$spacing_value = $attributes['spacing'][ 'value' . $device ] ?? '';
-		$spacing_unit = ! empty( $attributes['spacing'][ 'valueUnit' . $device ] ) ? $attributes['spacing'][ 'valueUnit' . $device ] : 'px';
-		$rating_icon_spacing_css = [];
-		if ( $spacing_value ) {
-			$rating_icon_spacing_css['gap'] = $spacing_value . $spacing_unit;
-		}
-		return $rating_icon_spacing_css;
+		$spacing_value = Range::get_css([
+			'attributeValue' => $attributes['spacing'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => true,
+			'defaultValue' => 0,
+			'hasUnit' => true,
+			'unitDefaultValue' => 'px',
+			'property' => 'gap',
+			'device' => $device,
+		]);
+		return $spacing_value;
 	}
 }

@@ -331,16 +331,15 @@ if ( ! class_exists( Library::class ) ) :
 		/**
 		 * Build blocks data
 		 *
-		 * @param boolean $force_refresh
 		 * @return array
 		 */
-		private function get_all_blocks_from_library( $force_refresh = false ) {
+		private function get_all_blocks_from_library() {
 			// Get the WP Version global.
 			global $wp_version;
 			$cache_key = $this->get_library_block_cache_key();
 			$data      = get_transient( $cache_key );
 
-			if ( $force_refresh || false === $data ) {
+			if ( $this->is_force_refresh() || false === $data ) {
 				$response = wp_remote_get(
 					$this->get_library_url() . '/wp-json/wp/v2/boldblocks-blocks',
 					[
@@ -396,7 +395,7 @@ if ( ! class_exists( Library::class ) ) :
 					'sslverify' => false,
 					'body'      => [
 						'_fields'      =>
-						'id,slug,meta,menu_order,order,title,content,description,keywords,thumbnail,libraryBlocks,variations,parentVariations,boldblocks_block_keywords,keywordIds,is_pro,has_pro_features',
+						'id,slug,meta,menu_order,order,title,content,description,keywords,thumbnail,libraryBlocks,libraryVariations,variations,parentVariations,boldblocks_block_keywords,keywordIds,is_pro,has_pro_features',
 						'api_version'  => 2,
 						'include_data' => true,
 						'include'      => $block_ids,
@@ -607,16 +606,15 @@ if ( ! class_exists( Library::class ) ) :
 		/**
 		 * Build variations data
 		 *
-		 * @param boolean $force_refresh
 		 * @return array
 		 */
-		private function get_all_variations_from_library( $force_refresh = false ) {
+		private function get_all_variations_from_library() {
 			// Get the WP Version global.
 			global $wp_version;
 			$cache_key = $this->get_library_variation_cache_key();
 			$data      = get_transient( $cache_key );
 
-			if ( $force_refresh || false === $data ) {
+			if ( $this->is_force_refresh() || false === $data ) {
 				$response = wp_remote_get(
 					$this->get_library_url() . '/wp-json/wp/v2/boldblocks-variations',
 					[
@@ -672,7 +670,7 @@ if ( ! class_exists( Library::class ) ) :
 					'sslverify' => false,
 					'body'      => [
 						'_fields'      =>
-						'id,slug,meta,menu_order,order,title,content,description,keywords,thumbnail,boldblocks_variation_keywords,keywordIds,is_pro,has_pro_features',
+						'id,slug,meta,menu_order,order,title,content,description,keywords,thumbnail,boldblocks_variation_keywords,keywordIds,is_pro,has_pro_features,libraryBlocks,libraryVariations',
 						'api_version'  => 2,
 						'include_data' => true,
 						'include'      => $variation_ids,
@@ -869,16 +867,15 @@ if ( ! class_exists( Library::class ) ) :
 		/**
 		 * Build patterns data
 		 *
-		 * @param boolean $force_refresh
 		 * @return array
 		 */
-		private function get_all_patterns_from_library( $force_refresh = false ) {
+		private function get_all_patterns_from_library() {
 			// Get the WP Version global.
 			global $wp_version;
 			$cache_key = $this->get_library_pattern_cache_key();
 			$data      = get_transient( $cache_key );
 
-			if ( $force_refresh || false === $data ) {
+			if ( $this->is_force_refresh() || false === $data ) {
 				$response = wp_remote_get(
 					$this->get_library_url() . '/wp-json/wp/v2/boldblocks-patterns',
 					[
@@ -936,7 +933,7 @@ if ( ! class_exists( Library::class ) ) :
 					'sslverify' => false,
 					'body'      => [
 						'_fields'      =>
-						'id,slug,meta,menu_order,order,title,description,keywords,thumbnail,boldblocks_pattern_keywords,keywordIds,is_pro,has_pro_features,variations,libraryBlocks',
+						'id,slug,meta,menu_order,order,title,description,keywords,thumbnail,boldblocks_pattern_keywords,keywordIds,is_pro,has_pro_features,libraryBlocks,libraryVariations',
 						'api_version'  => 2,
 						'include_data' => true,
 						'include'      => $pattern_ids,
@@ -1068,6 +1065,15 @@ if ( ! class_exists( Library::class ) ) :
 			}
 
 			return $max_items;
+		}
+
+		/**
+		 * Force reload from the library
+		 *
+		 * @return boolean
+		 */
+		private function is_force_refresh() {
+			return defined( 'CBB_LIBRARY_DEBUG' ) && CBB_LIBRARY_DEBUG;
 		}
 	}
 endif;

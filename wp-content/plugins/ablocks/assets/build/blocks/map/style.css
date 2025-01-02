@@ -6,3 +6,6 @@
     margin-top: 0;
     margin-bottom: 0;
 }
+.ablocks-block--map{
+    width: 100% !important;
+}

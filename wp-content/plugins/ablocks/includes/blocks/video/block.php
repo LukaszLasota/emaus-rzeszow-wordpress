@@ -33,7 +33,7 @@ class Block extends BlockBaseAbstract {
 
 		return array_merge(
 			$css,
-			CssFilter::get_css( isset( $attributes['cssFilter'] ) ? $attributes['cssFilter'] : '', $device )
+			isset( $attributes['cssFilter'] ) ? CssFilter::get_css( $attributes['cssFilter'], '', $device ) : [],
 		);
 	}
 }

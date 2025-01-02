@@ -9,6 +9,7 @@ use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\Typography;
 use ABlocks\Controls\TextShadow;
 use ABlocks\Controls\TextStroke;
+use ABlocks\Controls\Range;
 
 class Block extends BlockBaseAbstract {
 	protected $block_name = 'price-menu';
@@ -132,29 +133,27 @@ class Block extends BlockBaseAbstract {
 
 	public function get_gap_around_css( $attributes, $device = '' ) {
 		$css = [];
-		$gap_items = isset( $attributes['gap'][ 'value' . $device ] ) ? $attributes['gap'][ 'value' . $device ] : '';
-		$unit = ! empty( $attributes['gap'][ 'valueUnit' . $device ] ) ? $attributes['gap'][ 'valueUnit' . $device ] : 'px';
-
-		if ( isset( $attributes['gap'][ 'value' . $device ] ) ) {
-			$css['gap'] = $attributes['gap'][ 'value' . $device ] . $unit;
-		}
-
 		if ( isset( $attributes['alignment'][ 'value' . $device ] ) ) {
 			$css['align-items'] = $attributes['alignment'][ 'value' . $device ];
 		}
 
-		return $css;
+		return array_merge(
+			$css,
+			Range::get_css([
+				'attributeValue' => $attributes['gap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'defaultValue' => 10,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			]),
+		);
 	}
 
 	public function get_details_brief_css( $attributes, $device = '' ) {
 		$css = [];
-		$gap_items = isset( $attributes['gap'][ 'value' . $device ] ) ? $attributes['gap'][ 'value' . $device ] : '';
-		$unit = ! empty( $attributes['gap'][ 'valueUnit' . $device ] ) ? $attributes['gap'][ 'valueUnit' . $device ] : 'px';
-
-		if ( isset( $attributes['gap'][ 'value' . $device ] ) ) {
-			$css['gap'] = $attributes['gap'][ 'value' . $device ] . $unit;
-		}
-
 		if ( isset( $attributes['alignment'][ 'value' . $device ] ) ) {
 			if ( $attributes['itemsDirection'][ 'value' . $device ] === 'row' ) {
 				$css['justify-content'] = 'space-between';
@@ -163,19 +162,35 @@ class Block extends BlockBaseAbstract {
 			}
 		}
 
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['gap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'defaultValue' => 10,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			]),
+			$css
+		);
 	}
 
 	public function get_all_menu_css( $attributes, $device = '' ) {
-		$css = [];
-		$gap_items = isset( $attributes['columnGap'][ 'value' . $device ] ) ? $attributes['columnGap'][ 'value' . $device ] : '';
-		$unit = ! empty( $attributes['columnGap'][ 'valueUnit' . $device ] ) ? $attributes['columnGap'][ 'valueUnit' . $device ] : 'px';
 
-		if ( isset( $attributes['columnGap'][ 'value' . $device ] ) ) {
-			$css['gap'] = $gap_items . $unit;
-		}
-
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['columnGap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'isResponsive' => true,
+				'defaultValue' => 20,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			]),
+		);
 	}
 
 	public function get_title_text_css( $attributes, $device = '' ) {
@@ -216,30 +231,32 @@ class Block extends BlockBaseAbstract {
 		$divider_color = isset( $attributes['color'] ) ? $attributes['color'] : '#000000';
 		$default_Unit = $attributes['allowDescription'] === true ? '%' : 'px';
 
-		if ( ! empty( $attributes['width'][ 'value' . $device ] ) ) {
-			if ( $default_Unit === '%' && $divider_width > 100 ) {
-				$css['width'] = 100 . $default_Unit;
-			} else {
-				if ( $attributes['allowDescription'] === false && $device === 'Mobile' && $divider_width > 114 ) {
-					$css['width'] = $divider_width . $default_Unit;
-				} else {
-					$css['width'] = $divider_width . $default_Unit;
-				}
-			}
-		}
 		if ( isset( $attributes['color'] ) && ! empty( $attributes['color'] ) ) {
 			$css['--ablocks-divider-pattern-color'] = $divider_color;
 		}
 
+		$moreRangeCSS = [];
 		if ( isset( $attributes['dividerType'] ) && $attributes['dividerType'] === 'mask-style' && isset( $attributes['size'] ) && ! empty( $attributes['size'] ) ) {
-			$css['--ablocks-divider-pattern-height'] = $attributes['size'] . 'px';
-		} elseif ( isset( $attributes['dividerType'] ) && $attributes['dividerType'] === 'mask-style' && isset( $attributes['size'] ) && empty( $attributes['size'] ) ) {
-			$css['--ablocks-divider-pattern-height'] = '20px';
-		} else {
-			if ( isset( $attributes['weight'] ) && ! empty( $attributes['weight'] ) ) {
-				$css['--ablocks-divider-pattern-weight'] = $attributes['weight'] . 'px';
-			}
-		}
+			$moreRangeCSS = Range::get_css([
+				'attributeValue' => $attributes['size'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'defaultValue' => 20,
+				'hasUnit' => false,
+				'unitDefaultValue' => 'px',
+				'property' => '--ablocks-divider-pattern-height',
+			]);
+		} elseif ( isset( $attributes['weight'] ) && ! empty( $attributes['weight'] ) ) {
+			$moreRangeCSS = Range::get_css([
+				'attributeValue' => $attributes['weight'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'defaultValue' => 2,
+				'hasUnit' => false,
+				'unitDefaultValue' => 'px',
+				'property' => '--ablocks-divider-pattern-weight',
+			]);
+		};//end if
 
 		if ( ! empty( $attributes['dividerPatternUrl'] ) ) {
 			if ( $attributes['dividerType'] === 'mask-style' ) {
@@ -249,7 +266,20 @@ class Block extends BlockBaseAbstract {
 			}
 		}
 
-		return $css;
+		return array_merge(
+			$css,
+			Range::get_css([
+				'attributeValue' => $attributes['width'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 100,
+				'hasUnit' => false,
+				'unitDefaultValue' => $attributes['allowDescription'] === true ? '%' : 'px',
+				'property' => 'width',
+				'device' => $device,
+			]),
+			$moreRangeCSS,
+		);
 	}
 	public function get_price_text_css( $attributes, $device = '' ) {
 		$css = [];

@@ -179,6 +179,7 @@
 /* star rating starts */
 
 .ablocks-info-box-star-ratings {
+	width: 100%;
 	display: inline-flex;
 	align-items: center;
 	flex-wrap: wrap;

@@ -5,6 +5,7 @@ use ABlocks\Controls\Typography;
 use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\Border;
 use ABlocks\Controls\BoxShadow;
+use ABlocks\Controls\Range;
 use ABlocks\Classes\BlockBaseAbstract;
 use ABlocks\Classes\CssGenerator;
 
@@ -49,29 +50,33 @@ class Block extends BlockBaseAbstract {
 
 	private function get_wrapper_css( $attributes, $device = '' ) {
 		$css = [];
-		$padding = isset( $attributes['padding'] ) ? $attributes['padding'] : '';
-		$width = isset( $attributes['width'] ) ? $attributes['width'] : '';
 
-		// Width
-		if ( isset( $width[ 'value' . $device ] ) && ! empty( $width[ 'value' . $device ] ) ) {
-			$css['width'] = $width[ 'value' . $device ] . 'px';
-		}
 		if ( ! empty( $attributes['background'] ) ) {
 			$css['background'] = $attributes['background'];
 		}
 
 		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['width'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 250,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'width',
+				'device' => $device,
+			]),
 			BoxShadow::get_css( ! empty( $attributes['boxShadow'] ) ? $attributes['boxShadow'] : '', $device ),
-			Dimensions::get_css( $padding, 'padding', $device ),
-			Border::get_css( isset( $attributes['border'] ) ? $attributes['border'] : [], $device ),
+			Dimensions::get_css( $attributes['padding'], 'padding', $device ),
+			Border::get_css( $attributes['border'], '', $device ),
 			$css
 		);
 	}
 
 	private function get_menu_item_css( $attributes, $device = '' ) {
 		$css = array_merge(
-			Border::get_css( isset( $attributes['menuItemBorder'] ) ? $attributes['menuItemBorder'] : [], $device ),
-			Typography::get_css( isset( $attributes['menuItemTypography'] ) ? $attributes['menuItemTypography'] : [], $device ),
+			Border::get_css( isset( $attributes['menuItemBorder'] ) ? $attributes['menuItemBorder'] : [], '', $device ),
+			Typography::get_css( isset( $attributes['menuItemTypography'] ) ? $attributes['menuItemTypography'] : [], '', $device ),
 			Dimensions::get_css( isset( $attributes['menuItemPadding'] ) ? $attributes['menuItemPadding'] : [], 'padding', $device ),
 			Dimensions::get_css( isset( $attributes['menuItemMargin'] ) ? $attributes['menuItemMargin'] : [], 'margin', $device )
 		);
@@ -110,7 +115,7 @@ class Block extends BlockBaseAbstract {
 	}
 	private function get_menu_item_hover_css( $attributes, $device = '' ) {
 		$css = array_merge(
-			Border::get_hover_css( isset( $attributes['menuItemBorder'] ) ? $attributes['menuItemBorder'] : [], $device )
+			Border::get_hover_css( isset( $attributes['menuItemBorder'] ) ? $attributes['menuItemBorder'] : [], '', $device )
 		);
 
 		// Text color on hover

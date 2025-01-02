@@ -159,6 +159,9 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 			// Register rest fields.
 			add_action( 'rest_api_init', [ $this, 'register_rest_fields' ] );
 
+			// Render inline script module.
+			add_filter( 'wp_inline_script_attributes', [ $this, 'add_inline_script_module' ] );
+
 			// Hide on the frontend.
 			add_filter( 'render_block', [ $this, 'hide_on_frontend' ], 10, 3 );
 
@@ -423,10 +426,14 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 							'items' => array(
 								'type'       => 'object',
 								'properties' => array(
-									'handle' => array(
+									'is_module' => array(
+										'type'    => 'boolean',
+										'default' => false,
+									),
+									'handle'    => array(
 										'type' => 'string',
 									),
-									'value'  => array(
+									'value'     => array(
 										'type' => 'string',
 									),
 								),
@@ -643,10 +650,11 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 					"SELECT DISTINCT meta_key
 					FROM $wpdb->postmeta
 					WHERE meta_key NOT BETWEEN '_' AND '_z'
-					AND meta_key NOT LIKE 'boldblocks_%'
+					AND meta_key NOT LIKE %s
 					HAVING meta_key NOT LIKE %s
 					ORDER BY meta_key
 					LIMIT %d",
+					$wpdb->esc_like( 'boldblocks_' ) . '%',
 					$wpdb->esc_like( '_' ) . '%',
 					$limit
 				)
@@ -837,8 +845,9 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 				}
 
 				// Scripts & styles.
-				$is_backend          = is_admin();
-				$block_inline_handle = 'cbb-' . str_replace( '/', '-', $name );
+				$is_backend                 = is_admin();
+				$block_inline_handle        = 'cbb-' . str_replace( '/', '-', $name );
+				$block_module_inline_handle = 'cbb-script-module-' . str_replace( '/', '-', $name );
 
 				if ( ! empty( $args['external_scripts'] ) ) {
 					$external_scripts = array_filter(
@@ -891,24 +900,33 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 					$custom_scripts = $args['custom_scripts'];
 
 					foreach ( $custom_scripts as $script ) {
-						if ( $script && is_array( $script ) && $script['value'] ) {
-							$value = $script['value'];
-							if ( empty( $script['handle'] ) ) {
-								$handle = $block_inline_handle;
-								wp_register_script( $handle, '', [ $this->refine_script_handle( 'CBB_BLOCK_API', $is_backend ) ], false, [ 'in_footer' => true ] );
+						if ( ! $script || ! is_array( $script ) || empty( $script['value'] ) ) {
+							continue;
+						}
 
-								// Add the default handle to the block.
+						$is_module = $script['is_module'] ?? false;
+						$handle    = $is_module ? $block_module_inline_handle : $block_inline_handle;
+
+						// Determine if a custom handle should be used.
+						if ( ! empty( $script['handle'] ) && ! $is_module ) {
+							$handle = $this->refine_script_handle( $script['handle'], $is_backend );
+						} else {
+							// Register the default handle for module and inline scripts.
+							wp_register_script( $handle, '', [ $this->refine_script_handle( 'CBB_BLOCK_API', $is_backend ) ], false, [ 'in_footer' => true ] );
+
+							// Add handle to view scripts and editor scripts if backend.
+							if ( ! in_array( $handle, $handles['view_script_handles'], true ) ) {
 								$handles['view_script_handles'][] = $handle;
-
-								if ( $is_backend ) {
+							}
+							if ( $is_backend ) {
+								if ( ! in_array( $handle, $handles['editor_script_handles'], true ) ) {
 									$handles['editor_script_handles'][] = $handle;
 								}
-							} else {
-								$handle = $this->refine_script_handle( $script['handle'], $is_backend );
 							}
-
-							wp_add_inline_script( $handle, $value );
 						}
+
+						// Add inline script.
+						wp_add_inline_script( $handle, $script['value'] );
 					}
 				}
 
@@ -1788,6 +1806,22 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 		}
 
 		/**
+		 * Render the inline script as inline script module.
+		 *
+		 * @param array $attributes
+		 * @return array
+		 */
+		public function add_inline_script_module( $attributes ) {
+			if ( $attributes['id'] ?? false ) {
+				if ( strpos( $attributes['id'], 'cbb-script-module-' ) === 0 ) {
+					$attributes['type'] = 'module';
+				}
+			}
+
+			return $attributes;
+		}
+
+		/**
 		 * Hide the block on the frontend.
 		 *
 		 * @param string   $block_content
@@ -1801,15 +1835,8 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 				return $block_content;
 			}
 
-			// Make sure we have the blockName.
-			if ( empty( $block['blockName'] ) ) {
-				return $block_content;
-			}
-
-			if ( strpos( $block['blockName'], 'boldblocks/' ) === 0 ) {
-				if ( $block_instance->block_type->supports['hideOnFrontend'] ?? false ) {
-					return null;
-				}
+			if ( $block_instance->block_type->supports['hideOnFrontend'] ?? false ) {
+				return null;
 			}
 
 			return $block_content;
@@ -2090,8 +2117,11 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 
 				// Custom sorting.
 				$orderby = [];
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				if ( ( $cbb_params['orderbyFromQueryString'] ?? false ) && isset( $_GET['orderby'] ) ) {
+					// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 					$orderby = wp_unslash( $_GET['orderby'] );
+					// orderby will be sanitized below.
 					if ( $orderby ) {
 						if ( ! is_array( $orderby ) ) {
 							$orderby = [ $orderby ];
@@ -2119,6 +2149,11 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 
 				// Combine post__not_in value.
 				$cbb_args['post__not_in'] = array_merge( $query_args['post__not_in'], $cbb_args['post__not_in'] ?? [] );
+
+				// Don't need pagination.
+				if ( $cbb_params['disablePagination'] ?? false ) {
+					$cbb_args['no_found_rows'] = true;
+				}
 			}
 
 			// Allow third-party to alter the final result.
@@ -2223,8 +2258,10 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 
 						// Get query string.
 						$query_string = $query['query_string'] ?? '';
+						// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						if ( $query_string && isset( $_GET[ $query_string ] ) ) {
-							$refined_value = sanitize_text_field( $_GET[ $query_string ] );
+							// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+							$refined_value = sanitize_text_field( wp_unslash( $_GET[ $query_string ] ) );
 						}
 
 						// No value.
@@ -2259,7 +2296,7 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 											}
 
 											if ( 'timestamp' !== $format ) {
-												$formated_value = date( $format, $formated_value );
+												$formated_value = gmdate( $format, $formated_value );
 											}
 
 											return $formated_value;
@@ -2271,7 +2308,7 @@ if ( ! class_exists( CustomBlocks::class ) ) :
 								$refined_value = strtotime( $refined_value );
 
 								if ( 'timestamp' !== $format ) {
-									$refined_value = date( $format, $refined_value );
+									$refined_value = gmdate( $format, $refined_value );
 								}
 							}
 

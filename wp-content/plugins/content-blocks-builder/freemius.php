@@ -21,7 +21,7 @@ if ( !function_exists( 'cbb_fs' ) ) {
                 define( 'WP_FS__PRODUCT_11230_MULTISITE', true );
             }
             // Include Freemius SDK.
-            require_once dirname( __FILE__ ) . '/freemius/start.php';
+            require_once dirname( __FILE__ ) . '/vendor/freemius/start.php';
             $menu = array(
                 'slug'    => 'edit.php?post_type=boldblocks_block',
                 'account' => true,

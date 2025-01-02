@@ -8,6 +8,7 @@ use ABlocks\Controls\Alignment;
 use ABlocks\Controls\Typography;
 use ABlocks\Controls\TextShadow;
 use ABlocks\Controls\TextStroke;
+use ABlocks\Controls\Range;
 
 class Block extends BlockBaseAbstract {
 	protected $parent_block_name = 'price-menu';
@@ -101,28 +102,32 @@ class Block extends BlockBaseAbstract {
 		$divider_color = isset( $attributes['color'] ) ? $attributes['color'] : '#000000';
 		$default_Unit = $attributes['allowDescription'] === true ? '%' : 'px';
 
-		if ( ! empty( $attributes['width'][ 'value' . $device ] ) ) {
-			if ( $default_Unit === '%' && $divider_width > 100 ) {
-				$css['width'] = 100 . $default_Unit;
-			} else {
-				if ( $attributes['allowDescription'] === false && $device === 'Mobile' && $divider_width > 114 ) {
-					$css['width'] = $divider_width . $default_Unit;
-				} else {
-					$css['width'] = $divider_width . $default_Unit;
-				}
-			}
-		}
 		if ( ! empty( $attributes['color'] ) ) {
 			$css['--ablocks-divider-pattern-color'] = $divider_color;
 		}
 
+		$moreRangeCSS = [];
 		if ( isset( $attributes['dividerType'] ) && $attributes['dividerType'] === 'mask-style' && isset( $attributes['size'] ) && ! empty( $attributes['size'] ) ) {
-			$css['--ablocks-divider-pattern-height'] = $attributes['size'] . 'px';
-		} else {
-			if ( isset( $attributes['weight'] ) && ! empty( $attributes['weight'] ) ) {
-				$css['--ablocks-divider-pattern-weight'] = $attributes['weight'] . 'px';
-			}
-		}
+			$moreRangeCSS = Range::get_css([
+				'attributeValue' => $attributes['size'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'defaultValue' => null,
+				'hasUnit' => false,
+				'unitDefaultValue' => 'px',
+				'property' => '--ablocks-divider-pattern-height',
+			]);
+		} elseif ( isset( $attributes['weight'] ) && ! empty( $attributes['weight'] ) ) {
+			$moreRangeCSS = Range::get_css([
+				'attributeValue' => $attributes['weight'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'defaultValue' => null,
+				'hasUnit' => false,
+				'unitDefaultValue' => 'px',
+				'property' => '--ablocks-divider-pattern-weight',
+			]);
+		};//end if
 
 		if ( ! empty( $attributes['dividerPatternUrl'] ) ) {
 			if ( $attributes['dividerType'] === 'mask-style' ) {
@@ -132,7 +137,20 @@ class Block extends BlockBaseAbstract {
 			}
 		}
 
-		return $css;
+		return array_merge(
+			$css,
+			Range::get_css([
+				'attributeValue' => $attributes['width'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => null,
+				'hasUnit' => false,
+				'unitDefaultValue' => $attributes['allowDescription'] === true ? '%' : 'px',
+				'property' => 'width',
+				'device' => $device,
+			]),
+			$moreRangeCSS,
+		);
 	}
 	public function get_price_text_css( $attributes, $device = '' ) {
 		$css = [];

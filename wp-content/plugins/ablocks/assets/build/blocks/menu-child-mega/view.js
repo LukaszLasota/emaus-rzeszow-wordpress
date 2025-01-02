@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",(()=>{!function(){const e=document.querySelectorAll(".ablocks-block--menu-child-mega");e.length?e.forEach((e=>{if("true"===e.getAttribute("data-full-width")){const t=window.innerWidth;e.style.width=`${t}px`,e.style.left=`calc(50% - ${t/2}px)`}})):console.warn("No mega menu elements found.")}()}));

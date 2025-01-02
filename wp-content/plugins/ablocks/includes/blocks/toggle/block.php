@@ -85,11 +85,17 @@ class Block extends BlockBaseAbstract {
 		if ( ! empty( $attributes['toggleBarBgColor'] ) ) {
 			$toggleBarCSS['background-color'] = $attributes['toggleBarBgColor'];
 		}
-		if ( ! empty( $attributes['space'][ 'value' . $device ] ) ) {
-			$toggleBarCSS['margin-bottom'] = $attributes['space'][ 'value' . $device ] . 'px';
-		}
 		return array_merge(
 			$toggleBarCSS,
+			Range::get_css([
+				'attributeValue' => $attributes['space'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 0,
+				'unitDefaultValue' => 'px',
+				'property' => 'margin-bottom',
+				'device' => $device,
+			]),
 			isset( $attributes['alignment'] ) ? Alignment::get_css( $attributes['alignment'], 'text-align', $device ) : [],
 			isset( $attributes['toggleBarBorder'] ) ? Border::get_css( $attributes['toggleBarBorder'], '', $device ) : [],
 			isset( $attributes['toggleBarPadding'] ) ? Dimensions::get_css( $attributes['toggleBarPadding'], 'padding', $device ) : [],
@@ -97,13 +103,18 @@ class Block extends BlockBaseAbstract {
 	}
 
 	public function get_toggle_bar_wrapper_css( $attributes, $device = '' ) {
-		$toggleBarWrapperCSS = [];
+		$toggleBarWrapperCSS = Range::get_css([
+			'attributeValue' => $attributes['gap'],
+			'attribute_object_key' => 'value',
+			'isResponsive' => true,
+			'defaultValue' => 0,
+			'unitDefaultValue' => 'px',
+			'property' => 'gap',
+			'device' => $device,
+		]);
 
 		if ( ! empty( $attributes['toggleDirection'] ) ) {
 			$toggleBarWrapperCSS['flex-direction'] = $attributes['toggleDirection'];
-		}
-		if ( ! empty( $attributes['gap'][ 'value' . $device ] ) ) {
-			$toggleBarWrapperCSS['gap'] = $attributes['gap'][ 'value' . $device ] . 'px';
 		}
 		return $toggleBarWrapperCSS;
 	}
@@ -113,7 +124,7 @@ class Block extends BlockBaseAbstract {
 	}
 
 	public function get_toggle_label_css( $attributes, $device = '' ) {
-		$labelCSS = isset( $attributes['labelTypography'] ) ? Typography::get_css( $attributes['labelTypography'], $device ) : [];
+		$labelCSS = isset( $attributes['labelTypography'] ) ? Typography::get_css( $attributes['labelTypography'], '', $device ) : [];
 		if ( ! empty( $attributes['labelNormalColor'] ) ) {
 			$labelCSS['color'] = $attributes['labelNormalColor'];
 		}

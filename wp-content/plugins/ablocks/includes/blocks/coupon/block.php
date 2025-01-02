@@ -99,10 +99,10 @@ class Block extends BlockBaseAbstract {
 
 		return array_merge(
 			$css,
-			isset( $attributes['couponBorder'] ) ? Border::get_css( $attributes['couponBorder'], $device ) : [],
+			isset( $attributes['couponBorder'] ) ? Border::get_css( $attributes['couponBorder'], '', $device ) : [],
 			isset( $attributes['couponPadding'] ) ? Dimensions::get_css( $attributes['couponPadding'], 'padding', $device ) : [],
-			Typography::get_css( $attributes['couponTypography'], $device ),
-			TextShadow::get_css( $attributes['couponTextShadow'] )
+			Typography::get_css( $attributes['couponTypography'], '', $device ),
+			TextShadow::get_css( $attributes['couponTextShadow'], '', $device )
 		);
 	}
 
@@ -114,10 +114,10 @@ class Block extends BlockBaseAbstract {
 
 		return array_merge(
 			$css,
-			Border::get_css( $attributes['buttonBorder'], $device ),
+			Border::get_css( $attributes['buttonBorder'], '', $device ),
 			Dimensions::get_css( $attributes['buttonPadding'], 'padding', $device ),
-			Typography::get_css( $attributes['buttonTypography'], $device ),
-			TextShadow::get_css( $attributes['buttonTextShadow'] )
+			Typography::get_css( $attributes['buttonTypography'], '', $device ),
+			TextShadow::get_css( $attributes['buttonTextShadow'], '', $device )
 		);
 	}
 

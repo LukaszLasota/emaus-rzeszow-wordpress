@@ -4,25 +4,23 @@
  * The template for displaying blog posts
  */
 
-get_header(); ?>
+get_header(); 
+?>
 
-<main id="primary" class="site-main">
-	<?php
-	if ( have_posts() ) :
-		while ( have_posts() ) :the_post();
+<main>
+    <div class="editor-content">
+        <?php
+        $posts_page_id = get_option('page_for_posts');
 
-            the_content();
+        if ($posts_page_id) {
+            $posts_page = get_post($posts_page_id);
+            echo apply_filters('the_content', $posts_page->post_content);
+        }
+        ?>
+    </div>
 
-		endwhile;
+    <?php get_template_part('template-parts/content', 'posts'); ?>
 
-		the_posts_pagination( array(
-			'prev_text' => esc_html__( 'Poprzedni', 'church' ),
-			'next_text' => esc_html__( 'Nastepny', 'church' ),
-		) );	
-
-	endif;
-	?>
 </main>
 
-<?php
-get_footer();
+<?php get_footer(); ?>

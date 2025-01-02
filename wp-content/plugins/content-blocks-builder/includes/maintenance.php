@@ -118,7 +118,8 @@ if ( ! class_exists( Maintenance::class ) ) :
 				);
 			}
 
-			$request_uri = trim( $_SERVER['REQUEST_URI'] ?? '', '/' );
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? trim( wp_unslash( $_SERVER['REQUEST_URI'] ) ?? '', '/' ) : '';
 
 			// Ignore administrator and the default login page.
 			if ( current_user_can( 'manage_options' ) || in_array( $request_uri, $ignore_slug, true ) ) {

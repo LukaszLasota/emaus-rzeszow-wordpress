@@ -49,6 +49,11 @@ class Blocks {
 			'carousel' => true,
 			'image-comparison' => true,
 			'flip-box' => true,
+			'social-shares' => true,
+			'search' => true,
+			'svg-draw' => true,
+			'info-box' => true,
+			'price-menu' => true,
 			// Academy LMS Blocks
 			'academy-courses' => true,
 			'academy-course-search' => true,

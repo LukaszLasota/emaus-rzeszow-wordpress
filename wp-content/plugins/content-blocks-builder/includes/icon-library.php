@@ -97,6 +97,7 @@ if ( ! class_exists( IconLibrary::class ) ) :
 
 			if ( $images ) {
 				foreach ( $images as $image ) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 					$icon = file_get_contents( get_attached_file( $image->ID ) );
 					if ( $icon ) {
 						$media_svgs[] = [

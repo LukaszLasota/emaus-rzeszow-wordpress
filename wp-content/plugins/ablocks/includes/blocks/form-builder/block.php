@@ -8,6 +8,7 @@ use ABlocks\Controls\Alignment;
 use ABlocks\Controls\Typography;
 use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\Border;
+use ABlocks\Controls\Range;
 
 class Block extends BlockBaseAbstract {
 
@@ -108,27 +109,48 @@ class Block extends BlockBaseAbstract {
 	}
 
 	public function get_field_css( $attributes, $device = '' ) {
-		$field_css = [];
-		if ( ! empty( $attributes['rowsSpacing'][ 'value' . $device ] ) ) {
-			$field_css['margin-top'] = $attributes['rowsSpacing'][ 'value' . $device ] . 'px';
-			$field_css['margin-bottom'] = $attributes['rowsSpacing'][ 'value' . $device ] . 'px';
-		}
+		$field_css = array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['rowsSpacing'],
+				'attributeObjectKey' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 0,
+				'unitDefaultValue' => 'px',
+				'property' => 'margin-top',
+				'device' => $device,
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['rowsSpacing'],
+				'attributeObjectKey' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 0,
+				'unitDefaultValue' => 'px',
+				'property' => 'margin-bottom',
+				'device' => $device,
+			]),
+		);
 		return $field_css;
 	}
 
 	public function get_label_css( $attributes, $device = '' ) {
 		$label_css = array_merge(
-			Typography::get_css( $attributes['labelTypography'], $device ),
-			Alignment::get_css( $attributes['labelAlignment'], 'text-align', $device )
+			Typography::get_css( $attributes['labelTypography'], '', $device ),
+			Alignment::get_css( $attributes['labelAlignment'], 'text-align', $device ),
+			Range::get_css([
+				'attributeValue' => $attributes['labelSpacing'],
+				'attributeObjectKey' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 10,
+				'unitDefaultValue' => 'px',
+				'property' => 'margin-bottom',
+				'device' => $device,
+			]),
 		);
 
 		if ( ! empty( $attributes['labelColor'] ) ) {
 			$label_css['color'] = $attributes['labelColor'];
 		}
 
-		if ( ! empty( $attributes['labelSpacing'][ 'value' . $device ] ) ) {
-			$label_css['margin-bottom'] = $attributes['labelSpacing'][ 'value' . $device ] . 'px';
-		}
 		if ( ! $attributes['showLabels'] ) {
 			$label_css['display'] = 'none';
 		}
@@ -166,7 +188,7 @@ class Block extends BlockBaseAbstract {
 		$input_css = array_merge(
 			$css, // Include the default border styles if set
 			Alignment::get_css( $attributes['inputAlignment'], 'text-align', $device ),
-			Typography::get_css( $attributes['inputTypography'], $device ),
+			Typography::get_css( $attributes['inputTypography'], '', $device ),
 			Border::get_css( $attributes['inputBorder'], '', $device ),
 			Dimensions::get_css( $attributes['inputPadding'], 'padding', $device )
 		);
@@ -223,7 +245,7 @@ class Block extends BlockBaseAbstract {
 		// Initialize placeholder CSS array
 		$placeholder_css = array_merge(
 			// Apply typography for the placeholder (font size, font family, etc.)
-			Typography::get_css( $attributes['inputTypography'], $device ),
+			Typography::get_css( $attributes['inputTypography'], '', $device ),
 			// Apply alignment if specified
 			Alignment::get_css( $attributes['inputAlignment'], 'text-align', $device )
 		);
@@ -237,15 +259,16 @@ class Block extends BlockBaseAbstract {
 	}
 	public function get_input_position_css( $attributes, $device = '' ) {
 		// Access the inputIconPosition attribute from the attributes array
-		$input_icon_position = isset( $attributes['inputIconPosition'] ) ? $attributes['inputIconPosition'] : 0; // Default to 0 if not set
-
-		// Initialize an array to hold the CSS properties
-		$css = array();
-
-		// Add the CSS for the 'top' property based on the inputIconPosition
-		$css['top'] = $input_icon_position . '%';
-
-		// Return the generated CSS array
+		$css = array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['inputIconPosition'],
+				'isResponsive' => false,
+				'defaultValue' => 60,
+				'unitDefaultValue' => '%',
+				'property' => 'top',
+				'device' => $device,
+			]),
+		);
 		return $css;
 	}
 	public function get_alignment_button_css( $attributes, $device = '' ) {
@@ -261,7 +284,7 @@ class Block extends BlockBaseAbstract {
 		$button_css = array_merge(
 			Dimensions::get_css( $attributes['buttonPadding'], 'padding', $device ),
 			Border::get_css( $attributes['buttonBorder'], '', $device ),
-			Typography::get_css( $attributes['buttonTypography'], $device )
+			Typography::get_css( $attributes['buttonTypography'], '', $device )
 		);
 
 		if ( ! empty( $attributes['buttonColor'] ) ) {

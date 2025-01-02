@@ -9,6 +9,7 @@ use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\Typography;
 use ABlocks\Controls\CssFilter;
 use ABlocks\Controls\BoxShadow;
+use ABlocks\Controls\Range;
 
 class Block extends BlockBaseAbstract {
 	protected $block_name = 'image';
@@ -103,10 +104,6 @@ class Block extends BlockBaseAbstract {
 		if ( $aspectRatioValue && $aspectRatioValue !== 'original' ) {
 			$css['aspect-ratio'] = $aspectRatioValue;
 		}
-
-		if ( ! empty( $attributes['opacity'] ) ) {
-			$css['opacity'] = $attributes['opacity'];
-		}
 		if ( isset( $attributes['onHoverImg'] ) && 'slide' === $attributes['onHoverImg'] ) {
 			$css['transform'] = 'translate3d(-40px, 0, 0)';
 			$css['transition'] = 'transform 0.3s';
@@ -115,6 +112,13 @@ class Block extends BlockBaseAbstract {
 
 		return array_merge(
 			$css,
+			Range::get_css([
+				'attributeValue' => $attributes['opacity'],
+				'defaultValue' => 1,
+				'unitDefaultValue' => '',
+				'property' => 'opacity',
+				'device' => $device,
+			]),
 			isset( $attributes['border'] ) ? Border::get_css( $attributes['border'], '', $device ) : [],
 			isset( $attributes['cssFilter'] ) ? CssFilter::get_css( $attributes['cssFilter'], '', $device ) : [],
 			isset( $attributes['boxShadow'] ) ? BoxShadow::get_css( $attributes['boxShadow'], $device ) : []
@@ -123,7 +127,27 @@ class Block extends BlockBaseAbstract {
 
 	public function get_image_hover_css( $attributes, $device = '' ) {
 		$css = [];
-		$opacityH = $attributes['opacityH'] ?? null;
+		$range_css = Range::get_css([
+			'attributeValue' => $attributes['opacityH'],
+			'defaultValue' => 0,
+			'unitDefaultValue' => '',
+			'property' => 'opacity',
+			'device' => $device,
+		]);
+		$transitionDurationRange = Range::get_css([
+			'attributeValue' => $attributes['transitionDuration'],
+			'defaultValue' => 0.5,
+			'unitDefaultValue' => '',
+			'property' => 'transition',
+			'device' => $device,
+		]);
+		$filterTransitionDurationRange = Range::get_css([
+			'attributeValue' => $attributes['filterTransitionDuration'],
+			'defaultValue' => 0.5,
+			'unitDefaultValue' => '',
+			'property' => 'filter',
+			'device' => $device,
+		]);
 
 		if ( isset( $attributes['onHoverImg'] ) ) {
 			$on_Hover_Img = $attributes['onHoverImg'];
@@ -141,22 +165,18 @@ class Block extends BlockBaseAbstract {
 				$css['transition'] = 'transform 0.3s';
 			}
 		}
-
-		if ( '' !== $opacityH && null !== $opacityH ) {
-			$css['opacity'] = $opacityH;
-		}
 		if (
 			isset( $attributes['border']['transitionDuration'] ) ||
 			isset( $attributes['boxShadow']['transitionDuration'] ) ||
-			isset( $attributes['filterTransitionDuration'] ) ||
-			isset( $attributes['transitionDuration'] )
+			isset( $filterTransitionDurationRange['filter'] ) ||
+			isset( $transitionDurationRange['transition'] )
 		) {
 			$css['transition'] = sprintf(
 				'border %ss, box-shadow %ss, opacity %ss, filter %ss, transform 0.3s',
-				! empty( $attributes['border']['transitionDuration'] ) ? $attributes['border']['transitionDuration'] : $attributes['transitionDuration'],
-				isset( $attributes['boxShadow']['transitionDuration'] ) ? $attributes['boxShadow']['transitionDuration'] : $attributes['transitionDuration'],
-				$attributes['filterTransitionDuration'],
-				$attributes['filterTransitionDuration']
+				! empty( $attributes['border']['transitionDuration'] ) ? $attributes['border']['transitionDuration'] : $transitionDurationRange['transition'],
+				isset( $attributes['boxShadow']['transitionDuration'] ) ? $attributes['boxShadow']['transitionDuration'] : $transitionDurationRange['transition'],
+				$filterTransitionDurationRange['filter'],
+				$filterTransitionDurationRange['filter']
 			);
 		}
 
@@ -164,6 +184,7 @@ class Block extends BlockBaseAbstract {
 
 		return array_merge(
 			$css,
+			$range_css,
 			$border_hover_css,
 			( isset( $attributes['boxShadow'] ) ) ? BoxShadow::get_hover_css( $attributes['boxShadow'], $device ) : [],
 			( isset( $attributes['cssHoverFilter'] ) ) ? CssFilter::get_css( $attributes['cssHoverFilter'], '', $device ) : [],
@@ -190,7 +211,7 @@ class Block extends BlockBaseAbstract {
 			$css,
 			( isset( $attributes['captionPadding'] ) ) ? Dimensions::get_css( $attributes['captionPadding'], 'padding', $device ) : [],
 			( isset( $attributes['captionAlignment'] ) ) ? Alignment::get_css( $attributes['captionAlignment'], 'text-align', $device ) : [],
-			( isset( $attributes['captionTypography'] ) ) ? Typography::get_css( $attributes['captionTypography'], $device ) : [],
+			( isset( $attributes['captionTypography'] ) ) ? Typography::get_css( $attributes['captionTypography'], '', $device ) : [],
 			( isset( $attributes['captionBorder'] ) ) ? Border::get_css( $attributes['captionBorder'], '', $device ) : [],
 		);
 	}

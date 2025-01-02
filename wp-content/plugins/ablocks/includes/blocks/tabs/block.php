@@ -8,6 +8,7 @@ use ABlocks\Controls\Typography;
 use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\Border;
 use ABlocks\Controls\Icon;
+use ABlocks\Controls\Range;
 class Block extends BlockBaseAbstract {
 
 	protected $block_name = 'tabs';
@@ -79,29 +80,72 @@ class Block extends BlockBaseAbstract {
 
 		$tabs_element_icon_wrapper_styles = Icon::get_wrapper_css( $attributes );
 
-		if ( ! empty( $attributes['spacing'] ) && is_array( $attributes['spacing'] ) && ! empty( $attributes['spacing']['value'] ) ) {
-			$spacing_value = $attributes['spacing']['value'];
-			$spacing_unit = $attributes['spacing']['valueUnit'] ?? 'px';
+			$spacing_value = [];
 
-			switch ( $attributes['iconPosition'] ) {
-				case 'left':
-					$tabs_element_icon_wrapper_styles['margin-right'] = $spacing_value . $spacing_unit;
-					break;
-				case 'right':
-					$tabs_element_icon_wrapper_styles['margin-left'] = $spacing_value . $spacing_unit;
-					break;
-				case 'bottom':
-					$tabs_element_icon_wrapper_styles['margin-top'] = $spacing_value . $spacing_unit;
-					break;
-				case 'top':
-					$tabs_element_icon_wrapper_styles['margin-bottom'] = $spacing_value . $spacing_unit;
-					break;
-			}
-		}
+		switch ( $attributes['iconPosition'] ) {
+			case 'left':
+				$spacing_value = Range::get_css([
+					'attributeValue' => $attributes['spacing'] ?? null,
+					'attributeObjectKey' => 'value',
+					'defaultValue' => 0,
+					'isResponsive' => true,
+					'hasUnit' => true,
+					'property' => 'margin-right',
+					'unitDefaultValue' => 'px',
+				]);
+				break;
+			case 'right':
+				$spacing_value = Range::get_css([
+					'attributeValue' => $attributes['spacing'] ?? null,
+					'attributeObjectKey' => 'value',
+					'defaultValue' => 0,
+					'isResponsive' => true,
+					'hasUnit' => true,
+					'property' => 'margin-left',
+					'unitDefaultValue' => 'px',
+				]);
+				break;
+			case 'bottom':
+				$spacing_value = Range::get_css([
+					'attributeValue' => $attributes['spacing'] ?? null,
+					'attributeObjectKey' => 'value',
+					'defaultValue' => 0,
+					'isResponsive' => true,
+					'hasUnit' => true,
+					'property' => 'margin-top',
+					'unitDefaultValue' => 'px',
+				]);
+				break;
+			case 'top':
+				$spacing_value = Range::get_css([
+					'attributeValue' => $attributes['spacing'] ?? null,
+					'attributeObjectKey' => 'value',
+					'defaultValue' => 0,
+					'isResponsive' => true,
+					'hasUnit' => true,
+					'property' => 'margin-bottom',
+					'unitDefaultValue' => 'px',
+				]);
+				break;
+		}//end switch
 
-		$tablet_styles = Icon::get_wrapper_css( $attributes, 'Tablet' );
-		$mobile_styles = Icon::get_wrapper_css( $attributes, 'Mobile' );
+		// Merge $spacing_value into icon wrapper styles
+		$tabs_element_icon_wrapper_styles = array_merge(
+			Icon::get_wrapper_css( $attributes ),
+			$spacing_value
+		);
 
+		// Generate tablet and mobile styles for the icon wrapper
+		$tablet_styles = array_merge(
+			Icon::get_wrapper_css( $attributes, 'Tablet' ),
+			$spacing_value
+		);
+		$mobile_styles = array_merge(
+			Icon::get_wrapper_css( $attributes, 'Mobile' ),
+			$spacing_value
+		);
+
+		// Add icon wrapper styles to the CSS generator
 		if ( ! empty( $tabs_element_icon_wrapper_styles ) || ! empty( $tablet_styles ) || ! empty( $mobile_styles ) ) {
 			$css_generator->add_class_styles(
 				'{{WRAPPER}} .ablocks-block-tabs__icon .ablocks-icon-wrap',
@@ -232,24 +276,87 @@ class Block extends BlockBaseAbstract {
 		}
 
 		// Handling tabs gap
-		$tabs_gap_value = $attributes['tabsGap'][ 'value' . $device ] ?? '';
-		$tabs_gap_unit = $attributes['tabsGap'][ 'valueUnit' . $device ] ?? 'px';
+		$tabs_gap_value = [];
 		$tabs_menu_position = $attributes[ 'tabsMenuPosition' . $device ] ?? '';
 
-		if ( ( $tabs_menu_position === 'left' || $tabs_menu_position === 'right' ) && ! empty( $tabs_gap_value ) ) {
-			$css['margin'] = $tabs_gap_value . $tabs_gap_unit . ' 0' . $tabs_gap_unit;
-		}
-		if ( ( $tabs_menu_position === 'top' || $tabs_menu_position === 'bottom' ) && ! empty( $tabs_gap_value ) ) {
+		if ( ( $tabs_menu_position === 'left' || $tabs_menu_position === 'right' ) ) {
+			$tabs_gap_value = array_merge(
+				Range::get_css([
+					'attributeValue' => $attributes['tabsGap'],
+					'attribute_object_key' => 'value',
+					'isResponsive' => true,
+					'defaultValue' => 10,
+					'hasUnit' => true,
+					'unitDefaultValue' => 'px',
+					'property' => 'margin-top',
+					'device' => $device,
+				]),
+				Range::get_css([
+					'attributeValue' => $attributes['tabsGap'],
+					'attribute_object_key' => 'value',
+					'isResponsive' => true,
+					'defaultValue' => 10,
+					'hasUnit' => true,
+					'unitDefaultValue' => 'px',
+					'property' => 'margin-bottom',
+					'device' => $device,
+				]),
+			);
+		}//end if
+		if ( ( $tabs_menu_position === 'top' || $tabs_menu_position === 'bottom' ) ) {
 			if ( $device === 'Tablet' || $device === 'Mobile' ) {
-				$css['margin'] = $tabs_gap_value . $tabs_gap_unit . ' 0' . $tabs_gap_unit;
+				$tabs_gap_value = array_merge(
+					Range::get_css([
+						'attributeValue' => $attributes['tabsGap'],
+						'attribute_object_key' => 'value',
+						'isResponsive' => true,
+						'defaultValue' => 10,
+						'hasUnit' => true,
+						'unitDefaultValue' => 'px',
+						'property' => 'margin-top',
+						'device' => $device,
+					]),
+					Range::get_css([
+						'attributeValue' => $attributes['tabsGap'],
+						'attribute_object_key' => 'value',
+						'isResponsive' => true,
+						'defaultValue' => 10,
+						'hasUnit' => true,
+						'unitDefaultValue' => 'px',
+						'property' => 'margin-bottom',
+						'device' => $device,
+					]),
+				);
 			} else {
-				$css['margin'] = '0' . $tabs_gap_unit . ' ' . $tabs_gap_value . $tabs_gap_unit;
-			}
-		}
+				$tabs_gap_value = array_merge(
+					Range::get_css([
+						'attributeValue' => $attributes['tabsGap'],
+						'attribute_object_key' => 'value',
+						'isResponsive' => true,
+						'defaultValue' => 10,
+						'hasUnit' => true,
+						'unitDefaultValue' => 'px',
+						'property' => 'margin-left',
+						'device' => $device,
+					]),
+					Range::get_css([
+						'attributeValue' => $attributes['tabsGap'],
+						'attribute_object_key' => 'value',
+						'isResponsive' => true,
+						'defaultValue' => 10,
+						'hasUnit' => true,
+						'unitDefaultValue' => 'px',
+						'property' => 'margin-right',
+						'device' => $device,
+					]),
+				);
+			}//end if
+		}//end if
 
 		// Merging with margin, padding, and border styles
 		return array_merge(
 			$css,
+			$tabs_gap_value,
 			Dimensions::get_css( $attributes['menuContentPadding'] ?? [], 'padding', $device ),
 			Border::get_css( $attributes['menuContentBorder'] ?? [], '', $device )
 		);
@@ -297,7 +404,7 @@ class Block extends BlockBaseAbstract {
 		}
 		return array_merge(
 			$css,
-		Typography::get_css( $attributes[ 'titleTypography' . $device ] ?? [], $device ));
+		Typography::get_css( $attributes['titleTypography'] ?? [], '', $device ));
 	}
 
 	public function get_tabs_active_title_css( $attributes, $device = '' ) {
@@ -317,7 +424,7 @@ class Block extends BlockBaseAbstract {
 		}
 
 		// Get typography styles
-		$typographyStyles = Typography::get_css( $attributes[ 'subTitleTypography' . $device ] ?? [], $device );
+		$typographyStyles = Typography::get_css( $attributes['subTitleTypography'] ?? [], '', $device );
 		$tabsSubtitleCSS = array_merge( $tabsSubtitleCSS, $typographyStyles );
 
 		// Determine width based on menu position

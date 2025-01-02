@@ -13,6 +13,7 @@ use ABlocks\Controls\Background;
 use ABlocks\Controls\Border;
 use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\Alignment;
+use ABlocks\Controls\Range;
 
 class Block extends BlockBaseAbstract {
 	protected $block_name = 'table-of-content';
@@ -84,7 +85,24 @@ class Block extends BlockBaseAbstract {
 		return array_merge( $listing_padding_css, $css );
 	}
 	public function get_toc_header_icon_css( $attributes, $device = '' ) {
-		$css = array();
+		$css = array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['iconSize'],
+				'isResponsive' => false,
+				'defaultValue' => 20,
+				'unitDefaultValue' => 'px',
+				'property' => 'width',
+				'device' => $device,
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['iconSize'],
+				'isResponsive' => false,
+				'defaultValue' => 20,
+				'unitDefaultValue' => 'px',
+				'property' => 'height',
+				'device' => $device,
+			]),
+		);
 		if ( ! empty( $attributes['iconSize'] ) ) {
 			$css['width'] = $attributes['iconSize'] . 'px';
 			$css['height'] = $attributes['iconSize'] . 'px';
@@ -100,15 +118,20 @@ class Block extends BlockBaseAbstract {
 
 		$contentTypography = ! empty( $attributes['contentTypography'] ) ? Typography::get_css( $attributes['contentTypography'], '', $device ) : array();
 
-		$listItemGap = isset( $attributes['listItemGap'] ) ? $attributes['listItemGap'] : [];
-		if ( ! empty( $listItemGap[ 'value' . $device ] ) ) {
-			$css['line-height'] = $listItemGap[ 'value' . $device ]
-				. ( ! empty( $listItemGap[ 'valueUnit' . $device ] ) ? $listItemGap[ 'valueUnit' . $device ] : 'px' );
-		}
 		if ( ! empty( $attributes['itemColor'] ) ) {
 			$css['color'] = $attributes['itemColor'];
 		}
 		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['listItemGap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'defaultValue' => 30,
+				'unitDefaultValue' => 'px',
+				'property' => 'line-height',
+				'hasUnit' => true,
+				'device' => $device,
+			]),
 			$contentTypography,
 			$css,
 		);

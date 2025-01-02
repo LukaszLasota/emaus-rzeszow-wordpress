@@ -225,8 +225,8 @@ if ( ! class_exists( MetaRevisioning::class ) ) :
 		 * @return string
 		 */
 		private function get_meta_diff( $meta_from, $meta_to, $args = [] ) {
-			$meta_from = \is_array( $meta_from ) ? json_encode( $meta_from ) : $meta_from;
-			$meta_to   = \is_array( $meta_to ) ? json_encode( $meta_to ) : $meta_to;
+			$meta_from = \is_array( $meta_from ) ? wp_json_encode( $meta_from ) : $meta_from;
+			$meta_to   = \is_array( $meta_to ) ? wp_json_encode( $meta_to ) : $meta_to;
 
 			$diff = wp_text_diff( (string) $meta_from, (string) $meta_to, $args );
 

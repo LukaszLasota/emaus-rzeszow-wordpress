@@ -9,121 +9,170 @@ use ABlocks\Classes\ControlBaseAbstract;
 
 class Transform extends ControlBaseAbstract {
 	public static function get_attribute_default_value( $is_responsive = false ) {
+		if ( $is_responsive ) {
+			return [
+				'rotate' => '',
+				'rotateTablet' => '',
+				'rotateMobile' => '',
+				'rotate3D' => false,
+				'rotate3DTablet' => false,
+				'rotate3DMobile' => false,
+				'rotateX' => '',
+				'rotateXTablet' => '',
+				'rotateXMobile' => '',
+				'rotateY' => '',
+				'rotateYTablet' => '',
+				'rotateYMobile' => '',
+				'rotateP' => '',
+				'rotatePTablet' => '',
+				'rotatePMobile' => '',
+				// Offset
+				'offsetX' => '',
+				'offsetXTablet' => '',
+				'offsetXMobile' => '',
+				'offsetXUnit' => 'px',
+				'offsetXUnitTablet' => 'px',
+				'offsetXUnitMobile' => 'px',
+				'offsetY' => '',
+				'offsetYTablet' => '',
+				'offsetYMobile' => '',
+				'offsetYUnit' => 'px',
+				'offsetYUnitTablet' => 'px',
+				'offsetYUnitMobile' => 'px',
+				// Scale
+				'scaleProportions' => false,
+				'scale' => '',
+				'scaleTablet' => '',
+				'scaleMobile' => '',
+				'scaleX' => '',
+				'scaleXTablet' => '',
+				'scaleXMobile' => '',
+				'scaleY' => '',
+				'scaleYTablet' => '',
+				'scaleYMobile' => '',
+				// Skew
+				'skewX' => '',
+				'skewXTablet' => '',
+				'skewXMobile' => '',
+				'skewY' => '',
+				'skewYTablet' => '',
+				'skewYMobile' => '',
+				// Flip
+				'flipHorizontal' => false,
+				'flipVertical' => false,
+				// X Anchor
+				'xAnchorPoint' => '',
+				'xAnchorPointTablet' => '',
+				'xAnchorPointMobile' => '',
+				// Y Anchor
+				'yAnchorPoint' => '',
+				'yAnchorPointTablet' => '',
+				'yAnchorPointMobile' => '',
+
+				// Rotate - Hover
+				'rotateH' => '',
+				'rotateHTablet' => '',
+				'rotateHMobile' => '',
+				'rotate3DH' => false,
+				'rotate3DHTablet' => false,
+				'rotate3DHMobile' => false,
+				'rotateXH' => '',
+				'rotateXHTablet' => '',
+				'rotateXHMobile' => '',
+				'rotateYH' => '',
+				'rotateYHTablet' => '',
+				'rotateYHMobile' => '',
+				'rotatePH' => '',
+				'rotatePHTablet' => '',
+				'rotatePHMobile' => '',
+				// Offset - Hover
+				'offsetXH' => '',
+				'offsetXHTablet' => '',
+				'offsetXHMobile' => '',
+				'offsetXHUnit' => 'px',
+				'offsetXHUnitTablet' => 'px',
+				'offsetXHUnitMobile' => 'px',
+				'offsetYH' => '',
+				'offsetYHTablet' => '',
+				'offsetYHMobile' => '',
+				'offsetYHUnit' => 'px',
+				'offsetYHUnitTablet' => 'px',
+				'offsetYHUnitMobile' => 'px',
+				// Scale - Hover
+				'scaleProportionsH' => false,
+				'scaleH' => '',
+				'scaleHTablet' => '',
+				'scaleHMobile' => '',
+				'scaleXH' => '',
+				'scaleXHTablet' => '',
+				'scaleXHMobile' => '',
+				'scaleYH' => '',
+				'scaleYHTablet' => '',
+				'scaleYHMobile' => '',
+				// Skew - Hover
+				'skewXH' => '',
+				'skewXHTablet' => '',
+				'skewXHMobile' => '',
+				'skewYH' => '',
+				'skewYHTablet' => '',
+				'skewYHMobile' => '',
+				// Flip - Hover
+				'flipHorizontalH' => false,
+				'flipVerticalH' => false,
+				// X Anchor - Hover
+				'xAnchorPointH' => '',
+				'xAnchorPointHTablet' => '',
+				'xAnchorPointHMobile' => '',
+				// Y Anchor - Hover
+				'yAnchorPointH' => '',
+				'yAnchorPointHTablet' => '',
+				'yAnchorPointHMobile' => '',
+
+				// Transition
+				'transitionH' => '',
+			];
+		}//end if
 		return [
 			'rotate' => '',
-			'rotateTablet' => '',
-			'rotateMobile' => '',
-			'rotate3D' => false,
-			'rotate3DTablet' => false,
-			'rotate3DMobile' => false,
+			'rotate3D' => '',
 			'rotateX' => '',
-			'rotateXTablet' => '',
-			'rotateXMobile' => '',
 			'rotateY' => '',
-			'rotateYTablet' => '',
-			'rotateYMobile' => '',
 			'rotateP' => '',
-			'rotatePTablet' => '',
-			'rotatePMobile' => '',
-			// Offset
 			'offsetX' => '',
-			'offsetXTablet' => '',
-			'offsetXMobile' => '',
-			'offsetXUnit' => '',
-			'offsetXUnitTablet' => '',
-			'offsetXUnitMobile' => '',
+			'offsetXUnit' => 'px',
 			'offsetY' => '',
-			'offsetYTablet' => '',
-			'offsetYMobile' => '',
-			'offsetYUnit' => '',
-			'offsetYUnitTablet' => '',
-			'offsetYUnitMobile' => '',
-			// Scale
+			'offsetYUnit' => 'px',
 			'scaleProportions' => false,
 			'scale' => '',
-			'scaleTablet' => '',
-			'scaleMobile' => '',
 			'scaleX' => '',
-			'scaleXTablet' => '',
-			'scaleXMobile' => '',
 			'scaleY' => '',
-			'scaleYTablet' => '',
-			'scaleYMobile' => '',
-			// Skew
 			'skewX' => '',
-			'skewXTablet' => '',
-			'skewXMobile' => '',
 			'skewY' => '',
-			'skewYTablet' => '',
-			'skewYMobile' => '',
-			// Flip
 			'flipHorizontal' => false,
 			'flipVertical' => false,
-			// X Anchor
 			'xAnchorPoint' => '',
-			'xAnchorPointTablet' => '',
-			'xAnchorPointMobile' => '',
-			// Y Anchor
 			'yAnchorPoint' => '',
-			'yAnchorPointTablet' => '',
-			'yAnchorPointMobile' => '',
-
-			// Rotate - Hover
 			'rotateH' => '',
-			'rotateHTablet' => '',
-			'rotateHMobile' => '',
-			'rotate3DH' => false,
-			'rotate3DHTablet' => false,
-			'rotate3DHMobile' => false,
+			'rotate3DH' => '',
 			'rotateXH' => '',
-			'rotateXHTablet' => '',
-			'rotateXHMobile' => '',
 			'rotateYH' => '',
-			'rotateYHTablet' => '',
-			'rotateYHMobile' => '',
 			'rotatePH' => '',
-			'rotatePHTablet' => '',
-			'rotatePHMobile' => '',
-			// Offset - Hover
 			'offsetXH' => '',
-			'offsetXHTablet' => '',
-			'offsetXHMobile' => '',
+			'offsetXHUnit' => 'px',
 			'offsetYH' => '',
-			'offsetYHTablet' => '',
-			'offsetYHMobile' => '',
-			// Scale - Hover
-			'scaleProportionsH' => false,
+			'offsetYHUnit' => 'px',
 			'scaleH' => '',
-			'scaleHTablet' => '',
-			'scaleHMobile' => '',
 			'scaleXH' => '',
-			'scaleXHTablet' => '',
-			'scaleXHMobile' => '',
 			'scaleYH' => '',
-			'scaleYHTablet' => '',
-			'scaleYHMobile' => '',
-			// Skew - Hover
 			'skewXH' => '',
-			'skewXHTablet' => '',
-			'skewXHMobile' => '',
 			'skewYH' => '',
-			'skewYHTablet' => '',
-			'skewYHMobile' => '',
-			// Flip - Hover
 			'flipHorizontalH' => false,
 			'flipVerticalH' => false,
-			// X Anchor - Hover
 			'xAnchorPointH' => '',
-			'xAnchorPointHTablet' => '',
-			'xAnchorPointHMobile' => '',
-			// Y Anchor - Hover
 			'yAnchorPointH' => '',
-			'yAnchorPointHTablet' => '',
-			'yAnchorPointHMobile' => '',
-
-			// Transition
 			'transitionH' => '',
 		];
+
 	}
 
 	public static function get_attribute( $attributeName, $isResponsive = false ) {
@@ -145,6 +194,23 @@ class Transform extends ControlBaseAbstract {
 		$css = [];
 		$transformations = [];
 		$transformOrigin = '';
+
+		$x_offset_unit = self::get_unit(
+			[
+				'unit' => ! empty( $value['offsetXUnit'] ) ? $value['offsetXUnit'] : 'px',
+				'unitTablet' => ! empty( $value['offsetXUnitTablet'] ) ? $value['offsetXUnitTablet'] : 'px',
+				'unitMobile' => ! empty( $value['offsetXUnitMobile'] ) ? $value['offsetXUnitMobile'] : 'px',
+			],
+			$device
+		);
+		$y_offset_unit = self::get_unit(
+			[
+				'unit' => ! empty( $value['offsetYUnit'] ) ? $value['offsetYUnit'] : 'px',
+				'unitTablet' => ! empty( $value['offsetYUnitTablet'] ) ? $value['offsetYUnitTablet'] : 'px',
+				'unitMobile' => ! empty( $value['offsetYUnitMobile'] ) ? $value['offsetYUnitMobile'] : 'px',
+			],
+			$device
+		);
 
 		if ( ! empty( $value[ 'rotate' . $device ] ) ) {
 			$transformations[] = 'rotate(' . $value[ 'rotate' . $device ] . 'deg)';
@@ -180,20 +246,20 @@ class Transform extends ControlBaseAbstract {
 			$transformations[] = 'scaleY(' . $value[ 'scaleY' . $device ] . ')';
 		}
 
-		if ( isset( $value[ 'flipHorizontal' . $device ] ) && $value[ 'flipHorizontal' . $device ] !== false ) {
+		if ( isset( $value['flipHorizontal'] ) && $value['flipHorizontal'] !== false ) {
 			$transformations[] = 'scaleX(-1)';
 		}
 
-		if ( isset( $value[ 'flipVertical' . $device ] ) && $value[ 'flipVertical' . $device ] !== false ) {
+		if ( isset( $value['flipVertical'] ) && $value['flipVertical'] !== false ) {
 			$transformations[] = 'scaleY(-1)';
 		}
 
 		if ( ! empty( $value[ 'offsetX' . $device ] ) ) {
-			$transformations[] = 'translateX(' . $value[ 'offsetX' . $device ] . 'px)';
+			$transformations[] = 'translateX(' . $value[ 'offsetX' . $device ] . $x_offset_unit . ')';
 		}
 
 		if ( ! empty( $value[ 'offsetY' . $device ] ) ) {
-			$transformations[] = 'translateY(' . $value[ 'offsetY' . $device ] . 'px)';
+			$transformations[] = 'translateY(' . $value[ 'offsetY' . $device ] . $y_offset_unit . ')';
 		}
 
 		if ( ! empty( $value[ 'skewX' . $device ] ) ) {
@@ -228,6 +294,23 @@ class Transform extends ControlBaseAbstract {
 
 		$transformations = [];
 		$transformOrigin = '';
+
+		$x_offset_hover_unit = self::get_unit(
+			[
+				'unit' => ! empty( $value['offsetXHUnit'] ) ? $value['offsetXHUnit'] : 'px',
+				'unitTablet' => ! empty( $value['offsetXHUnitTablet'] ) ? $value['offsetXHUnitTablet'] : 'px',
+				'unitMobile' => ! empty( $value['offsetXHUnitMobile'] ) ? $value['offsetXHUnitMobile'] : 'px',
+			],
+			$device
+		);
+		$y_offset_hover_unit = self::get_unit(
+			[
+				'unit' => ! empty( $value['offsetYHUnit'] ) ? $value['offsetYHUnit'] : 'px',
+				'unitTablet' => ! empty( $value['offsetYHUnitTablet'] ) ? $value['offsetYHUnitTablet'] : 'px',
+				'unitMobile' => ! empty( $value['offsetYHUnitMobile'] ) ? $value['offsetYHUnitMobile'] : 'px',
+			],
+			$device
+		);
 
 		if ( '' !== $value[ 'rotateH' . $device ] ) {
 			$rotateH = isset( $value[ 'rotateH' . $device ] ) ? $value[ 'rotateH' . $device ] : 0;
@@ -265,11 +348,11 @@ class Transform extends ControlBaseAbstract {
 		}
 
 		if ( '' !== $value[ 'offsetXH' . $device ] ) {
-			$transformations[] = 'translateX(' . $value[ 'offsetXH' . $device ] . 'px)';
+			$transformations[] = 'translateX(' . $value[ 'offsetXH' . $device ] . $x_offset_hover_unit . ')';
 		}
 
 		if ( '' !== $value[ 'offsetYH' . $device ] ) {
-			$transformations[] = 'translateY(' . $value[ 'offsetYH' . $device ] . 'px)';
+			$transformations[] = 'translateY(' . $value[ 'offsetYH' . $device ] . $y_offset_hover_unit . ')';
 		}
 
 		if ( '' !== $value[ 'skewXH' . $device ] ) {
@@ -284,12 +367,12 @@ class Transform extends ControlBaseAbstract {
 			$transformOrigin = $value[ 'yAnchorPointH' . $device ] . ' ' . $value[ 'xAnchorPointH' . $device ];
 		}
 
-		if ( '' === $device || ( 0 !== $device && count( $transformations ) ) ) {
-			if ( false !== $value[ 'flipHorizontalH' . $device ] ) {
+		if ( count( $transformations ) ) {
+			if ( false !== $value['flipHorizontalH'] ) {
 				$transformations[] = 'scaleX(-1)';
 			}
 
-			if ( false !== $value[ 'flipVerticalH' . $device ] ) {
+			if ( false !== $value['flipVerticalH'] ) {
 				$transformations[] = 'scaleY(-1)';
 			}
 		}

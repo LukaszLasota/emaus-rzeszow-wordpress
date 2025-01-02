@@ -49,9 +49,9 @@ class Block extends BlockBaseAbstract {
 
 	public function get_paragraph_text_css( $attributes, $device = '' ) {
 		return array_merge(
-			isset( $attributes['typography'] ) ? Typography::get_css( $attributes['typography'], $device ) : [],
-			isset( $attributes['textStroke'] ) ? TextStroke::get_css( $attributes['textStroke'], $device ) : [],
-			isset( $attributes['textShadow'] ) ? TextShadow::get_css( $attributes['textShadow'] ) : [],
+			isset( $attributes['typography'] ) ? Typography::get_css( $attributes['typography'], '', $device ) : [],
+			isset( $attributes['textStroke'] ) ? TextStroke::get_css( $attributes['textStroke'], '', $device ) : [],
+			isset( $attributes['textShadow'] ) ? TextShadow::get_css( $attributes['textShadow'], '', $device ) : [],
 		);
 	}
 

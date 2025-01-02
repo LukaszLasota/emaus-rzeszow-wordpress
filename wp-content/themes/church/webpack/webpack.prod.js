@@ -14,7 +14,7 @@ module.exports = merge(common, {
 		assetModuleFilename: '[name][ext][query]'
 	},
 	plugins: [
-		new MiniCssExtractPlugin({filename: 'css/[name].min.css'})
+		new MiniCssExtractPlugin({ filename: 'css/[name].min.css' })
 	],
 	optimization: {
 		minimize: true,
@@ -29,7 +29,7 @@ module.exports = merge(common, {
 					],
 				},
 			}),
-			new TerserPlugin({extractComments: false}),
+			new TerserPlugin({ extractComments: false }),
 		],
 	},
 });

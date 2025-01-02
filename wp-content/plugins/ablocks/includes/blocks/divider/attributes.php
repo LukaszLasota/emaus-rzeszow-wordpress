@@ -54,14 +54,12 @@ $attributes = array_merge(
 	Typography::get_attribute( 'elementTextTypography', true ),
 	TextStroke::get_attribute( 'elementTextStroke', true ),
 	Alignment::get_attribute( 'alignment', true, [ 'value' => 'left' ] ),
-	Icon::get_attribute( '', false ),
+	Icon::get_attribute(),
 	Range::get_attribute( [
 		'attributeName' => 'width',
 		'attributeObjectKey' => 'value',
 		'isResponsive' => true,
 		'defaultValue' => 100,
-		'defaultValueMobile' => 100,
-		'defaultValueTablet' => 100,
 		'hasUnit' => true,
 		'unitDefaultValue' => '%',
 	] ),
@@ -88,8 +86,6 @@ $attributes = array_merge(
 		'attributeObjectKey' => 'value',
 		'isResponsive' => true,
 		'defaultValue' => 0,
-		'defaultValueMobile' => 0,
-		'defaultValueTablet' => 0,
 		'hasUnit' => true,
 		'unitDefaultValue' => 'px',
 	] ),
@@ -106,4 +102,5 @@ $attributes = array_merge(
 	$attributes
 );
 
-return $attributes;
+return array_merge( $attributes, \ABlocks\Classes\BlockGlobal::get_attributes() );
+

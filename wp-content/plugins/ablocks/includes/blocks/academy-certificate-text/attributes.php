@@ -18,7 +18,7 @@ $attributes = [
 	'heading' => array(
 		'type' => 'string',
 		'source' => 'html',
-		'selector' => '.ablocks-heading-text',
+		'selector' => '.ablocks-block--certificate__heading-text',
 		'default' => 'Add Your Heading Text Here',
 	),
 	'headingTag' => array(
@@ -40,4 +40,5 @@ $attributes = array_merge(
 	TextStroke::get_attribute( 'textStroke', true ),
 );
 
-return $attributes;
+return array_merge( $attributes, \ABlocks\Classes\BlockGlobal::get_attributes() );
+

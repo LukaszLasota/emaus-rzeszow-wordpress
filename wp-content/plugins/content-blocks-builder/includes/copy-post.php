@@ -115,6 +115,7 @@ if ( ! class_exists( CopyPost::class ) ) :
 			}
 
 			// Nonce verification.
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			if ( ! isset( $_GET['cbb-copy-nonce'] ) || ! wp_verify_nonce( $_GET['cbb-copy-nonce'], BOLDBLOCKS_CBB_ROOT_FILE ) ) {
 				return;
 			}

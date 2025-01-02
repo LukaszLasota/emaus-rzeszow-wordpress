@@ -11,7 +11,7 @@ module.exports = merge(common, {
 		assetModuleFilename: '[name][ext][query]'
 	},
 	plugins: [
-		new MiniCssExtractPlugin({filename: 'css/[name].css'})
+		new MiniCssExtractPlugin({ filename: 'css/[name].css' })
 	],
 	devtool: 'source-map'
 });

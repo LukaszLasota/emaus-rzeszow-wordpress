@@ -7,6 +7,7 @@ use ABlocks\Controls\Alignment;
 use ABlocks\Controls\Typography;
 use ABlocks\Controls\Border;
 use ABlocks\Controls\BoxShadow;
+use ABlocks\Controls\Range;
 
 class Block extends BlockBaseAbstract {
 	protected $block_name = 'countdown';
@@ -72,11 +73,7 @@ class Block extends BlockBaseAbstract {
 
 	public function get_countdown_items_css( $attributes, $device = '' ) {
 		$css = [];
-		$box_size = ! empty( $attributes['boxSize'][ 'value' . $device ] ) ? $attributes['boxSize'][ 'value' . $device ] : '';
-		$box_size_unit = ( ! empty( $attributes['boxSize'][ 'valueUnit' . $device ] ) ? $attributes['boxSize'][ 'valueUnit' . $device ] : 'px' );
-		if ( $box_size ) {
-			$css['min-height'] = $box_size . $box_size_unit;
-		}
+
 		if ( ! empty( $attributes[ 'direction' . $device ] ) ) {
 			$css['flex-direction'] = $attributes[ 'direction' . $device ];
 		}
@@ -98,29 +95,49 @@ class Block extends BlockBaseAbstract {
 			$css['row-gap'] = $attributes['boxRowGap'][ 'value' . $device ]
 				. ( ! empty( $attributes['boxRowGap'][ 'valueUnit' . $device ] ) ? $attributes['boxRowGap'][ 'valueUnit' . $device ] : 'px' );
 		}
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['boxSize'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 130,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'min-height',
+				'device' => $device,
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['boxRowGap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 0,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'row-gap',
+				'device' => $device,
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['boxColumnGap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 0,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'column-gap',
+				'device' => $device,
+			]),
+			$css,
+		);
 	}
 
 	public function get_countdown_item_css( $attributes, $device = '' ) {
 		$css = [];
 
-		$box_size = ! empty( $attributes['boxSize'][ 'value' . $device ] ) ? $attributes['boxSize'][ 'value' . $device ] : ( ! empty( $attributes['boxSize']['value'] ) ? $attributes['boxSize']['value'] : 130 );
-		$box_size_unit = ! empty( $attributes['boxSize'][ 'valueUnit' . $device ] ) ? $attributes['boxSize'][ 'valueUnit' . $device ] : ( ! empty( $attributes['boxSize']['valueUnit'] ) ? $attributes['boxSize']['valueUnit'] : 'px' );
-
 		$box_background_color = ! empty( $attributes['boxBackgroundColor'] ) ? $attributes['boxBackgroundColor'] : '';
-
-		$number_and_label_gap = ! empty( $attributes['numberAndLabelGap'][ 'value' . $device ] ) ? $attributes['numberAndLabelGap'][ 'value' . $device ] : ( ! empty( $attributes['numberAndLabelGap']['value'] ) ? $attributes['numberAndLabelGap']['value'] : 5 );
-		$number_and_label_gap_unit = ! empty( $attributes['numberAndLabelGap'][ 'valueUnit' . $device ] ) ? $attributes['numberAndLabelGap'][ 'valueUnit' . $device ] : ( ! empty( $attributes['numberAndLabelGap']['valueUnit'] ) ? $attributes['numberAndLabelGap']['valueUnit'] : 'px' );
 
 		$label_position = ! empty( $attributes['labelPosition'] ) ? $attributes['labelPosition'] : '';
 		if ( $label_position ) {
 			$css['flex-direction'] = $label_position;
-		}
-		if ( $number_and_label_gap ) {
-			$css['gap'] = $number_and_label_gap . $number_and_label_gap_unit;
-		}
-		if ( $box_size ) {
-			$css['width'] = $box_size . $box_size_unit;
 		}
 		if ( $box_background_color ) {
 			$css['background'] = $box_background_color;
@@ -130,6 +147,26 @@ class Block extends BlockBaseAbstract {
 			$border_css = Border::get_css( $attributes['boxBorder'], '', $device );
 		}
 		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['boxSize'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 130,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'width',
+				'device' => $device,
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['numberAndLabelGap'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 5,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'gap',
+				'device' => $device,
+			]),
 			$border_css,
 			$css,
 			BoxShadow::get_css( ! empty( $attributes['boxShadow'] ) ? $attributes['boxShadow'] : '', $device )

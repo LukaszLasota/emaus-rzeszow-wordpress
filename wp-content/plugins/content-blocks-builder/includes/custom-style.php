@@ -478,7 +478,7 @@ if ( ! class_exists( CustomStyle::class ) ) :
 					'group'                       => 'grid',
 					'layout_type'                 => 'grid',
 				],
-				'rows'           => [
+				'rows'              => [
 					'func_build_responsive_style' => [ $this, 'build_rows_style' ],
 					'group'                       => 'grid',
 					'layout_type'                 => 'grid',
@@ -1550,7 +1550,7 @@ if ( ! class_exists( CustomStyle::class ) ) :
 			$settings            = $background['settings'] ?? [];
 			$media               = $background['image'] ?? [];
 			$mobile_background   = ! ( $media['useFeaturedImage'] ?? false ) && ( $media['hasMobileBackground'] ?? false ) && ( $media['mobileBackground']['url'] ?? '' ) ? $media['mobileBackground'] : false;
-			$background_classes  = [ 'bb:block-background bb:block-background--image' ];
+			$background_classes  = [ 'bb:block-background bb:block-background--image cbb-bg-image' ];
 			$background_position = round( ( $settings['focalPoint']['x'] ?? .5 ) * 100 ) . '% ' . round( ( $settings['focalPoint']['y'] ?? .5 ) * 100 ) . '%';
 
 			$image_element = '';
@@ -1574,11 +1574,12 @@ if ( ! class_exists( CustomStyle::class ) ) :
 			$background_styles = [];
 			$animation_type    = false;
 			if ( $settings['isImgElement'] ?? false ) {
-				$attrs            = [
+				$attrs = [
 					'alt'   => esc_attr( $alt_text ),
 					'style' => esc_attr( $img_style ),
 					'class' => 'bb:block-background--img',
 				];
+
 				$loading_priority = $settings['loadingPriority'] ?? '';
 				if ( $loading_priority ) {
 					if ( $loading_priority === 'lazy' ) {
@@ -1625,12 +1626,14 @@ if ( ! class_exists( CustomStyle::class ) ) :
 					'background-image'    => 'url(' . $image_as_background . ')',
 					'background-position' => $background_position,
 				];
+
 				if ( ! empty( $settings['isFixed'] ) ) {
 					$background_styles['background-attachment'] = 'fixed';
 				}
 
 				$background_styles['background-repeat'] = $settings['repeat'] ?? 'no-repeat';
 				$background_styles['background-size']   = $settings['size'] ?? 'cover';
+
 				if ( $mobile_background ) {
 					$background_styles['--cbb-mobile-background'] = "url('{$this->get_background_image_url( $mobile_background['url'] )}')";
 					$background_classes[]                         = 'cbb-mobile-background';
@@ -1724,6 +1727,14 @@ if ( ! class_exists( CustomStyle::class ) ) :
 				$background_style = ' style="' . $background_style . '"';
 			}
 
+			// Get image full size.
+			$image_full_size     = $is_internal_image ? $this->generate_image_full_attributes( $image_id ) : false;
+			$dataset['data-src'] = $image_full_size ? $image_full_size['src'] : $image_url;
+			if ( $image_full_size ) {
+				$dataset['data-width']  = $image_full_size['width'];
+				$dataset['data-height'] = $image_full_size['height'];
+			}
+
 			$data_attribute = $dataset ? array_reduce(
 				array_keys( $dataset ),
 				function ( $carry, $key ) use ( $dataset ) {
@@ -1742,6 +1753,27 @@ if ( ! class_exists( CustomStyle::class ) ) :
 				'background_markup' => $background_image,
 				'block_class'       => $block_class,
 			];
+		}
+
+		/**
+		 * Generate data for full size of an image
+		 *
+		 * @param int $image_id
+		 * @return array
+		 */
+		private function generate_image_full_attributes( $image_id ) {
+			$image = wp_get_attachment_image_src( $image_id, 'full' );
+			if ( $image ) {
+				list( $src, $width, $height ) = $image;
+
+				return [
+					'src'    => $src,
+					'width'  => $width,
+					'height' => $height,
+				];
+			}
+
+			return [];
 		}
 
 		/**

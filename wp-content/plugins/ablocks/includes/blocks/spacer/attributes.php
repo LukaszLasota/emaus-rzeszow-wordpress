@@ -21,6 +21,9 @@ $attributes = array_merge(
 		'defaultValue' => 50,
 		'hasUnit' => true,
 		'unitDefaultValue' => 'px',
+		'unitDefaultValueTablet' => 'px',
+		'unitDefaultValueMobile' => 'px',
 	] ),
 );
-return $attributes;
+return array_merge( $attributes, \ABlocks\Classes\BlockGlobal::get_attributes() );
+

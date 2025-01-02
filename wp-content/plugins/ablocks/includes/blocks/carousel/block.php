@@ -4,6 +4,7 @@ namespace ABlocks\Blocks\Carousel;
 use ABlocks\Classes\BlockBaseAbstract;
 use ABlocks\Classes\CssGenerator;
 use ABlocks\Controls\Alignment;
+use ABlocks\Controls\Range;
 
 
 class Block extends BlockBaseAbstract {
@@ -68,61 +69,79 @@ class Block extends BlockBaseAbstract {
 
 	public function get_carousel_css( $attributes, $device = '' ) {
 		$carousel_css = [];
-
-		if ( isset( $attributes['carouselHeight'] ) ) {
-			$carousel_height = $attributes['carouselHeight'];
-			if ( ! empty( $carousel_height[ 'value' . $device ] ) ) {
-				$unit = isset( $carousel_height[ 'valueUnit' . $device ] ) ? $carousel_height[ 'valueUnit' . $device ] : 'px';
-				$carousel_css['min-height'] = $carousel_height[ 'value' . $device ] . $unit;
-			}
-		}
-
 		if ( isset( $attributes['verticalAlignment'] ) ) {
 			$carousel_css['align-items'] = $attributes['verticalAlignment'];
 		}
 
-		return $carousel_css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['carouselHeight'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'defaultValue' => 300,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'min-height',
+				'device' => $device,
+			]),
+			$carousel_css,
+		);
 	}
 
 
 	public function get_navigation_button_css( $attributes, $device = '' ) {
 		$navigation_button_css = [];
 
-		if ( isset( $attributes['navigationIconSize'][ 'value' . $device ] ) ) {
-			$unit = isset( $attributes['navigationIconSize'][ 'valueUnit' . $device ] ) ? $attributes['navigationIconSize'][ 'valueUnit' . $device ] : 'px';
-			$navigation_button_css['width'] = $attributes['navigationIconSize'][ 'value' . $device ] . $unit;
-			$navigation_button_css['height'] = $attributes['navigationIconSize'][ 'value' . $device ] . $unit;
-		}
-
-		if ( isset( $attributes['navigationIconPositionY'][ 'value' . $device ] ) ) {
-			$unit = isset( $attributes['navigationIconPositionY'][ 'valueUnit' . $device ] ) ? $attributes['navigationIconPositionY'][ 'valueUnit' . $device ] : '%';
-			$navigation_button_css['top'] = $attributes['navigationIconPositionY'][ 'value' . $device ] . $unit;
-		}
-
-		return $navigation_button_css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['navigationIconPositionY'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 50,
+				'isResponsive' => false,
+				'hasUnit' => true,
+				'unitDefaultValue' => '%',
+				'property' => 'top',
+				'device' => $device,
+			]),
+			$navigation_button_css,
+		);
 	}
 
 
 	public function get_navigation_prev_button_css( $attributes, $device = '' ) {
 		$navigation_prev_button_css = [];
 
-		if ( isset( $attributes['navigationIconPositionPrevX'][ 'value' . $device ] ) ) {
-			$unit = isset( $attributes['navigationIconPositionPrevX'][ 'valueUnit' . $device ] ) ? $attributes['navigationIconPositionPrevX'][ 'valueUnit' . $device ] : '%';
-			$navigation_prev_button_css['left'] = $attributes['navigationIconPositionPrevX'][ 'value' . $device ] . $unit;
-		}
-
-		return $navigation_prev_button_css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['navigationIconPositionPrevX'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => -3,
+				'hasUnit' => true,
+				'isResponsive' => false,
+				'unitDefaultValue' => '%',
+				'property' => 'left',
+				'device' => $device,
+			]),
+			$navigation_prev_button_css,
+		);
 	}
 
 	public function get_navigation_next_button_css( $attributes, $device = '' ) {
 		$navigation_next_button_css = [];
 
-		if ( isset( $attributes['navigationIconPositionNextX'][ 'value' . $device ] ) ) {
-			$unit = isset( $attributes['navigationIconPositionNextX'][ 'valueUnit' . $device ] ) ? $attributes['navigationIconPositionNextX'][ 'valueUnit' . $device ] : '%';
-			$navigation_next_button_css['right'] = $attributes['navigationIconPositionNextX'][ 'value' . $device ] . $unit;
-		}
-
-		return $navigation_next_button_css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['navigationIconPositionNextX'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => -3,
+				'isResponsive' => false,
+				'hasUnit' => true,
+				'unitDefaultValue' => '%',
+				'property' => 'right',
+				'device' => $device,
+			]),
+			$navigation_next_button_css,
+		);
 	}
 
 
@@ -134,7 +153,18 @@ class Block extends BlockBaseAbstract {
 			$navigation_icon_css['font-size'] = $attributes['navigationIconSize'][ 'value' . $device ] . $unit;
 		}
 
-		return $navigation_icon_css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['navigationIconSize'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 35,
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'font-size',
+			]),
+			$navigation_icon_css,
+		);
 	}
 
 

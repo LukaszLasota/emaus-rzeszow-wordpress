@@ -2,6 +2,8 @@
 
 namespace ABlocks\Blocks\ContentTimeline;
 
+use ABlocks\Controls\Range;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -56,7 +58,7 @@ class Block extends BlockBaseAbstract {
 			$this->get_content_timeline_content_background_css( $attributes, 'Mobile' )
 		);
 		// Conditional CSS generation based on arrowAlignment
-		$arrowAlignment = $attributes['arrowAlignment'] ?? 'top'; // Default to 'top' if not set
+		$arrowAlignment = $attributes['arrowAlignment'] ?? 'top';
 
 		if ( $arrowAlignment === 'top' ) {
 			$css_generator->add_class_styles(
@@ -207,51 +209,80 @@ class Block extends BlockBaseAbstract {
 	}
 	public function get_content_timeline_icon_css( $attributes, $device = '' ) {
 		$css = [];
-		$iconSize = $attributes['iconSize'] ?? '';
-		if ( $iconSize ) {
-			$css['width'] = $iconSize . 'px !important';
-			$css['height'] = $iconSize . 'px !important';
-		}
 		if ( ! empty( $attributes['iconColor'] ) ) {
 			$css['fill'] = $attributes['iconColor'];
 		}
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['iconSize'],
+				'attribute_object_key' => 'value',
+				'unitDefaultValue' => 'px',
+				'defaultValue' => 18,
+				'property' => 'width',
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['iconSize'],
+				'attribute_object_key' => 'value',
+				'unitDefaultValue' => 'px',
+				'defaultValue' => 18,
+				'property' => 'height',
+			]),
+			$css,
+		);
 	}
 
 	public function get_content_timeline_icon_background_css( $attributes, $device = '' ) {
 		$css = [];
-		$icon_background_size = $attributes['iconBackgroundSize'] ?? '';
-		if ( $icon_background_size ) {
-			$css['width'] = $icon_background_size . 'px !important';
-			$css['height'] = $icon_background_size . 'px !important';
-		}
 		if ( ! empty( $attributes['iconBackgroundColor'] ) ) {
 			$css['background-color'] = $attributes['iconBackgroundColor'];
 		}
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['iconBackgroundSize'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 48,
+				'property' => 'width',
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['iconBackgroundSize'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 48,
+				'property' => 'height',
+			]),
+			$css,
+		);
 	}
 
 	public function get_content_timeline_connector_css( $attributes, $device = '' ) {
 		$css = [];
-		$thickness_size = $attributes['thickness'] ?? '';
-		if ( $thickness_size ) {
-			$css['width'] = $thickness_size . 'px !important';
-		}
 		if ( ! empty( $attributes['thicknessColor'] ) ) {
 			$css['background-color'] = $attributes['thicknessColor'];
 		}
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['thickness'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 3,
+				'property' => 'width',
+			]),
+			$css,
+		);
 	}
 
 	public function get_content_timeline_item_gap_css( $attributes, $device = '' ) {
 		$css = [];
-		$item_gap_value = $attributes['itemGap'][ 'value' . $device ] ?? '';
-		$item_gap_unit = $attributes['itemGap'][ 'valueUnit' . $device ] ?? 'px';
-		if ( $item_gap_value ) {
-			$value_unit = ! empty( $item_gap_unit ) ? $item_gap_unit : 'px';
-			$css['margin-top'] = $item_gap_value . $value_unit;
-		}
-		return $css;
+		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['itemGap'],
+				'attribute_object_key' => 'value',
+				'defaultValue' => 10,
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'margin-top',
+			]),
+			$css,
+		);
 	}
 
 	public function get_content_timeline_content_css( $attributes, $device = '' ) {
@@ -311,7 +342,7 @@ class Block extends BlockBaseAbstract {
 		}
 		return array_merge(
 			$css,
-			Typography::get_css( $attributes['dateTypography'] ?? [], $device )
+			Typography::get_css( $attributes['dateTypography'] ?? [], '', $device )
 		);
 	}
 	public function get_content_timeline_date_mobile_css( $attributes, $device = '' ) {

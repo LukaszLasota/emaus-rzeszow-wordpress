@@ -15,6 +15,7 @@ use ABlocks\Controls\Background;
 use ABlocks\Controls\Border;
 use ABlocks\Controls\Dimensions;
 use ABlocks\Controls\Alignment;
+use ABlocks\Controls\Range;
 
 class Block extends BlockBaseAbstract {
 	protected $block_name = 'accordion';
@@ -98,11 +99,19 @@ class Block extends BlockBaseAbstract {
 	}
 	public function get_item_css( $attributes, $device = '' ) {
 		$css = [];
-		if ( ! empty( $attributes['itemSpace'] ) ) {
-			$item_space = $attributes['itemSpace'];
-			$css['margin-bottom'] = $item_space . 'px';
-		}
+
 		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['itemSpace'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'defaultValue' => 10,
+				'property' => 'margin-bottom',
+				'hasUnit' => false,
+				'unitDefaultValue' => 'px',
+				'device' => $device,
+
+			]),
 			$css,
 			isset( $attributes['itemBorder'] ) ? Border::get_css( $attributes['itemBorder'], '', $device ) : []
 		);
@@ -114,17 +123,23 @@ class Block extends BlockBaseAbstract {
 	}
 	public function get_title_css( $attributes, $device = '' ) {
 		$css = [];
-		if ( ! empty( $attributes['iconSpace'] ) ) {
-			$css['margin-left'] = $attributes['iconSpace'] . 'px';
-		}
 		if ( ! empty( $attributes['headerTextColor'] ) ) {
 			$css['color'] = $attributes['headerTextColor'];
 		}
+
 		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['iconSpace'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'defaultValue' => 10,
+				'property' => 'margin-left',
+				'device' => $device,
+			]),
 			$css,
-			isset( $attributes['headerTypography'] ) ? Typography::get_css( $attributes['headerTypography'], $device ) : [],
-			isset( $attributes['headerTextShadow'] ) ? TextShadow::get_css( $attributes['headerTextShadow'], $device ) : [],
-			isset( $attributes['headerTextStroke'] ) ? TextStroke::get_css( $attributes['headerTextStroke'], $device ) : [],
+			Typography::get_css( $attributes['headerTypography'], '', $device ),
+			TextShadow::get_css( $attributes['headerTextShadow'], '', $device ),
+			TextStroke::get_css( $attributes['headerTextStroke'], '', $device )
 		);
 	}
 	public function get_title_hover_css( $attributes, $device = '' ) {
@@ -175,16 +190,22 @@ class Block extends BlockBaseAbstract {
 			$css,
 		);
 	}
-	public function get_icon_css( $attributes ) {
+	public function get_icon_css( $attributes, $device = '' ) {
 		$css = [];
-		if ( ! empty( $attributes['iconSize'] ) ) {
-			$css['font-size'] = $attributes['iconSize'] . 'px';
-		}
+
 		if ( ! empty( $attributes['iconColor'] ) ) {
 			$css['fill'] = $attributes['iconColor'];
 		}
 		return array_merge(
 			$css,
+			Range::get_css([
+				'attributeValue' => $attributes['iconSize'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => false,
+				'defaultValue' => 30,
+				'property' => 'font-size',
+				'device' => $device,
+			]),
 		);
 	}
 	public function get_icon_hover_css( $attributes ) {

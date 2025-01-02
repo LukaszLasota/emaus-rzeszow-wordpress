@@ -77,19 +77,6 @@ class Block extends BlockBaseAbstract {
 
 	public function get_panel_content_wrap_css( $attributes, $device = '' ) {
 		$css = [];
-		$width_value = ! empty( $attributes['panelWidth'][ 'value' . $device ] ) ? $attributes['panelWidth'][ 'value' . $device ] : '';
-		$width_unit = ! empty( $attributes['panelWidth'][ 'valueUnit' . $device ] ) ? $attributes['panelWidth'][ 'valueUnit' . $device ] : 'px';
-
-		if ( $width_value ) {
-			$css['width'] = $width_value . $width_unit;
-		}
-
-		$height_value = ! empty( $attributes['panelHeight'][ 'value' . $device ] ) ? $attributes['panelHeight'][ 'value' . $device ] : '';
-		$height_unit = ! empty( $attributes['panelHeight'][ 'valueUnit' . $device ] ) ? $attributes['panelHeight'][ 'valueUnit' . $device ] : 'px';
-
-		if ( $height_value ) {
-			$css['min-height'] = $height_value . $height_unit;
-		}
 
 		if ( empty( $device ) && ! empty( $attributes['panelContentPosition'] ) ) {
 			$css['align-items'] = $attributes['panelContentPosition'];
@@ -115,6 +102,30 @@ class Block extends BlockBaseAbstract {
 		}
 
 		return array_merge(
+			Range::get_css([
+				'attributeValue' => $attributes['panelWidth'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'defaultValue' => '',
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'width',
+				'device' => $device,
+			]),
+			Range::get_css([
+				'attributeValue' => $attributes['panelHeight'],
+				'attribute_object_key' => 'value',
+				'isResponsive' => true,
+				'hasUnit' => true,
+				'defaultValue' => '',
+				'hasUnit' => true,
+				'unitDefaultValue' => 'px',
+				'property' => 'min-height',
+				'device' => $device,
+			]),
+			isset( $attributes['barBorder'] ) ? Border::get_css( $attributes['barBorder'], '', $device ) : [],
+			$css,
 			$css,
 			Dimensions::get_css( $attributes['panelPadding'], 'padding', $device ),
 			$Background_css,

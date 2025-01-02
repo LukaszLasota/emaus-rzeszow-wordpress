@@ -56,6 +56,10 @@ $attributes = [
 		'type' => 'string',
 		'default' => ''
 	],
+	'sideBarMenuDevice' => [
+		'type' => 'string',
+		'default' => 'mobile'
+	],
 
 ];
 
@@ -71,12 +75,19 @@ $attributes = array_merge(
 	Range::get_attribute( [
 		'attributeName' => 'hamburgerHeight',
 		'isResponsive' => false,
-		'defaultValue' => '3',
+		'defaultValue' => 3,
+		'attributeObjectKey' => 'value',
+		'hasUnit' => true,
+		'unitDefaultValue' => 'px',
 	]),
 	Range::get_attribute( [
 		'attributeName' => 'hamburgerWidth',
 		'isResponsive' => false,
-		'defaultValue' => '30',
+		'defaultValue' => 30,
+		'attributeObjectKey' => 'value',
+		'hasUnit' => true,
+		'unitDefaultValue' => 'px',
 	]),
 );
-return $attributes;
+return array_merge( $attributes, \ABlocks\Classes\BlockGlobal::get_attributes() );
+

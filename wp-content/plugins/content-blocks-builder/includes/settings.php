@@ -22,7 +22,7 @@ if ( ! class_exists( Settings::class ) ) :
 		 *
 		 * @var string
 		 */
-		protected $core_blocks_version = '2.4.6';
+		protected $core_blocks_version = '2.7.3';
 
 		/**
 		 * The script handle
@@ -206,8 +206,10 @@ if ( ! class_exists( Settings::class ) ) :
 
 			// Redirect to the getting started page, ignore bulk activation.
 			if (
-			! ( ( isset( $_REQUEST['action'] ) && 'activate-selected' === $_REQUEST['action'] ) &&
-			( isset( $_POST['checked'] ) && count( $_POST['checked'] ) > 1 ) ) ) {
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				! ( ( isset( $_REQUEST['action'] ) && 'activate-selected' === $_REQUEST['action'] ) &&
+				// phpcs:ignore WordPress.Security.NonceVerification.Missing
+				( isset( $_POST['checked'] ) && count( $_POST['checked'] ) > 1 ) ) ) {
 				add_option( 'boldblocks_activation_redirect', wp_get_current_user()->ID );
 			}
 		}
@@ -236,6 +238,7 @@ if ( ! class_exists( Settings::class ) ) :
 			$core_blocks_file_path = $this->the_plugin_instance->get_file_path( 'data/core-blocks/blocks.json' );
 
 			if ( \file_exists( $core_blocks_file_path ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 				$core_blocks = \file_get_contents( $core_blocks_file_path );
 				$core_blocks = \json_decode( $core_blocks, true );
 			}
@@ -452,7 +455,7 @@ if ( ! class_exists( Settings::class ) ) :
 		 * @return void
 		 */
 		public function boldblocks_purge_cache() {
-			$nonce = wp_unslash( $_REQUEST['_cbb_purge'] ?? '' );
+			$nonce = sanitize_text_field( wp_unslash( $_REQUEST['_cbb_purge'] ?? '' ) );
 			if ( wp_verify_nonce( $nonce, 'cbb_purce_nonce' ) ) {
 				$cbb = $this->the_plugin_instance;
 

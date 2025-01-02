@@ -10,7 +10,7 @@
   "category": "ablocks",
   "icon": "smiley",
   "description": "Show Submenu",
-  "example": {},
+  "example": [],
   "supports": {
     "html": false,
     "anchor": true
@@ -19,5 +19,59 @@
   "style": [
     "file:./style.css"
   ],
-  "viewScript": "file:./view.js"
+  "viewScript": "file:./view.js",
+  "attributes": {
+    "block_id": {
+      "type": "string",
+      "default": ""
+    },
+    "fullWidth": {
+      "type": "boolean",
+      "default": false
+    },
+    "width": {
+      "type": "object",
+      "default": {
+        "value": 100,
+        "valueTablet": "",
+        "valueMobile": "",
+        "valueUnit": "%",
+        "valueUnitTablet": "",
+        "valueUnitMobile": ""
+      }
+    },
+    "height": {
+      "type": "object",
+      "default": {
+        "value": "",
+        "valueTablet": "",
+        "valueMobile": "",
+        "valueUnit": "px",
+        "valueUnitTablet": "",
+        "valueUnitMobile": ""
+      }
+    },
+    "positionX": {
+      "type": "object",
+      "default": {
+        "value": 0,
+        "valueTablet": "",
+        "valueMobile": "",
+        "valueUnit": "%",
+        "valueUnitTablet": "",
+        "valueUnitMobile": ""
+      }
+    },
+    "positionY": {
+      "type": "object",
+      "default": {
+        "value": 100,
+        "valueTablet": "",
+        "valueMobile": "",
+        "valueUnit": "%",
+        "valueUnitTablet": "",
+        "valueUnitMobile": ""
+      }
+    }
+  }
 }
