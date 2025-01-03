@@ -30,7 +30,7 @@ class RegisterAssets implements ActionHookInterface
         $suffix = ($env_type === 'production') ? '.min' : '';
         wp_enqueue_script('church-script', get_stylesheet_directory_uri() . "/assets/js/frontend{$suffix}.js", [], filemtime(get_stylesheet_directory() . "/assets/js/frontend{$suffix}.js"), true);
         wp_enqueue_style('church-styles', get_stylesheet_directory_uri() . "/assets/css/frontend{$suffix}.css", [], filemtime(get_stylesheet_directory() . "/assets/css/frontend{$suffix}.css"));
-        wp_localize_script('church-script', ['ajax_url' => admin_url('admin-ajax.php')]);
+        wp_localize_script('church-script', 'redlist', ['ajax_url' => admin_url('admin-ajax.php')]);
         wp_enqueue_style('church-print-styles', get_stylesheet_directory_uri() . "/assets/css/print{$suffix}.css", [], filemtime(get_stylesheet_directory() . "/assets/css/print{$suffix}.css"), 'print');
     }
 

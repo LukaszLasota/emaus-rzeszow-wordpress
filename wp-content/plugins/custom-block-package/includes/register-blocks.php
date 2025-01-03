@@ -10,7 +10,13 @@ function up_register_blocks() {
     ]],
     [ 'name' => 'map-block', 'options' => [
       'render_callback' => 'render_map_block'
-    ]]
+    ]],
+    [ 'name' => 'dynamic-images', 'options' => [
+      'render_callback' => 'render_dynamic_images'
+    ]],
+
+    
+    
     
   ];
 

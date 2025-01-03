@@ -7,6 +7,6 @@ import Save from './save.js';
 
 registerBlockType(block.name, {
     edit: Edit,
-    save: Save
+    save: () => null
 });
 
