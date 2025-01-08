@@ -14,10 +14,8 @@ function up_register_blocks() {
     [ 'name' => 'dynamic-images', 'options' => [
       'render_callback' => 'render_dynamic_images'
     ]],
-
-    
-    
-    
+    [ 'name' => 'custom-accordion'],
+    [ 'name' => 'accordion-item']
   ];
 
   foreach($blocks as $block) {

@@ -36,6 +36,7 @@
 				}
 			],
 			"palette": [
+				
 				{
 					"color": "#f9f9f9",
 					"name": "Base",
@@ -45,6 +46,11 @@
 					"color": "#ffffff",
 					"name": "Base / Two",
 					"slug": "base-2"
+				},
+				{
+					"color": "#008089",
+					"name": "Site Color",
+					"slug": "site-color"
 				}
 			]
 		},
