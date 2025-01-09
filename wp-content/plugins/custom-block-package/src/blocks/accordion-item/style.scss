@@ -61,5 +61,15 @@
                 padding: 2rem 1.3rem;
             }
         }
+        a {
+            padding: 1rem 2rem;
+            background-color: #6c757d;
+            border-radius: 0.5rem;
+            color: #fff;
+            transition: all 0.3s linear;
+            &:hover {
+                background-color: #5a6268;
+            }
+        }
     }
 }

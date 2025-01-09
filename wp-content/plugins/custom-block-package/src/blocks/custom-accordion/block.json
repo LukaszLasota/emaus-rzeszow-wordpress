@@ -7,7 +7,12 @@
     "icon": "menu",
     "description": "Lista akordeonów, każdy element można rozwijać.",
     "supports": {
-        "html": false
+        "html": false,
+        "spacing": {
+            "margin": true,  
+            "padding": true, 
+            "blockGap": true
+        }
     },
     "attributes": {
         "accordions": {

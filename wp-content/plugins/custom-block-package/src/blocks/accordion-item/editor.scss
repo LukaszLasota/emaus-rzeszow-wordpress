@@ -1,1 +1,13 @@
 @use './style.scss';
+
+.accordion__item {
+    .accordion__content {
+        overflow: visible; 
+        max-height: none; 
+        display: block; 
+    }
+
+    .accordion__title {
+        cursor: default;
+    }
+}
