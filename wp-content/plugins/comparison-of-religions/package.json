@@ -1,0 +1,17 @@
+{
+  "name": "comparison-of-religions",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "wp-scripts build src/block.js --output-path=build",
+    "start": "wp-scripts start src/block.js --output-path=build"
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@wordpress/scripts": "^27.9.0"
+  },
+  "type": "module"
+}
