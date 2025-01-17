@@ -72,7 +72,7 @@ const {
   useBlockProps
 } = wp.blockEditor;
 registerBlockType('comparison-religions/topics-block', {
-  title: 'Edytor Tematów',
+  title: 'Edytuj Tematy',
   category: 'widgets',
   attributes: {
     topics: {
@@ -87,65 +87,125 @@ registerBlockType('comparison-religions/topics-block', {
     const {
       topics
     } = attributes;
-    const addTopic = () => {
+
+    // Dodaje nowy temat (subtopic)
+    const addSubtopic = () => {
       const newTopics = [...topics, {
-        church_name: '',
-        description: '',
-        extra_points: []
+        subtopic: '',
+        churches: [] // Tablica dla wielu kościołów w tym temacie
       }];
       setAttributes({
         topics: newTopics
       });
     };
-    const updateTopic = (index, field, value) => {
+
+    // Aktualizuje pole w danym temacie (np. nazwa tematu)
+    const updateSubtopicField = (index, field, value) => {
       const newTopics = [...topics];
       newTopics[index][field] = value;
       setAttributes({
         topics: newTopics
       });
     };
-    const removeTopic = index => {
+
+    // Usuwa temat
+    const removeSubtopic = index => {
       const newTopics = [...topics];
       newTopics.splice(index, 1);
       setAttributes({
         topics: newTopics
       });
     };
+
+    // Dodaje nowy kościół w danym temacie
+    const addChurch = subtopicIndex => {
+      const newTopics = [...topics];
+      newTopics[subtopicIndex].churches.push({
+        church_name: '',
+        description: '',
+        extra_points: []
+      });
+      setAttributes({
+        topics: newTopics
+      });
+    };
+
+    // Aktualizuje pole w danym kościele
+    const updateChurchField = (subtopicIndex, churchIndex, field, value) => {
+      const newTopics = [...topics];
+      newTopics[subtopicIndex].churches[churchIndex][field] = value;
+      setAttributes({
+        topics: newTopics
+      });
+    };
+
+    // Aktualizuje listę punktów (po przecinku)
+    const updateChurchExtraPoints = (subtopicIndex, churchIndex, value) => {
+      const newTopics = [...topics];
+      newTopics[subtopicIndex].churches[churchIndex].extra_points = value.split(',').map(point => point.trim());
+      setAttributes({
+        topics: newTopics
+      });
+    };
+
+    // Usuwa kościół z tematu
+    const removeChurch = (subtopicIndex, churchIndex) => {
+      const newTopics = [...topics];
+      newTopics[subtopicIndex].churches.splice(churchIndex, 1);
+      setAttributes({
+        topics: newTopics
+      });
+    };
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       ...useBlockProps()
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h4", null, "Edytuj Tematy"), topics.map((topic, index) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      key: index,
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", null, "Edytuj Tematy"), topics.map((item, subtopicIndex) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      key: subtopicIndex,
       style: {
-        border: '1px solid #ccc',
+        border: '1px solid #ddd',
+        marginBottom: '10px',
+        padding: '10px'
+      }
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(TextControl, {
+      label: "Nazwa tematu",
+      value: item.subtopic,
+      onChange: value => updateSubtopicField(subtopicIndex, 'subtopic', value)
+    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(Button, {
+      isSecondary: true,
+      style: {
+        marginBottom: '10px'
+      },
+      onClick: () => addChurch(subtopicIndex)
+    }, "Dodaj Ko\u015Bci\xF3\u0142"), item.churches.map((church, churchIndex) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      key: churchIndex,
+      style: {
+        border: '1px solid #eee',
         padding: '10px',
         marginBottom: '10px'
       }
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(TextControl, {
       label: "Nazwa Ko\u015Bcio\u0142a",
-      value: topic.church_name,
-      onChange: value => updateTopic(index, 'church_name', value)
+      value: church.church_name,
+      onChange: value => updateChurchField(subtopicIndex, churchIndex, 'church_name', value)
     }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(TextareaControl, {
       label: "Opis",
-      value: topic.description,
-      onChange: value => updateTopic(index, 'description', value)
-    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(TextareaControl, {
+      value: church.description,
+      onChange: value => updateChurchField(subtopicIndex, churchIndex, 'description', value)
+    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(TextControl, {
       label: "Dodatkowe punkty (rozdzielone przecinkami)",
-      value: topic.extra_points.join(', '),
-      onChange: value => updateTopic(index, 'extra_points', value.split(',').map(point => point.trim()))
+      value: church.extra_points.join(', '),
+      onChange: value => updateChurchExtraPoints(subtopicIndex, churchIndex, value)
     }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(Button, {
       isDestructive: true,
-      onClick: () => removeTopic(index),
-      style: {
-        marginTop: '10px'
-      }
-    }, "Usu\u0144"))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(Button, {
+      onClick: () => removeChurch(subtopicIndex, churchIndex)
+    }, "Usu\u0144 ko\u015Bci\xF3\u0142"))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(Button, {
+      isDestructive: true,
+      onClick: () => removeSubtopic(subtopicIndex)
+    }, "Usu\u0144 Temat"))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(Button, {
       isPrimary: true,
-      onClick: addTopic
+      onClick: addSubtopic
     }, "Dodaj Temat"));
   },
-  save: () => {
-    return null; // Dane są renderowane dynamicznie.
-  }
+  save: () => null // Serwerowe przetwarzanie danych
 });
 })();
 
