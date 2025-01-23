@@ -3,8 +3,9 @@
  * Plugin Name: Comparison of Religions - Porównanie wyznań
  * Description: React + CPT + strona opcji.
  * Version: 1.0.0
- * Author: Your Name
+ * Author: Łukasz Lasota
  * License: GPL2
+ * Text Domain: comparison
  */
 
 defined('ABSPATH') || exit;
@@ -254,11 +255,10 @@ ComparisonOfReligionsPlugin::init();
 
 function cr_register_blocks() {
     $blocks = [
-        ['name' => 'accordion-cpt'],
-        // ['name' => 'map-block', 'options' => [
-        //     'render_callback' => 'render_map_block'
-        // ]],
-        // Dodaj inne bloki w miarę potrzeby
+        // ['name' => 'accordion-cpt'],
+        ['name' => 'accordion-cpt', 'options' => [
+            'render_callback' => 'render_comparison_block'
+        ]],
     ];
 
     foreach ($blocks as $block) {
@@ -277,6 +277,160 @@ function cr_register_blocks() {
 
 add_action('init', 'cr_register_blocks');
 
+
+
 define('CR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('CR_PLUGIN_FILE', __FILE__);
 define('CR_PLUGIN_URL', plugin_dir_url(__FILE__));
+
+
+
+function render_comparison_block($attributes) {
+    
+    $headerBackground   = $attributes['headerBackground']   ?? '#ffffff';
+    $headerBorderColor  = $attributes['headerBorderColor']  ?? '#000000';
+    $headerTextColor    = $attributes['headerTextColor']    ?? '#000000';
+
+    $unique_id = 'comparison-accordion-' . uniqid();
+    echo '<div id="' . esc_attr($unique_id) . '" class="comparison-accordion">';
+    echo '<style>
+    #' . esc_attr($unique_id) . ' {
+        --accordion-border-color: ' . esc_attr($headerBorderColor) . ';
+    }
+    </style>';
+
+    $comparisons = get_posts([
+        'post_type'      => 'comparison',
+        'posts_per_page' => -1,
+        'orderby'        => 'date',
+        'order'          => 'ASC',
+    ]);
+
+    if (empty($comparisons)) {
+        return '<p>' . __('Brak postów', 'comparison') . '</p>';
+    }
+
+    ob_start();
+    ?>
+    <div class="comparison-accordion"
+
+    style="
+    --compAccordionDesktop: <?php echo esc_attr($attributes['widthDesktop'] ?? '70%'); ?>;
+    --compAccordionTablet: <?php echo esc_attr($attributes['widthTablet'] ?? '80%'); ?>;
+    --compAccordionMobile: <?php echo esc_attr($attributes['widthMobile'] ?? '95%'); ?>;
+    "
+    >
+        <?php foreach ($comparisons as $index => $comparison) :
+            $content  = json_decode(strip_tags($comparison->post_content), true);
+            $is_last  = ($index === count($comparisons) - 1);
+
+            $buttonId = 'accordion-button-' . $index;
+            $panelId  = 'accordion-panel-'  . $index;
+        ?>
+            <div class="comparison-accordion__item" data-index="<?php echo esc_attr($index); ?>">
+                
+                <div class="comparison-accordion__header" id="heading-<?php echo esc_attr($index); ?>">
+                    <h2>
+                        <button
+                            id="<?php echo esc_attr($buttonId); ?>"
+                            class="comparison-accordion__toggle"
+                            type="button"
+                            aria-expanded="false"
+                            aria-controls="<?php echo esc_attr($panelId); ?>"
+                            style="
+                                background-color: <?php echo esc_attr($headerBackground); ?>;
+                                border-top: 1px solid <?php echo esc_attr($headerBorderColor); ?>;
+                                border-right: 1px solid <?php echo esc_attr($headerBorderColor); ?>;
+                                border-left: 1px solid <?php echo esc_attr($headerBorderColor); ?>;
+                                color: <?php echo esc_attr($headerTextColor); ?>;
+                                
+                            "
+                        >
+                            <?php echo esc_html($comparison->post_title); ?>
+                        </button>
+                    </h2>
+                </div>
+
+                <div
+                    id="<?php echo esc_attr($panelId); ?>"
+                    class="comparison-accordion__content"
+                    role="region"
+                    aria-labelledby="<?php echo esc_attr($buttonId); ?>"
+                    style="
+                        max-height: 0;
+                        opacity: 0;
+                        overflow: hidden;
+                        transition: max-height 0.6s ease-in-out, opacity 0.6s ease-in-out;
+                        border-left: 1px solid <?php echo esc_attr($headerBorderColor); ?>;
+                        border-right: 1px solid <?php echo esc_attr($headerBorderColor); ?>;
+                        border-bottom: <?php echo $is_last ? '1px solid ' . esc_attr($headerBorderColor) : 'none'; ?>;
+                    "
+                >
+                    <div class="comparison-accordion__body">
+                        
+                        <div class="comparison-accordion__header-row">
+                            <div class="comparison-accordion__column">
+                                <h3><?php _e('Temat', 'comparison'); ?></h3>
+                            </div>
+                            <div class="comparison-accordion__column">
+                                <h3><?php _e('Kościół Rzymskokatolicki', 'comparison'); ?></h3>
+                            </div>
+                            <div class="comparison-accordion__column">
+                                <h3><?php _e('Kościół Protestancki', 'comparison'); ?></h3>
+                            </div>
+                        </div>
+
+                        <div class="comparison-accordion__content-flex">
+                            <?php if (!empty($content)) : ?>
+                                <?php foreach ($content as $item) : ?>
+                                    <?php 
+                                        $maxRows = max(
+                                            count($item['catholic']   ?? []),
+                                            count($item['protestant'] ?? [])
+                                        );
+
+                                        $catholicRows   = !empty($item['catholic'])   ? $item['catholic']   : [];
+                                        $protestantRows = !empty($item['protestant']) ? $item['protestant'] : [];
+                                    ?>
+                                  <div class="comparison-accordion__row">
+    <!-- Temat -->
+    <div class="comparison-accordion__column--topic">
+        <p><?php echo esc_html($item['topic']); ?></p>
+    </div>
+
+    <!-- Dwie oddzielne kolumny: katolicka i protestancka -->
+    <div class="comparison-accordion__column--combined">
+
+        <div class="comparison-accordion__single-church comparison-accordion__single-church--catholic">
+            <h4><?php _e('Kościół Rzymskokatolicki', 'comparison'); ?></h4>
+
+            <?php foreach ($catholicRows as $catholicText) : ?>
+                <p class="comparison-accordion__paragraph">
+                    <?php echo esc_html($catholicText); ?>
+                </p>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="comparison-accordion__single-church comparison-accordion__single-church--protestant">
+            <h4><?php _e('Kościół Protestancki', 'comparison'); ?></h4>
+
+            <?php foreach ($protestantRows as $protestantText) : ?>
+                <p class="comparison-accordion__paragraph">
+                    <?php echo esc_html($protestantText); ?>
+                </p>
+            <?php endforeach; ?>
+        </div>
+
+    </div><!-- .comparison-accordion__column--combined -->
+</div><!-- .comparison-accordion__row -->
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div><!-- .comparison-accordion__content-grid -->
+                    </div><!-- .comparison-accordion__body -->
+                </div><!-- .comparison-accordion__content -->
+            </div><!-- .comparison-accordion__item -->
+        <?php endforeach; ?>
+    </div><!-- .comparison-accordion -->
+    <?php
+    return ob_get_clean();
+}

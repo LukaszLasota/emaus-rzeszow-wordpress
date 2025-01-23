@@ -9,7 +9,7 @@
 		"appearanceTools": true,
 		"color": {
 			"defaultDuotone": false,
-			"defaultPalette": false,
+			"defaultPalette": true,
 			"defaultGradients": false,
 			"duotone": [
 				{

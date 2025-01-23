@@ -2,17 +2,54 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "comparison-of-religions/accordion-cpt",
-  "title": "Accordion Block CPT",
+  "title": "Blok akordeona dla porównania wyznań",
   "category": "widgets",
   "icon": "list-view",
-  "description": "A custom accordion block.",
+  "description": "Blok akordeona dla porównania wyznań (comparison CPT)",
   "attributes": {
-    "postCount": {
-      "type": "number",
-      "default": 5
+    "headerBackground": {
+      "type": "string",
+      "default": "#f0f8ff"
+    },
+    "headerBorderColor": {
+      "type": "string",
+      "default": "#000000"
+    },
+    "headerTextColor": {
+      "type": "string",
+      "default": "#333333"
+    },
+    "widthDesktop": {
+      "type": "string",
+      "default": "70%"
+    },
+    "widthTablet": {
+      "type": "string",
+      "default": "80%"
+    },
+    "widthMobile": {
+      "type": "string",
+      "default": "90%"
     }
+  },
+  "supports": {
+    "align": true,
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "fontWeight": true,
+      "textTransform": true,
+      "letterSpacing": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "customClassName": true,
+    "anchor": true
   },
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
-  "viewStyle": "file:./style.css"
+  "viewStyle": "file:./index.css",
+  "viewScript": "file:./frontend.js"
 }
