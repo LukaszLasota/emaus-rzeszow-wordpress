@@ -15,7 +15,7 @@ import {
     ToggleControl
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import "./editor.scss";
+import "./index.scss";
 
 const Edit = ({ attributes, setAttributes }) => {
     const {

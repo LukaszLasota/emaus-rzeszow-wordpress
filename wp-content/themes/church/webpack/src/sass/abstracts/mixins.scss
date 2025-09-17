@@ -53,4 +53,33 @@
 	  text-fill-color: transparent;
     -webkit-background-clip: text;
     font-weight: normal;
-}
+  }
+
+  @mixin gradient-text(
+    $font-size: 2rem,
+    $line-height: 1.4,
+    $font-weight: 400,
+    $text-transform: uppercase,
+    $text-align: center,
+    $letter-spacing: 2px,
+    $gradient: var(--wp--preset--gradient--gradient-to-left-bottom)
+  ) {
+    font-size: $font-size;
+    line-height: $line-height;
+    font-weight: $font-weight;
+    text-transform: $text-transform;
+    width: 100%;
+    text-align: $text-align;
+    letter-spacing: $letter-spacing;
+    
+    // Gradient background
+    background: $gradient;
+    background-image: $gradient;
+
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+    
+    // Przycinanie gradientu do tekstu
+    -webkit-background-clip: text;
+    background-clip: text;
+  }

@@ -13,6 +13,6 @@
     },
     "parent": ["custom-block-package/custom-accordion"],
     "editorScript": "file:./index.js",
-    "editorStyle": "file:./index-rtl.css",
+    "editorStyle": "file:./index.css",
     "viewStyle": "file:./style-index.css"
 }

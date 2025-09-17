@@ -1,1 +1,50 @@
-.swiper-container{height:400px;margin:20px 0;position:relative;width:100%}.swiper-container .swiper-wrapper{display:flex;height:100%}.swiper-container .swiper-slide{align-items:center;display:flex;height:100%;justify-content:center;position:relative;width:100%}.swiper-container .swiper-slide img{max-height:100%;max-width:100%}.swiper-container .swiper-slide .components-button{position:absolute;right:10px;top:10px}.swiper-container .swiper-pagination{bottom:10px;text-align:center}.swiper-container .swiper-pagination .swiper-pagination-bullet{background:#000;border-radius:50%;cursor:pointer;height:10px;margin:0 4px;opacity:.5;transition:opacity .3s;width:10px}.swiper-container .swiper-pagination .swiper-pagination-bullet-active{background:#007cba;opacity:1}
+/*!***********************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/blocks/slider-block/style.scss ***!
+  \***********************************************************************************************************************************************************************************************************************************************************/
+.swiper-container {
+  margin: 20px 0;
+  width: 100%;
+  height: 400px;
+  position: relative;
+}
+.swiper-container .swiper-wrapper {
+  display: flex;
+  height: 100%;
+}
+.swiper-container .swiper-slide {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+.swiper-container .swiper-slide img {
+  max-width: 100%;
+  max-height: 100%;
+}
+.swiper-container .swiper-slide .components-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+.swiper-container .swiper-pagination {
+  bottom: 10px;
+  text-align: center;
+}
+.swiper-container .swiper-pagination .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: #000;
+  opacity: 0.5;
+  border-radius: 50%;
+  margin: 0 4px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+.swiper-container .swiper-pagination .swiper-pagination-bullet-active {
+  opacity: 1;
+  background: #007cba;
+}
+
+/*# sourceMappingURL=style-index.css.map*/

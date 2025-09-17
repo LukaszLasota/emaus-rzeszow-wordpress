@@ -4,7 +4,8 @@ import { PanelBody, PanelRow, Button, ToggleControl, RangeControl, } from '@word
 import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import block from './block.json';
-import { MediaUpload, MediaPlaceholder } from '@wordpress/block-editor';
+import { MediaUpload } from '@wordpress/block-editor';
+import './index.scss';
 import './style.scss';
 
 registerBlockType(block.name, {

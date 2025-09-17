@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Comparison of Religions - Porównanie wyznań
+ * Plugin Name: Comparison of Religions - Porównanie wyznań 2
  * Description: A simple WordPress plugin using OOP principles to register custom post types and build Gutenberg blocks.
  * Version: 1.0.0
  * Author: Your Name

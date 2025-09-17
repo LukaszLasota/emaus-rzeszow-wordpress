@@ -86,44 +86,44 @@ const Edit = ({ attributes, setAttributes }) => {
     return (
         <>
             <InspectorControls>
-                <PanelBody title={__("Nagłówek Akordeonu", "comparison")} initialOpen={true}>
+                <PanelBody title={__("Nagłówek Akordeonu", "comparison-of-religions")} initialOpen={true}>
                     {/* Tutaj Twoje ColorPalette, itd. */}
                 </PanelBody>
 
-                <PanelBody title={__("Szerokość Akordeonu", "comparison")} initialOpen={true}>
+                <PanelBody title={__("Szerokość Akordeonu", "comparison-of-religions")} initialOpen={true}>
                     <TextControl
-                        label={__("Szer. Desktop", "comparison")}
+                        label={__("Szer. Desktop", "comparison-of-religions")}
                         value={widthDesktop}
                         onChange={onChangeDesktopWidth}
-                        help={__("np. 80%, 800px, 70vw", "comparison")}
+                        help={__("np. 80%, 800px, 70vw", "comparison-of-religions")}
                     />
                     <TextControl
-                        label={__("Szer. Tablet", "comparison")}
+                        label={__("Szer. Tablet", "comparison-of-religions")}
                         value={widthTablet}
                         onChange={onChangeTabletWidth}
-                        help={__("np. 90%, 600px, 70vw", "comparison")}
+                        help={__("np. 90%, 600px, 70vw", "comparison-of-religions")}
                     />
                     <TextControl
-                        label={__("Szer. Mobile", "comparison")}
+                        label={__("Szer. Mobile", "comparison-of-religions")}
                         value={widthMobile}
                         onChange={onChangeMobileWidth}
-                        help={__("np. 100%, 300px, 90vw", "comparison")}
+                        help={__("np. 100%, 300px, 90vw", "comparison-of-religions")}
                     />
                 </PanelBody>
-                <PanelBody title={__("Nagłówek Akordeonu", "comparison")} initialOpen={true}>
-                    <p>{__("Kolor tła nagłówka", "comparison")}</p>
+                <PanelBody title={__("Nagłówek Akordeonu", "comparison-of-religions")} initialOpen={true}>
+                    <p>{__("Kolor tła nagłówka", "comparison-of-religions")}</p>
                     <ColorPalette
                         colors={colors}
                         value={headerBackground}
                         onChange={onChangeHeaderBackground}
                     />
-                    <p>{__("Kolor obramowania nagłówka", "comparison")}</p>
+                    <p>{__("Kolor obramowania nagłówka", "comparison-of-religions")}</p>
                     <ColorPalette
                         colors={colors}
                         value={headerBorderColor}
                         onChange={onChangeHeaderBorderColor}
                     />
-                    <p>{__("Kolor tekstu nagłówka", "comparison")}</p>
+                    <p>{__("Kolor tekstu nagłówka", "comparison-of-religions")}</p>
                     <ColorPalette
                         colors={colors}
                         value={headerTextColor}

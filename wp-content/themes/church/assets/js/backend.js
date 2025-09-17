@@ -54,7 +54,7 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 /*!************************!*\
   !*** ./src/backend.ts ***!
@@ -67,4 +67,4 @@ __webpack_require__.r(__webpack_exports__);
 
 /******/ })()
 ;
-//# sourceMappingURL=backend.js.map?615991994ecd30671756
+//# sourceMappingURL=backend.js.map?e6cf67ef72ebea7617cb

@@ -41,7 +41,8 @@
       "customClassName": true
   },
     "editorScript": "file:./index.js",
-    "script": "file:./view.js",
-    "viewStyle": "file:./index.css",
-    "editorStyle": "file:./index.css"
+    "viewScript": "file:./view.js",
+    "editorStyle": "file:./index.css",
+    "viewStyle": "file:./style-index.css", 
+    "render": "file:./render.php"
 }

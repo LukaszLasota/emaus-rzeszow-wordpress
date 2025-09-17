@@ -2,7 +2,7 @@ import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, RangeControl } from '@wordpress/components';
 import { useEffect, useRef } from '@wordpress/element';
 import L from 'leaflet';
-import './edit.scss';
+import './index.scss';
 
 const Edit = ({ attributes, setAttributes }) => {
     const { latitude, longitude, zoom, containerHeight, popupText } = attributes;

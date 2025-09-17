@@ -46,10 +46,11 @@
     "viewScript": "file:./frontend.js",
     "editorStyle": [
         "my-block-leaflet-style",
-        "file:./index-rtl.css"
+        "file:./index.css"
     ],
     "viewStyle": [
         "file:./style-index.css",
         "my-block-leaflet-style"
-    ]
+    ],
+    "render": "file:./render.php"
 }

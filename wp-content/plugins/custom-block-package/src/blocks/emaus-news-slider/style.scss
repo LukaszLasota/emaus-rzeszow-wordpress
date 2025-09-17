@@ -1,0 +1,169 @@
+// Zmienne
+$primary-color: #333;
+$secondary-color: #777;
+$text-color: #444;
+$bg-color: #fff;
+$shadow-light: rgba(0, 0, 0, 0.1);
+$shadow-medium: rgba(0, 0, 0, 0.15);
+
+// Główne style dla slidera aktualności
+.emaus-news-slider {
+  margin: 30px auto; // Auto dla centrowania
+  box-sizing: border-box;
+  width: 100%;
+  
+  // Kontener wewnętrzny dla slidera
+  .glide__track {
+    width: 100%;
+  }
+  
+  // Style szerokości na desktopach
+  &.emaus-slider-width-100 {
+    width: 100%;
+  }
+  
+  &.emaus-slider-width-75 {
+    width: 75%;
+  }
+  
+  &.emaus-slider-width-50 {
+    width: 50%;
+  }
+  
+  // Media query dla urządzeń mobilnych
+  @media (max-width: 767px) {
+    &.emaus-slider-mobile-width-100 {
+      width: 90%; // Important aby nadpisać desktop
+    }
+    
+    &.emaus-slider-mobile-width-75 {
+      width: 75%;
+    }
+    
+    &.emaus-slider-mobile-width-50 {
+      width: 50%;
+    }
+  }
+  
+  .emaus-news-heading {
+    font-size: 2rem;
+    line-height: 1.4;
+    font-weight: 400;
+    text-transform: uppercase;
+    width: 100%;
+    text-align: center;
+    letter-spacing: 2px;
+    -webkit-background: var(--wp--preset--gradient--gradient-to-left-bottom);
+    -moz-background: var(--wp--preset--gradient--gradient-to-left-bottom);
+    background: var(--wp--preset--gradient--gradient-to-left-bottom);
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+    -webkit-background-clip: text;
+  }
+
+  .news-slide {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+   
+    &:hover {
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);;
+    }
+  }
+  
+  .news-image {
+    width: 100%;
+    overflow: hidden;
+    
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  }
+  
+  .news-content {
+    padding: 5px 15px;
+
+    h3 {
+      margin: 15px 0;
+      margin-bottom: 10px;
+      font-size: 1.6rem;
+      line-height: 1.4;
+      font-weight: 400;
+    }
+    p{
+      font-size: 1.0rem;
+      line-height: 1.4;
+      margin: 15px 0 25px;
+    }
+  }
+
+    
+  // Style dla nawigacji slidera
+  .glide {
+   
+    &__slides{
+      justify-content: center;
+      align-items: center;
+     
+    }
+
+    &__slide {
+      border: 1px solid var(--wp--preset--color--site-color);
+      margin: 20px 30px;
+    }
+
+    &__arrows {
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      top: 50%;
+      left: -10px;
+      right: -10px;
+      transform: translateY(-50%);
+      z-index: 2;
+    }
+    
+    &__arrow { 
+      border: none;
+      background: var(--wp--preset--gradient--gradient-to-left-bottom);
+      color: white;
+      width: 40px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 2px 5px $shadow-light;
+      
+      &--left,
+      &--right {
+        &:before {
+          content: '';
+          border: solid white;
+          border-width: 0 2px 2px 0;
+          display: inline-block;
+          padding: 10px;
+        }
+      }
+      
+      // Strzałka w lewo - odwrócona zgodnie z żądaniem
+      &--left:before {
+        transform: rotate(135deg);
+        margin-left: 10px;
+      }
+      
+      // Strzałka w prawo - odwrócona zgodnie z żądaniem
+      &--right:before {
+        transform: rotate(-45deg);
+        margin-right: 10px;
+      }
+    }
+  }
+}

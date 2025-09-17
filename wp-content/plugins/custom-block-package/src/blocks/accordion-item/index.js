@@ -5,6 +5,7 @@ import Save from './save.js';
 
 
 registerBlockType(block.name, {
+    ...block,
     edit: Edit,
     save: Save
 });

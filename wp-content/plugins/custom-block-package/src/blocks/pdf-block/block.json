@@ -1,6 +1,6 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 2,
+    "apiVersion": 3,
     "name": "custom-block-package/pdf-block",
     "title": "PDF Block",
     "icon": "media-document",
@@ -33,5 +33,8 @@
 		}
 	},
 	"editorScript": "file:./index.js",
-	"viewStyle": "file:./style-index.css"
+	"editorStyle": "file:./index.css",
+    "viewStyle": "file:./style-index.css"
   }
+
+  

@@ -5,9 +5,11 @@ import { PanelBody, Spinner, TextControl } from "@wordpress/components";
 import { __ } from '@wordpress/i18n';
 import block from "./block.json";
 import "./view.js";
-import "./editor.scss";
+import "./index.scss";
+import './style.scss';
 
 registerBlockType(block.name, {
+    ...block,
     edit({ attributes, setAttributes }) {
         const { numberposts, blockTitle, text } = attributes;
         const blockProps = useBlockProps();

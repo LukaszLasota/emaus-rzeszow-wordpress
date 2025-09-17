@@ -30,5 +30,8 @@ foreach($allFiles as $filename) {
   include_once($filename);
 }
 
-add_action('init', 'up_register_blocks');
+// add_action('init', 'up_register_blocks');
+
+new RegisterBlocks();
+new AssetsManager();
 

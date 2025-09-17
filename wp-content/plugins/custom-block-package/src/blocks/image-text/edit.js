@@ -13,7 +13,7 @@ import {
     Popover
 } from '@wordpress/components';
 import { Fragment, useState } from '@wordpress/element';
-import './editor.scss';
+import './index.scss';
 
 const Edit = ({ attributes, setAttributes }) => {
     const { text, imgID, imgAlt, imgURL, postURL } = attributes;

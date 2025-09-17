@@ -6,6 +6,7 @@ import './style.scss';
 import './frontend.js';
 
 registerBlockType(block.name, {
+    ...block,
     edit: Edit,
     save: () => {
         return null;

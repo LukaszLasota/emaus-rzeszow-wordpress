@@ -6,7 +6,7 @@ import {
     RichText,
 } from '@wordpress/block-editor';
 import { PanelBody, TextControl } from '@wordpress/components';
-import './editor.scss';
+import './index.scss';
 
 const Edit = ({ attributes, setAttributes }) => {
     const { title } = attributes;

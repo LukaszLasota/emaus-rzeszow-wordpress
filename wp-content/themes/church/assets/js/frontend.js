@@ -174,7 +174,7 @@ class HamburgerMenu {
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 /*!*************************!*\
   !*** ./src/frontend.ts ***!
@@ -190,4 +190,4 @@ new _js_menu_menu__WEBPACK_IMPORTED_MODULE_1__.HamburgerMenu();
 
 /******/ })()
 ;
-//# sourceMappingURL=frontend.js.map?dd75f84267e11a2d1cdc
+//# sourceMappingURL=frontend.js.map?88336dff24318d2da185

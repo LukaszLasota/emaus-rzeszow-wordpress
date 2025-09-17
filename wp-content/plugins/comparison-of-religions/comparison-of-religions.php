@@ -5,7 +5,7 @@
  * Version: 1.0.0
  * Author: Łukasz Lasota
  * License: GPL2
- * Text Domain: comparison
+ * Text Domain: comparison-of-religions
  */
 
 defined('ABSPATH') || exit;
@@ -269,8 +269,6 @@ function cr_register_blocks() {
                 $block_dir,
                 isset($block['options']) ? $block['options'] : []
             );
-        } else {
-            error_log("Block folder does not exist: " . $block_dir);
         }
     }
 }
@@ -307,7 +305,7 @@ function render_comparison_block($attributes) {
     ]);
 
     if (empty($comparisons)) {
-        return '<p>' . __('Brak postów', 'comparison') . '</p>';
+        return '<p>' . __('Brak postów', 'comparison-of-religions') . '</p>';
     }
 
     ob_start();
@@ -321,7 +319,7 @@ function render_comparison_block($attributes) {
     "
     >
         <?php foreach ($comparisons as $index => $comparison) :
-            $content  = json_decode(strip_tags($comparison->post_content), true);
+            $content  = json_decode(wp_strip_all_tags($comparison->post_content), true);
             $is_last  = ($index === count($comparisons) - 1);
 
             $buttonId = 'accordion-button-' . $index;
@@ -370,13 +368,13 @@ function render_comparison_block($attributes) {
                         
                         <div class="comparison-accordion__header-row">
                             <div class="comparison-accordion__column">
-                                <h3><?php _e('Temat', 'comparison'); ?></h3>
+                                <h3><?php esc_html_e('Temat', 'comparison-of-religions'); ?></h3>
                             </div>
                             <div class="comparison-accordion__column">
-                                <h3><?php _e('Kościół Rzymskokatolicki', 'comparison'); ?></h3>
+                                <h3><?php esc_html_e('Kościół Rzymskokatolicki', 'comparison-of-religions'); ?></h3>
                             </div>
                             <div class="comparison-accordion__column">
-                                <h3><?php _e('Kościół Protestancki', 'comparison'); ?></h3>
+                                <h3><?php esc_html_e('Kościół Protestancki', 'comparison-of-religions'); ?></h3>
                             </div>
                         </div>
 
@@ -402,7 +400,7 @@ function render_comparison_block($attributes) {
     <div class="comparison-accordion__column--combined">
 
         <div class="comparison-accordion__single-church comparison-accordion__single-church--catholic">
-            <h4><?php _e('Kościół Rzymskokatolicki', 'comparison'); ?></h4>
+            <h4><?php esc_html_e('Kościół Rzymskokatolicki', 'comparison-of-religions'); ?></h4>
 
             <?php foreach ($catholicRows as $catholicText) : ?>
                 <p class="comparison-accordion__paragraph">
@@ -412,7 +410,7 @@ function render_comparison_block($attributes) {
         </div>
 
         <div class="comparison-accordion__single-church comparison-accordion__single-church--protestant">
-            <h4><?php _e('Kościół Protestancki', 'comparison'); ?></h4>
+            <h4><?php esc_html_e('Kościół Protestancki', 'comparison-of-religions'); ?></h4>
 
             <?php foreach ($protestantRows as $protestantText) : ?>
                 <p class="comparison-accordion__paragraph">
