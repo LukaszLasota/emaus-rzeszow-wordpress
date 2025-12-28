@@ -13,10 +13,12 @@ import {
     Popover
 } from '@wordpress/components';
 import { Fragment, useState } from '@wordpress/element';
+import ServerSideRender from '@wordpress/server-side-render';
+import block from './block.json';
 import './index.scss';
 
 const Edit = ({ attributes, setAttributes }) => {
-    const { text, imgID, imgAlt, imgURL, postURL } = attributes;
+    const { text, imgID, postURL } = attributes;
     const blockProps = useBlockProps({
         className: "about-one",
     });
@@ -114,25 +116,14 @@ const Edit = ({ attributes, setAttributes }) => {
 
                 </PanelBody>
             </InspectorControls>
+
             <div {...blockProps}>
-                {postURL && postURL.url ? (
-                    <a href={postURL.url}>
-                        <figure>
-                            {imgURL && <img className="about-one__image" src={imgURL} alt={imgAlt} />}
-                            <h2 className='about-one__caption'>{text}</h2>
-                        </figure>
-                        <div className="about-one__overlay"></div>
-                    </a>
-                ) : (
-                    <figure>
-                        {imgURL && <img className="about-one__image" src={imgURL} alt={imgAlt} />}
-                        <h2 className='about-one__caption'>{text}</h2>
-                        <div className="about-one__overlay"></div>
-                    </figure>
-                )}
+                <ServerSideRender
+                    block={block.name}
+                    attributes={attributes}
+                    EmptyResponsePlaceholder={() => <p>{__('Ładowanie podglądu...', 'custom-block-package')}</p>}
+                />
             </div>
-
-
         </Fragment>
     );
 };

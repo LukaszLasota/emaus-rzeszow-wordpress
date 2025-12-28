@@ -6,7 +6,7 @@ import {
 } from '@wordpress/block-editor';
 import { PanelBody, Button } from '@wordpress/components';
 import { useRef, useEffect } from '@wordpress/element';
-import { initGlide } from '../common/glide-init.js';
+import { initGlide } from '../../js/glide-init.js';
 
 export default function Edit({ attributes, setAttributes }) {
   const { desktopImages = [], mobileImages = [] } = attributes;

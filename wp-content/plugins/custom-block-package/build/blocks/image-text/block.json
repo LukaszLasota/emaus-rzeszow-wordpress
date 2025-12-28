@@ -4,8 +4,8 @@
   "name": "custom-block-package/image-text",
   "title": "Obraz i tekst",
   "icon": "media-document",
-  "category": "media",
-  "description": "Blok z obrazem i tekstem Emaus",
+  "category": "custom-blocks-from-scratch",
+  "description": "Blok z obrazem i tekstem",
   "keywords": [
     "image",
     "text"
@@ -15,8 +15,7 @@
   "attributes": {
     "text": {
       "type": "string",
-      "source": "html",
-      "selector": "h2"
+      "default": ""
     },
     "background": {
       "type": "boolean",
@@ -32,17 +31,11 @@
     },
     "imgAlt": {
       "type": "string",
-      "default": "",
-      "source": "attribute",
-      "selector": "img",
-      "attribute": "alt"
+      "default": ""
     },
     "imgURL": {
       "type": "string",
-      "default": "",
-      "source": "attribute",
-      "selector": "img",
-      "attribute": "src"
+      "default": ""
     },
     "postURL": {
       "type": "object",
@@ -54,5 +47,6 @@
   },
   "editorScript": "file:./index.js",
   "viewStyle": "file:./style-index.css",
-  "editorStyle": "file:./index.css"
+  "editorStyle": "file:./index.css",
+  "render": "file:./render.php"
 }

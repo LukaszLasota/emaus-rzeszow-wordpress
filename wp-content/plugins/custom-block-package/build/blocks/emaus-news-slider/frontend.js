@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".emaus-news-slider").forEach(e=>{const t="true"===e.dataset.autoplay,a=parseInt(e.dataset.autoplaySpeed,10)||3e5;window.initGlide(e,{autoplay:!!t&&a,perView:1})})});

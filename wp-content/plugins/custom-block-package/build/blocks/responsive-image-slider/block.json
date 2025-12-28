@@ -1,8 +1,8 @@
 {
   "apiVersion": 3,
   "name": "custom-block-package/responsive-image-slider",
-  "title": "Responsywny slider Emaus",
-  "category": "media",
+  "title": "Responsywny slider",
+  "category": "custom-blocks-from-scratch",
   "attributes": {
     "desktopImages": {
       "type": "array",
@@ -21,7 +21,8 @@
     "file:./index.css"
   ],
   "viewScript": [
-    "glide-init-script"
+    "glide-init-script",
+    "file:./frontend.js"
   ],
   "viewStyle": [
     "glide-core-style",

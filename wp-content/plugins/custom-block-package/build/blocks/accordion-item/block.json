@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "custom-block-package/accordion-item",
   "title": "Akordeon",
-  "category": "layout",
+  "category": "custom-blocks-from-scratch",
   "icon": "editor-insertmore",
   "attributes": {
     "title": {

@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "custom-block-package/custom-accordion",
   "title": "Dedykowany blok akordeon",
-  "category": "layout",
+  "category": "custom-blocks-from-scratch",
   "icon": "menu",
   "description": "Lista akordeonów, każdy element można rozwijać.",
   "supports": {

@@ -1,1 +1,0 @@
-{"version":3,"file":"blocks/custom-accordion/style-index.css","mappings":";;;AACA;EACI;AAAJ,C","sources":["webpack://custom-block-package/./src/blocks/custom-accordion/style.scss"],"sourcesContent":["\r\n.wp-block-custom-block-package-custom-accordion {\r\n    padding: 100px 0 20px;\r\n}"],"names":[],"sourceRoot":""}

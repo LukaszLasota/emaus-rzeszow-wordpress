@@ -49,7 +49,8 @@
     "file:./index.css"
   ],
   "viewScript": [
-    "glide-init-script"
+    "glide-init-script",
+    "file:./frontend.js"
   ],
   "viewStyle": [
     "glide-core-style",

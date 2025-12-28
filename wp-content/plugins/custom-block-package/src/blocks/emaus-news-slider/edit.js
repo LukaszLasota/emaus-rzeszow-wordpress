@@ -9,7 +9,7 @@ import block from './block.json';
 import './index.scss';
 
 // Import funkcji initGlide
-import { initGlide } from '../common/glide-init.js';
+import { initGlide } from '../../js/glide-init.js';
 
 export default function Edit({ attributes, setAttributes }) {
   const { 

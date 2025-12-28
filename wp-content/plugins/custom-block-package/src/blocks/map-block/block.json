@@ -2,7 +2,7 @@
     "apiVersion": 3,
     "name": "custom-block-package/map-block",
     "title": "Blok mapy",
-    "category": "widgets",
+    "category": "custom-blocks-from-scratch",
     "icon": "location-alt",
     "description": "Blok mapu zbudowanu przu użyciu Leaflet.js.",
     "supports": {

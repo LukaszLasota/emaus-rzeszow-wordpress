@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "custom-block-package/dynamic-images",
   "title": "Blok z trzema obrazami",
-  "category": "media",
+  "category": "custom-blocks-from-scratch",
   "icon": "format-image",
   "attributes": {
     "imgDesktopID": {

@@ -20,17 +20,12 @@ define('UP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('UP_PLUGIN_FILE', __FILE__);
 define('UP_PLUGIN_URL', plugin_dir_url( __FILE__ ));
 
-// Includes
-$rootFiles = glob(UP_PLUGIN_DIR . 'includes/*.php');
-$subdirectoryFiles = glob(UP_PLUGIN_DIR . 'includes/**/*.php');
-$allFiles = array_merge($rootFiles, $subdirectoryFiles);
+// Load autoloader
+require_once UP_PLUGIN_DIR . 'app/Autoloader.php';
 
-
-foreach($allFiles as $filename) {
-  include_once($filename);
-}
-
-// add_action('init', 'up_register_blocks');
+// Initialize plugin classes
+use CustomBlockPackage\Blocks\RegisterBlocks;
+use CustomBlockPackage\Assets\AssetsManager;
 
 new RegisterBlocks();
 new AssetsManager();

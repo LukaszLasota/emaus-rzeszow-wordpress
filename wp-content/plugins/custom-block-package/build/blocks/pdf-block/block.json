@@ -3,8 +3,8 @@
   "apiVersion": 3,
   "name": "custom-block-package/pdf-block",
   "title": "PDF Block",
-  "icon": "media-document",
-  "category": "common",
+  "icon": "custom-blocks-from-scratch",
+  "category": "custom-blocks-from-scratch",
   "description": "Dodaj pdf który wyświetli się na stronie.",
   "keywords": [
     "pdf"
