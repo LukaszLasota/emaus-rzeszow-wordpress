@@ -11,6 +11,13 @@
 class Forminator_Mixpanel_Modules extends Events {
 
 	/**
+	 * Stripe OCS data
+	 *
+	 * @var array
+	 */
+	public static array $stripe_ocs = array();
+
+	/**
 	 * Initialize class.
 	 *
 	 * @since 1.27.0
@@ -43,10 +50,6 @@ class Forminator_Mixpanel_Modules extends Events {
 	 * @since 1.27.0
 	 */
 	public static function tracking_form_publish( $id, $title, $status, $fields, $settings ) {
-		if ( ! self::is_tracking_active() ) {
-			return;
-		}
-
 		$form_status = get_post_status( $id );
 		if ( 'pdf_form' === $form_status || 'leads' === $form_status ) {
 			return;
@@ -70,10 +73,6 @@ class Forminator_Mixpanel_Modules extends Events {
 	 * @since 1.27.0
 	 */
 	public static function tracking_poll_publish( $id, $status, $answers, $settings ) {
-		if ( ! self::is_tracking_active() ) {
-			return;
-		}
-
 		$properties = self::module_properties( $id, 'poll', $status, $answers, $settings );
 
 		self::track_event( 'for_poll_published', $properties );
@@ -94,10 +93,6 @@ class Forminator_Mixpanel_Modules extends Events {
 	 * @since 1.27.0
 	 */
 	public static function tracking_quiz_publish( $id, $type, $status, $questions, $results, $settings ) {
-		if ( ! self::is_tracking_active() ) {
-			return;
-		}
-
 		$data       = array(
 			'type'      => $type,
 			'questions' => $questions,
@@ -169,10 +164,6 @@ class Forminator_Mixpanel_Modules extends Events {
 	 * @since 1.35.0
 	 */
 	public static function tracking_save_template( int $form_id, ?int $template_id = null ) {
-		if ( ! self::is_tracking_active() ) {
-			return;
-		}
-
 		self::track_event(
 			'for_form_save_to_cloud',
 			array(
@@ -227,7 +218,7 @@ class Forminator_Mixpanel_Modules extends Events {
 	 */
 	private static function module_integration( $module_id, $module_slug ) {
 		$addons           = array();
-		$connected_addons = forminator_get_registered_addons_grouped_by_module_connected( $module_id, $module_slug );
+		$connected_addons = forminator_get_registered_addons_grouped_by_module_connected( $module_id, $module_slug, true );
 		if ( ! empty( $connected_addons['connected'] ) ) {
 			foreach ( $connected_addons['connected'] as $addon ) {
 				$addons[] = esc_html( $addon['short_title'] );
@@ -247,12 +238,32 @@ class Forminator_Mixpanel_Modules extends Events {
 	 * @return array
 	 */
 	private static function form_properties( $module_id, $fields, $settings ) {
-		$property = array();
+		$property       = array();
+		$form_style     = self::settings_value( $settings, 'form-style', 'default' );
+		$form_sub_style = self::settings_value( $settings, 'form-substyle', 'default' );
+		$form_style     = 'default' === $form_style ? $form_sub_style : $form_style;
 
 		$property['List of fields']      = self::fields_list( $fields );
-		$property['Design Style']        = self::settings_value( $settings, 'form-style', 'default' );
+		$property['Design Style']        = $form_style;
 		$property['Save and Continue']   = self::settings_value( $settings, 'use_save_and_continue', false );
 		$property['Email Notifications'] = self::settings_value( $settings, 'notification_count', 0 );
+		$property['CAPTCHA Type']        = self::captcha_type( $fields );
+
+		if ( isset( self::$stripe_ocs['payment_method'] ) ) {
+			if ( 'false' === self::$stripe_ocs['payment_method'] ) {
+				$property['Stripe Payment Method'] = 'card only';
+			} else {
+				$property['Stripe Payment Method'] = 'dynamic';
+			}
+		}
+
+		list( $confirm_email, $filter_type ) = self::email_field_properties( $fields );
+		$property['Confirm Email']           = $confirm_email;
+		$property['Filter Email Provider']   = $filter_type;
+
+		if ( isset( self::$stripe_ocs['mode'] ) ) {
+			$property['Stripe Mode'] = 'live' === self::$stripe_ocs['mode'] ? 'live' : 'test';
+		}
 
 		// Addon data.
 		$addon_data                            = self::addon_data( $module_id, $fields, $settings );
@@ -347,6 +358,12 @@ class Forminator_Mixpanel_Modules extends Events {
 					}
 				} else {
 					$field_list[] = ucfirst( esc_html( $field['type'] ) );
+					if ( ! empty( $field['type'] ) && 'stripe-ocs' === $field['type'] ) {
+						self::$stripe_ocs = array(
+							'mode'           => $field['mode'] ?? '',
+							'payment_method' => $field['automatic_payment_methods'] ?? '',
+						);
+					}
 				}
 			}
 		}
@@ -449,6 +466,59 @@ class Forminator_Mixpanel_Modules extends Events {
 	}
 
 	/**
+	 * Get captcha provider label.
+	 *
+	 * @param array $fields Fields.
+	 *
+	 * @return string
+	 */
+	private static function captcha_type( $fields ) {
+		$captcha_data = self::fields_array( $fields, 'captcha' );
+		$captcha_type = '';
+		if ( ! empty( $captcha_data ) ) {
+			$provider = $captcha_data[0]['captcha_provider'] ?? '';
+			if ( 'recaptcha' === $provider ) {
+				$captcha_type = 'reCAPTCHA';
+			} elseif ( 'hcaptcha' === $provider ) {
+				$captcha_type = 'hCaptcha';
+			} elseif ( 'turnstile' === $provider ) {
+				$captcha_type = 'Cloudflare Turnstile';
+			}
+		}
+
+		return $captcha_type;
+	}
+
+	/**
+	 * Get email field properties.
+	 *
+	 * @param array $fields Fields.
+	 *
+	 * @return array
+	 */
+	private static function email_field_properties( $fields ) {
+		$confirm_email         = 'Disabled';
+		$filter_email_provider = 'None';
+		$email_fields          = self::fields_array( $fields, 'email' );
+		if ( ! empty( $email_fields ) ) {
+			foreach ( $email_fields as $field ) {
+				if ( 'Disabled' === $confirm_email && ! empty( $field['confirm-email'] ) && filter_var( $field['confirm-email'], FILTER_VALIDATE_BOOLEAN ) ) {
+					$confirm_email = 'Enabled';
+				}
+				if ( 'None' === $filter_email_provider && ! empty( $field['filter_type'] ) ) {
+					if ( 'deny' === $field['filter_type'] && ! empty( $field['denylist'] ) ) {
+						$filter_email_provider = 'Deny';
+					} elseif ( 'allow' === $field['filter_type'] && ! empty( $field['allowlist'] ) ) {
+						$filter_email_provider = 'Allow';
+					}
+				}
+			}
+		}
+
+		return array( $confirm_email, $filter_email_provider );
+	}
+
+	/**
 	 * Module status
 	 *
 	 * @param string $status Status.
@@ -478,9 +548,6 @@ class Forminator_Mixpanel_Modules extends Events {
 	 * @return void
 	 */
 	private static function delete_module( $module_id, $module_type ) {
-		if ( ! self::is_tracking_active() ) {
-			return;
-		}
 
 		$properties = array(
 			'ID'          => $module_id,

@@ -1,0 +1,59 @@
+{
+  "apiVersion": 3,
+  "name": "custom-block-package/emaus-news-slider",
+  "title": "Slider Aktualności Emaus",
+  "category": "custom-blocks-from-scratch",
+  "icon": "slides",
+  "description": "Wyświetla najnowsze aktualności jako slider",
+  "attributes": {
+    "numberOfPosts": {
+      "type": "number",
+      "default": 3
+    },
+    "category": {
+      "type": "string",
+      "default": ""
+    },
+    "autoplay": {
+      "type": "boolean",
+      "default": true
+    },
+    "autoplaySpeed": {
+      "type": "number",
+      "default": 3000
+    },
+    "sliderWidth": {
+      "type": "string",
+      "default": "100"
+    },
+    "mobileWidth": {
+      "type": "string",
+      "default": "100"
+    },
+    "sliderPadding": {
+      "type": "number",
+      "default": 0
+    },
+    "linkDestination": {
+      "type": "string",
+      "default": "post"
+    }
+  },
+  "supports": {
+    "html": false
+  },
+  "textdomain": "custom-block-package",
+  "editorScript": "file:./index.js",
+  "editorStyle": [
+    "glide-core-style",
+    "file:./index.css"
+  ],
+  "viewScript": [
+    "glide-init-script"
+  ],
+  "viewStyle": [
+    "glide-core-style",
+    "file:./style-index.css"
+  ],
+  "render": "file:./render.php"
+}

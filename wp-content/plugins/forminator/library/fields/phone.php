@@ -81,6 +81,9 @@ class Forminator_Phone extends Forminator_Field {
 		parent::__construct();
 
 		$this->name = esc_html__( 'Phone', 'forminator' );
+		$required   = __( 'This field is required. Please input a phone number.', 'forminator' );
+
+		self::$default_required_messages[ $this->type ] = $required;
 	}
 
 	/**
@@ -98,7 +101,6 @@ class Forminator_Phone extends Forminator_Field {
 				'limit_type'  => 'characters',
 				'validation'  => 'none',
 				'field_label' => esc_html__( 'Phone', 'forminator' ),
-				'placeholder' => esc_html__( 'E.g. +1 300 400 5000', 'forminator' ),
 			)
 		);
 	}
@@ -172,9 +174,10 @@ class Forminator_Phone extends Forminator_Field {
 	 * @return mixed
 	 */
 	public function markup( $field, $views_obj, $draft_value = null ) {
-
 		$settings    = $views_obj->model->settings;
 		$this->field = $field;
+
+		$descr_position = self::get_description_position( $field, $settings );
 
 		$html                  = '';
 		$id                    = self::get_property( 'element_id', $field );
@@ -182,7 +185,6 @@ class Forminator_Phone extends Forminator_Field {
 		$id                    = self::get_field_id( $id );
 		$required              = self::get_property( 'required', $field, false, 'bool' );
 		$ariareq               = 'false';
-		$design                = $this->get_form_style( $settings );
 		$placeholder           = $this->sanitize_value( self::get_property( 'placeholder', $field ) );
 		$value                 = esc_html( self::get_property( 'value', $field ) );
 		$national_country      = self::get_property( 'phone_national_country', $field, 'AF' );
@@ -191,6 +193,24 @@ class Forminator_Phone extends Forminator_Field {
 		$label                 = esc_html( self::get_property( 'field_label', $field, '' ) );
 		$description           = self::get_property( 'description', $field, '' );
 		$format_check          = self::get_property( 'validation', $field, self::FIELD_PROPERTY_VALUE_NOT_EXIST );
+
+		$description_block = '';
+		if ( ! empty( $description ) || ( 'character_limit' === $format_check && 0 < $limit ) ) {
+
+			$description_block .= sprintf( '<span id="' . esc_attr( $id . '-description' ) . '" class="forminator-description" id="%s">', $id . '-description' );
+
+			if ( ! empty( $description ) ) {
+				$description_block .= self::convert_markdown( wp_kses_data( $description ) );
+			}
+
+			if ( 'character_limit' === $format_check && 0 < $limit ) {
+				$description_block .= sprintf( '<span data-limit="%s" data-type="%s">0 / %s</span>', $limit, '', $limit );
+			}
+
+			$description_block .= '</span>';
+		}
+
+		$description_block = apply_filters( 'forminator_field_description', $description_block, $description, $id, $descr_position );
 
 		if ( (bool) $required ) {
 			$ariareq = 'true';
@@ -216,8 +236,8 @@ class Forminator_Phone extends Forminator_Field {
 				$value = 0 === strpos( $value, ' ' ) ? str_replace( ' ', '+', $value ) : trim( $value );
 			}
 		}
-
-		$phone_attr = array(
+		$browser_autofill = self::get_property( 'browser_autofill', $field, 'disabled' );
+		$phone_attr       = array(
 			'type'          => 'text',
 			'name'          => $name,
 			'value'         => $value,
@@ -226,7 +246,7 @@ class Forminator_Phone extends Forminator_Field {
 			'class'         => 'forminator-input forminator-field--phone',
 			'data-required' => $required,
 			'aria-required' => $ariareq,
-			'autocomplete'  => 'off',
+			'autocomplete'  => 'enabled' === $browser_autofill ? 'tel-national' : 'off',
 		);
 
 		if ( wp_is_mobile() ) {
@@ -262,23 +282,15 @@ class Forminator_Phone extends Forminator_Field {
 		}
 
 		$html .= '<div class="forminator-field">';
+		$html .= self::get_field_label( $label, $id, $required );
+		if ( 'above' === $descr_position ) {
+			$html .= $description_block;
+		}
 
-			$html .= self::create_input( $phone_attr, $label, '', $required, $design );
+			$html .= self::create_input( $phone_attr, '', '', $required );
 
-		if ( ! empty( $description ) || ( 'character_limit' === $format_check && 0 < $limit ) ) {
-
-			$html .= sprintf( '<span id="' . esc_attr( $id . '-description' ) . '" class="forminator-description" id="%s">', $id . '-description' );
-
-			if ( ! empty( $description ) ) {
-				$html .= wp_kses_data( $description );
-			}
-
-			if ( 'character_limit' === $format_check && 0 < $limit ) {
-				$html .= sprintf( '<span data-limit="%s" data-type="%s">0 / %s</span>', $limit, '', $limit );
-			}
-
-				$html .= '</span>';
-
+		if ( 'above' !== $descr_position ) {
+			$html .= $description_block;
 		}
 
 		$html .= '</div>';
@@ -349,10 +361,7 @@ class Forminator_Phone extends Forminator_Field {
 		$messages           = '"' . $this->get_id( $field ) . '": {' . "\n";
 
 		if ( $this->is_required( $field ) ) {
-			$required_message = self::get_property( 'required_message', $field );
-			if ( empty( $required_message ) ) {
-				$required_message = esc_html__( 'This field is required. Please input a phone number.', 'forminator' );
-			}
+			$required_message = self::get_property( 'required_message', $field, self::$default_required_messages[ $this->type ] );
 			$required_message = apply_filters(
 				'forminator_field_phone_required_validation_message',
 				$required_message,
@@ -432,7 +441,7 @@ class Forminator_Phone extends Forminator_Field {
 
 		if ( $this->is_required( $field ) ) {
 			if ( empty( $data ) ) {
-				$required_message                = self::get_property( 'required_message', $field, esc_html__( 'This field is required. Please input a phone number.', 'forminator' ) );
+				$required_message                = self::get_property( 'required_message', $field, esc_html( self::$default_required_messages[ $this->type ] ) );
 				$this->validation_message[ $id ] = apply_filters(
 					'forminator_field_phone_required_field_validation_message',
 					$required_message,

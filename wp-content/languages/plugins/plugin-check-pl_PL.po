@@ -1,0 +1,724 @@
+# Translation of Plugins - Plugin Check (PCP) - Stable (latest release) in Polish
+# This file is distributed under the same license as the Plugins - Plugin Check (PCP) - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-12-19 13:52:18+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.3\n"
+"Language: pl\n"
+"Project-Id-Version: Plugins - Plugin Check (PCP) - Stable (latest release)\n"
+
+#: includes/Checker/Checks/Security/Safe_Redirect_Check.php:79
+#: includes/Checker/Checks/Security/Safe_Redirect_Check.php:98
+msgid "https://developer.wordpress.org/reference/functions/wp_safe_redirect/"
+msgstr "https://developer.wordpress.org/reference/functions/wp_safe_redirect/"
+
+#: includes/Checker/Checks/Security/Safe_Redirect_Check.php:66
+msgid "Checks that redirects use wp_safe_redirect() instead of wp_redirect() for security."
+msgstr "Sprawdza, czy przekierowania używają bezpiecznego wp_safe_redirect() zamiast wp_redirect()."
+
+#: includes/Checker/Checks/Security/Nonce_Verification_Check.php:107
+#: includes/Checker/Checks/Security/Nonce_Verification_Check.php:111
+msgid "https://developer.wordpress.org/apis/security/nonces/#verifying-nonces"
+msgstr "https://developer.wordpress.org/apis/security/nonces/#verifying-nonces"
+
+#: includes/Checker/Checks/Security/Nonce_Verification_Check.php:103
+msgid "https://developer.wordpress.org/reference/functions/check_admin_referer/"
+msgstr "https://developer.wordpress.org/reference/functions/check_admin_referer/"
+
+#: includes/Checker/Checks/Security/Nonce_Verification_Check.php:82
+#: includes/Checker/Checks/Security/Nonce_Verification_Check.php:115
+msgid "https://developer.wordpress.org/apis/security/nonces/"
+msgstr "https://developer.wordpress.org/apis/security/nonces/"
+
+#: includes/Checker/Checks/Plugin_Repo/Prefixing_Check.php:90
+msgid "https://make.wordpress.org/plugins/handbook/performing-reviews/review-checklist/#code"
+msgstr "https://make.wordpress.org/plugins/handbook/performing-reviews/review-checklist/#code"
+
+#: includes/Admin/Admin_Page.php:335
+msgid "Check a plugin"
+msgstr "Sprawdź wtyczkę"
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Uninstall_Check.php:101
+msgid "Checks related to plugin uninstallation."
+msgstr "Kontrole związane z odinstalowywaniem wtyczki."
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Uninstall_Check.php:114
+msgid "https://developer.wordpress.org/plugins/plugin-basics/uninstall-methods/#method-2-uninstall-php"
+msgstr "https://developer.wordpress.org/plugins/plugin-basics/uninstall-methods/#method-2-uninstall-php"
+
+#. translators: %s: Constant name.
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Uninstall_Check.php:78
+msgid "Check for %s constant missing."
+msgstr "Sprawdź, czy nie brakuje stałej %s."
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Review_PHPCS_Check.php:95
+msgid "When your plugin is hosted on WordPress.org, you no longer need to manually include this function call for translations under your plugin slug. WordPress will automatically load the translations for you as needed."
+msgstr "Gdy wtyczka jest hostowana na WordPress.org, nie musisz już ręcznie dołączać tego wywołania funkcji dla tłumaczeń pod uproszczoną nazwą wtyczki. W razie potrzeby WordPress automatycznie załaduje dla tłumaczenia."
+
+#: templates/admin-page.php:89
+msgid "Include Experimental Checks"
+msgstr "Uwzględnij kontrole eksperymentalne"
+
+#: templates/admin-page.php:87
+msgid "Other Options"
+msgstr "Pozostałe opcje"
+
+#: includes/Checker/Checks/Plugin_Repo/Setting_Sanitization_Check.php:78
+#: includes/Checker/Checks/Plugin_Repo/Setting_Sanitization_Check.php:109
+msgid "https://developer.wordpress.org/reference/functions/register_setting/"
+msgstr "https://developer.wordpress.org/reference/functions/register_setting/"
+
+#: includes/Checker/Checks/Plugin_Repo/Setting_Sanitization_Check.php:65
+msgid "Ensures sanitization in register_setting()."
+msgstr "Zapewnia sanityzację w funkcji register_setting()."
+
+#: includes/Checker/Checks/Security/Late_Escaping_Check.php:108
+msgid "https://developer.wordpress.org/reference/functions/get_search_query/"
+msgstr "https://developer.wordpress.org/reference/functions/get_search_query/"
+
+#: includes/Checker/Checks/Security/Late_Escaping_Check.php:104
+msgid "https://developer.wordpress.org/apis/security/escaping/#escaping-with-localization"
+msgstr "https://developer.wordpress.org/apis/security/escaping/#escaping-with-localization"
+
+#: includes/Checker/Checks/Security/Late_Escaping_Check.php:100
+msgid "https://developer.wordpress.org/apis/security/escaping/#escaping-functions"
+msgstr "https://developer.wordpress.org/apis/security/escaping/#escaping-functions"
+
+#: includes/Checker/Checks/General/I18n_Usage_Check.php:126
+msgid "https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/#variables"
+msgstr "https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/#variables"
+
+#: includes/Checker/Checks/General/I18n_Usage_Check.php:122
+msgid "https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/#descriptions"
+msgstr "https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/#descriptions"
+
+#: includes/Checker/Checks/General/I18n_Usage_Check.php:118
+msgid "https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/#disambiguation-by-context"
+msgstr "https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/#disambiguation-by-context"
+
+#: includes/Checker/Checks/General/I18n_Usage_Check.php:114
+msgid "https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/#basic-strings"
+msgstr "https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/#basic-strings"
+
+#. translators: %s: readme header field
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Readme_Check.php:699
+msgid "The \"%s\" header in the readme file must be a valid URL."
+msgstr "Nagłówek \"%s\" w pliku readme musi być poprawnym adresem URL."
+
+#. translators: 1: plugin header field, 2: license
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Header_Fields_Check.php:415
+msgid "<strong>Invalid %1$s: %2$s.</strong><br>Please update your Plugin Header with a valid GPLv2 (or later) compatible license."
+msgstr "<strong>Nieprawidłowe %1$s: %2$s.</strong><br>Zaktualizuj nagłówek wtyczki o ważną licencję zgodną z GPLv2 (lub nowszą)."
+
+#. translators: %s: plugin header field
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Header_Fields_Check.php:398
+msgid "<strong>Missing \"%s\" in Plugin Header.</strong><br>Please update your Plugin Header with a valid GPLv2 (or later) compatible license."
+msgstr "<strong>Brak \"%s\" w nagłówku wtyczki.</strong><br>Zaktualizuj nagłówek wtyczki, dodając ważną licencję zgodną z GPLv2 (lub nowszą)."
+
+#. translators: %s: plugin header field
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Header_Fields_Check.php:230
+msgid "The \"%s\" header in the plugin file should only contain numbers, letters, periods, and hyphens."
+msgstr "Nagłówek \"%s\" w pliku wtyczki powinien zawierać tylko cyfry, litery, kropki i myślniki."
+
+#. translators: %s: plugin header field
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Header_Fields_Check.php:176
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Header_Fields_Check.php:214
+msgid "The \"%s\" header is missing in the plugin file."
+msgstr "Brak nagłówka \"%s\" w pliku wtyczki."
+
+#: templates/admin-page.php:26
+msgid "Select a plugin to check it for best practices in several categories and security issues. For more information about the checks, use the Help tab at the top of this page."
+msgstr "Wybierz wtyczkę, aby sprawdzić ją pod kątem najlepszych praktyk w kilku kategoriach i kwestii bezpieczeństwa. Aby uzyskać więcej informacji na temat testów, skorzystaj z zakładki pomoc w górnej części strony."
+
+#: includes/CLI/Plugin_Check_Command.php:267
+msgid "Checks complete. No errors found."
+msgstr "Kontrola zakończona. Nie znaleziono błędów."
+
+#. translators: %s: plugin header field
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Readme_Check.php:775
+msgid "The \"%s\" header in the readme file must be a comma-separated list of WordPress.org-formatted usernames."
+msgstr "Nagłówek „%s” w pliku readme musi być rozdzieloną przecinkami listą nazw użytkowników WordPress.org."
+
+#. translators: 1: currently used version, 2: 'Tested up to'
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Readme_Check.php:280
+msgid "<strong>Tested up to: %1$s.</strong><br>The \"%2$s\" value in your plugin is not valid. This version of WordPress does not exist (yet)."
+msgstr "<strong>Testowane do: %1$s.</strong><br>Wartość „%2$s” we wtyczce nie jest prawidłowa. Wybrana wersja WordPressa (jeszcze) nie istnieje."
+
+#. translators: 1: Plugin name, 2: Name in plugin header
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Readme_Check.php:182
+msgid "Plugin name \"%1$s\" is different from the name declared in plugin header \"%2$s\"."
+msgstr "Nazwa wtyczki „%1$s” różni się od nazwy zadeklarowanej w nagłówku wtyczki „%2$s”."
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Header_Fields_Check.php:183
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Header_Fields_Check.php:221
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Header_Fields_Check.php:237
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Header_Fields_Check.php:575
+msgid "https://developer.wordpress.org/plugins/plugin-basics/header-requirements/"
+msgstr "https://developer.wordpress.org/plugins/plugin-basics/header-requirements/"
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Header_Fields_Check.php:562
+msgid "Checks adherence to the Headers requirements."
+msgstr "Sprawdza wymagania dotyczącymi nagłówków."
+
+#. translators: 1: plugin header field, 2: domain path
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Header_Fields_Check.php:523
+msgid "The \"%1$s\" header in the plugin file must point to an existing folder. Found: \"%2$s\""
+msgstr "Nagłówek „%1$s” w pliku wtyczki musi wskazywać na istniejący katalog. Znaleziono: „%2$s”"
+
+#. translators: %s: plugin header field
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Header_Fields_Check.php:502
+msgid "The \"%s\" header in the plugin file must start with forward slash."
+msgstr "Nagłówek „%s” w pliku wtyczki musi zaczynać się od ukośnika."
+
+#: includes/Checker/Checks/Plugin_Repo/Offloading_Files_Check.php:86
+msgid "https://developer.wordpress.org/plugins/wordpress-org/common-issues/#calling-files-remotely"
+msgstr "https://developer.wordpress.org/plugins/wordpress-org/common-issues/#calling-files-remotely"
+
+#: includes/Utilities/Plugin_Request_Utility.php:294
+msgid "Saving JSON file failed."
+msgstr "Nie udało się zapisanie pliku JSON."
+
+#: includes/Utilities/Plugin_Request_Utility.php:288
+msgid "Invalid JSON content."
+msgstr "Nieprawidłowa zawartość JSON."
+
+#: includes/Utilities/Plugin_Request_Utility.php:278
+msgid "Fetching data failed."
+msgstr "Nie udało się pobranie danych."
+
+#: includes/Utilities/Plugin_Request_Utility.php:257
+msgid "Saving zip file failed."
+msgstr "Nie udało się zapisanie pliku zip"
+
+#: includes/Utilities/Plugin_Request_Utility.php:229
+msgid "Downloading the zip file failed."
+msgstr "Nie udało się pobrać pliku zip."
+
+#: includes/Checker/Checks/Security/Late_Escaping_Check.php:79
+#: includes/Checker/Checks/Security/Late_Escaping_Check.php:112
+msgid "https://developer.wordpress.org/apis/security/escaping/"
+msgstr "https://developer.wordpress.org/apis/security/escaping/"
+
+#: includes/Checker/Checks/Security/Late_Escaping_Check.php:66
+msgid "Checks that all output is escaped before being sent to the browser."
+msgstr "Sprawdza, czy wszystkie dane wyjściowe są eskejpowane przed wysłaniem do przeglądarki."
+
+#: includes/Checker/Checks/Security/Direct_DB_Queries_Check.php:66
+msgid "Checks the usage of direct database queries, which should be avoided."
+msgstr "Sprawdza użycie bezpośrednich zapytań do bazy danych, których należy unikać."
+
+#: includes/Checker/Checks/Plugin_Repo/Trademarks_Check.php:534
+msgid "Checks the usage of trademarks or other projects in the plugin slug."
+msgstr "Sprawdza użycie znaków towarowych lub innych projektów w nazwie uproszczonej wtyczki."
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Updater_Check.php:249
+msgid "Prevents altering WordPress update routines or using custom updaters, which are not allowed on WordPress.org."
+msgstr "Zapobiega modyfikowaniu procedur aktualizacji WordPress lub używaniu własnych aktualizatorów, które nie są dozwolone na WordPress.org."
+
+#. translators: %s: The match file name.
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Updater_Check.php:225
+msgid "<strong>Plugin Updater detected.</strong><br>Detected code which may be altering WordPress update routines. Detected: %s"
+msgstr "<strong>Wykryto aktualizator wtyczek.</strong><br>Wykryto kod, który może zmieniać procedury aktualizacji WordPress. Wykryto: %s"
+
+#. translators: %s: The match updater file name.
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Updater_Check.php:146
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Updater_Check.php:187
+msgid "<strong>Plugin Updater detected.</strong><br>These are not permitted in WordPress.org hosted plugins. Detected: %s"
+msgstr "<strong>Wykryto aktualizator wtyczek.</strong><br>Nie są one dozwolone we wtyczkach hostowanych przez WordPress.org. Wykryto: %s"
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Updater_Check.php:117
+msgid "<strong>Including An Update Checker / Changing Updates functionality.</strong><br>Plugin Updater detected. Use of the Update URI header is not allowed in plugins hosted on WordPress.org."
+msgstr "<strong>Włączenie funkcji sprawdzania aktualizacji / zmiany aktualizacji.</strong><br>Wykryto aktualizator wtyczek. Używanie nagłówka Update URI nie jest dozwolone we wtyczkach hostowanych na WordPress.org."
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Review_PHPCS_Check.php:75
+msgid "https://developer.wordpress.org/plugins/plugin-basics/best-practices/"
+msgstr "https://developer.wordpress.org/plugins/plugin-basics/best-practices/"
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Review_PHPCS_Check.php:62
+msgid "Runs PHP_CodeSniffer to detect certain best practices plugins should follow for submission on WordPress.org."
+msgstr "Uruchamia PHP_CodeSniffer, aby wykryć pewne najlepsze praktyki, których wtyczki powinny przestrzegać podczas przesyłania na WordPress.org."
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Readme_Check.php:1103
+msgid "https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/"
+msgstr "https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/"
+
+#. translators: %s: readme.txt
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Readme_Check.php:1088
+msgid "Checks adherence to the %s requirements."
+msgstr "Sprawdza zgodność z wymaganiami %s."
+
+#. translators: %s: warning code
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Readme_Check.php:659
+msgid "Readme parser warning detected: %s"
+msgstr "Wykryto ostrzeżenie parsera pliku readme: %s"
+
+#: includes/Checker/Checks/Performance/Performant_WP_Query_Params_Check.php:80
+#: includes/Checker/Checks/Security/Direct_DB_Check.php:79
+#: includes/Checker/Checks/Security/Direct_DB_Queries_Check.php:79
+msgid "https://developer.wordpress.org/apis/database/"
+msgstr "https://developer.wordpress.org/apis/database/"
+
+#: includes/Checker/Checks/Plugin_Repo/Localhost_Check.php:82
+#: includes/Checker/Checks/Plugin_Repo/No_Unfiltered_Uploads_Check.php:95
+msgid "https://make.wordpress.org/plugins/handbook/performing-reviews/review-checklist/"
+msgstr "https://make.wordpress.org/plugins/handbook/performing-reviews/review-checklist/"
+
+#: includes/Checker/Checks/Plugin_Repo/Code_Obfuscation_Check.php:204
+#: includes/Checker/Checks/Plugin_Repo/File_Type_Check.php:637
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Content_Check.php:106
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Updater_Check.php:262
+#: includes/Checker/Checks/Plugin_Repo/Trademarks_Check.php:547
+msgid "https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/"
+msgstr "https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/"
+
+#: includes/Checker/Checks/Performance/Enqueued_Resources_Check.php:79
+#: includes/Checker/Checks/Performance/Enqueued_Scripts_In_Footer_Check.php:76
+#: includes/Checker/Checks/Performance/Enqueued_Scripts_Scope_Check.php:301
+#: includes/Checker/Checks/Performance/Enqueued_Scripts_Size_Check.php:295
+#: includes/Checker/Checks/Performance/Enqueued_Styles_Scope_Check.php:300
+#: includes/Checker/Checks/Performance/Enqueued_Styles_Size_Check.php:295
+#: includes/Checker/Checks/Performance/Non_Blocking_Scripts_Check.php:267
+msgid "https://developer.wordpress.org/plugins/"
+msgstr "https://developer.wordpress.org/plugins/"
+
+#: includes/Checker/Checks/General/I18n_Usage_Check.php:82
+#: includes/Checker/Checks/General/I18n_Usage_Check.php:130
+msgid "https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/"
+msgstr "https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/"
+
+#. translators: %s: ALLOW_UNFILTERED_UPLOADS
+#: includes/Checker/Checks/Plugin_Repo/No_Unfiltered_Uploads_Check.php:80
+msgid "Detects disallowed usage of %s."
+msgstr "Wykrywa niedozwolone użycie %s."
+
+#. translators: %s: ALLOW_UNFILTERED_UPLOADS
+#: includes/Checker/Checks/Plugin_Repo/No_Unfiltered_Uploads_Check.php:55
+msgid "<strong>%s is not permitted.</strong><br>Setting this constant to true will allow the user to upload any type of file (including PHP and other executables), creating serious potential security risks."
+msgstr "<strong>%s nie jest dozwolone.</strong><br>Ustawienie tej stałej na true pozwoli użytkownikowi wczytywać każdy rodzaj pliku (w tym PHP i inne pliki wykonywalne), co stwarza poważne potencjalne zagrożenia zabezpieczeń."
+
+#. translators: %s: Localhost/127.0.0.1
+#: includes/Checker/Checks/Plugin_Repo/Localhost_Check.php:67
+msgid "Detects the usage of %s in the plugin."
+msgstr "Wykrywa użycie %s we wtyczce."
+
+#: includes/Admin/Admin_Page.php:163 templates/results-row.php:19
+msgid "Learn more"
+msgstr "Dowiedz się więcej"
+
+#: includes/Plugin_Context.php:77
+msgid "Unknown environment, normalize_path function not found"
+msgstr "Nieznane środowisko, nie znaleziono funkcji normalize_path"
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Readme_Check.php:218
+msgid "Contributors"
+msgstr "Współtwórcy"
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Readme_Check.php:214
+msgid "Tested up to"
+msgstr "Testowano do"
+
+#: runtime-content/themes/wp-empty-theme/searchform.php:17
+msgctxt "submit button"
+msgid "Search"
+msgstr "Szukaj"
+
+#: runtime-content/themes/wp-empty-theme/searchform.php:14
+msgid "Search"
+msgstr "Szukaj"
+
+#: runtime-content/themes/wp-empty-theme/index.php:145
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Nie udało się znaleźć tego, czego szukasz. Być może wyszukiwanie przyniesie lepsze rezultaty."
+
+#: runtime-content/themes/wp-empty-theme/index.php:131
+msgid "Older <span class=\"nav-short\">posts</span>"
+msgstr "Starsze <span class=\"nav-short\">wpisy</span>"
+
+#: runtime-content/themes/wp-empty-theme/index.php:120
+msgid "Newer <span class=\"nav-short\">posts</span>"
+msgstr "Nowsze <span class=\"nav-short\">wpisy</span>"
+
+#: runtime-content/themes/wp-empty-theme/index.php:109
+msgid "Previous post"
+msgstr "Poprzedni wpis"
+
+#: runtime-content/themes/wp-empty-theme/index.php:108
+msgid "Next post"
+msgstr "Następny wpis"
+
+#. translators: %: Page number.
+#: runtime-content/themes/wp-empty-theme/index.php:87
+msgid "Page %"
+msgstr "Strona %"
+
+#: runtime-content/themes/wp-empty-theme/index.php:43
+msgid "Nothing here"
+msgstr "Niczego tutaj nie ma"
+
+#. translators: %s: List of tags.
+#: runtime-content/themes/wp-empty-theme/inc/template-tags.php:99
+#: runtime-content/themes/wp-empty-theme/inc/template-tags.php:143
+msgid "Tagged %s"
+msgstr "Otagowano %s"
+
+#. translators: %s: List of categories.
+#: runtime-content/themes/wp-empty-theme/inc/template-tags.php:89
+#: runtime-content/themes/wp-empty-theme/inc/template-tags.php:133
+msgid "Categorized as %s"
+msgstr "Umieszczono w kategoriach: %s"
+
+#. translators: Used between list items, there is a space after the comma.
+#: runtime-content/themes/wp-empty-theme/inc/template-tags.php:85
+#: runtime-content/themes/wp-empty-theme/inc/template-tags.php:95
+#: runtime-content/themes/wp-empty-theme/inc/template-tags.php:129
+#: runtime-content/themes/wp-empty-theme/inc/template-tags.php:139
+msgid ", "
+msgstr ", "
+
+#. translators: %s: Name of current post. Only visible to screen readers.
+#: runtime-content/themes/wp-empty-theme/inc/template-tags.php:73
+#: runtime-content/themes/wp-empty-theme/inc/template-tags.php:116
+msgid "Edit %s"
+msgstr "Edytuj %s"
+
+#: runtime-content/themes/wp-empty-theme/inc/template-tags.php:63
+msgctxt "Label for sticky posts"
+msgid "Featured post"
+msgstr "Wyróżniony wpis"
+
+#. translators: %s: Author name.
+#: runtime-content/themes/wp-empty-theme/inc/template-tags.php:39
+msgid "By %s"
+msgstr "Przez %s"
+
+#. translators: %s: Publish date.
+#: runtime-content/themes/wp-empty-theme/inc/template-tags.php:23
+msgid "Published %s"
+msgstr "Opublikowano %s"
+
+#. translators: %s: Name of current post.
+#: runtime-content/themes/wp-empty-theme/inc/template-functions.php:37
+msgid "Continue reading %s"
+msgstr "Czytaj dalej %s"
+
+#. translators: %s: WordPress Version.
+#: runtime-content/themes/wp-empty-theme/inc/back-compat.php:32
+#: runtime-content/themes/wp-empty-theme/inc/back-compat.php:47
+#: runtime-content/themes/wp-empty-theme/inc/back-compat.php:68
+msgid "This theme requires WordPress 5.3 or newer. You are running version %s. Please upgrade."
+msgstr "Motyw wymaga WordPress w wersji 5.3 lub wyższej. Używasz wersji %s. Proszę zaktualizować."
+
+#: runtime-content/themes/wp-empty-theme/header.php:22
+msgid "Skip to content"
+msgstr "Przejdź do treści"
+
+#: runtime-content/themes/wp-empty-theme/footer.php:34
+msgid "https://wordpress.org/"
+msgstr "https://pl.wordpress.org/"
+
+#. translators: %s: WordPress.
+#: runtime-content/themes/wp-empty-theme/footer.php:33
+msgid "Proudly powered by %s."
+msgstr "Dumnie wspierane przez %s."
+
+#: runtime-content/themes/wp-empty-theme/comments.php:71
+msgid "Leave a comment"
+msgstr "Dodaj komentarz"
+
+#: runtime-content/themes/wp-empty-theme/comments.php:63
+msgid "Comments are closed."
+msgstr "Możliwość komentowania została wyłączona."
+
+#: runtime-content/themes/wp-empty-theme/comments.php:56
+msgid "Newer comments"
+msgstr "Nowsze komentarze"
+
+#: runtime-content/themes/wp-empty-theme/comments.php:52
+msgid "Older comments"
+msgstr "Starsze komentarze"
+
+#: runtime-content/themes/wp-empty-theme/comments.php:48
+#: runtime-content/themes/wp-empty-theme/index.php:84
+#: runtime-content/themes/wp-empty-theme/index.php:115
+msgid "Page"
+msgstr "Strona"
+
+#. translators: %s: Comment count number.
+#: runtime-content/themes/wp-empty-theme/comments.php:26
+msgctxt "Comments title"
+msgid "%s comment"
+msgid_plural "%s comments"
+msgstr[0] "%s komentarz"
+msgstr[1] "%s komentarze"
+msgstr[2] "%s komentarzy"
+
+#. translators: 1: plugin name, 2: found trademarked term
+#: includes/Checker/Checks/Plugin_Repo/Trademarks_Check.php:365
+msgid "The plugin name includes a restricted term. Your chosen plugin name - \"%1$s\" - contains the restricted term \"%2$s\" and cannot be used to begin your plugin name. We disallow the use of certain terms in ways that are abused, or potentially infringe on and/or are misleading with regards to trademarks. You may use the term \"%2$s\" elsewhere in your plugin name, such as \"... for %2$s\"."
+msgstr "Nazwa wtyczki zawiera zastrzeżony termin. Wybrana nazwa wtyczki - „%1$s” - zawiera zastrzeżony termin „%2$s” i nie może być używana do rozpoczęcia nazwy wtyczki. Nie zezwalamy na używanie niektórych terminów w sposób, który jest nadużywany lub potencjalnie narusza i/lub wprowadza w błąd w odniesieniu do znaków towarowych. Można użyć terminu „%2$s” w innym miejscu w nazwie wtyczki, na przykład „… dla %2$s”."
+
+#: runtime-content/themes/wp-empty-theme/comments.php:22
+msgid "1 comment"
+msgstr "Jeden komentarz"
+
+#: templates/results-table.php:22
+msgid "Edit Link"
+msgstr "Edytuj odnośnik"
+
+#: templates/results-row.php:14 templates/results-table.php:18
+msgid "Message"
+msgstr "Wiadomość"
+
+#: templates/results-row.php:11 templates/results-table.php:15
+msgid "Code"
+msgstr "Kod"
+
+#: templates/results-row.php:8 templates/results-table.php:12
+msgid "Type"
+msgstr "Rodzaj"
+
+#: templates/results-row.php:5 templates/results-table.php:9
+msgid "Column"
+msgstr "Kolumna"
+
+#: templates/results-row.php:2 templates/results-table.php:6
+msgid "Line"
+msgstr "Linia"
+
+#: templates/results-table.php:1
+msgid "FILE:"
+msgstr "PLIK:"
+
+#: templates/results-row.php:20 templates/results-row.php:30
+msgid "(opens in a new tab)"
+msgstr "(otworzy się w nowej karcie)"
+
+#: templates/results-complete.php:2
+msgid "Checks complete."
+msgstr "Sprawdzenie zostało zakończone."
+
+#: templates/admin-page.php:97
+msgid "No plugins available."
+msgstr "Brak dostępnych wtyczek."
+
+#: templates/admin-page.php:44
+msgid "Categories"
+msgstr "Kategorie"
+
+#: templates/admin-page.php:40
+msgid "Check it!"
+msgstr "Sprawdź to!"
+
+#: templates/admin-page.php:31
+msgid "Select Plugin"
+msgstr "Wybierz wtyczkę"
+
+#: templates/admin-page.php:21
+msgid "Check the Plugin"
+msgstr "Sprawdź wtyczkę"
+
+#. translators: composer command.
+#: plugin.php:76
+msgid "Your installation of the Plugin Check plugin is incomplete. Please run %s."
+msgstr "Instalacja wtyczki Kontrola Wtyczek nie jest kompletna. Uruchom %s."
+
+#. translators: 1: required version, 2: currently used version
+#: plugin.php:60
+msgid "Plugin Check requires at least PHP version %1$s. Your site is currently running on PHP %2$s."
+msgstr "Wtyczka Kontrola Wtyczek wymaga co najmniej wersji PHP %1$s. Witryna używa PHP w wersji %2$s."
+
+#. translators: 1. Output formats.
+#: includes/CLI/Plugin_Check_Command.php:545
+msgid "Invalid format argument, valid value will be one of [%1$s]"
+msgstr "Nieprawidłowy argument formatu, prawidłową wartością będzie jeden z [%1$s]."
+
+#: includes/Checker/Check_Categories.php:59
+msgid "Accessibility"
+msgstr "Dostępność"
+
+#: includes/Checker/Check_Categories.php:58
+msgid "Performance"
+msgstr "Wydajność"
+
+#: includes/Checker/Check_Categories.php:57
+msgid "Security"
+msgstr "Bezpieczeństwo"
+
+#: includes/Checker/Check_Categories.php:56
+msgid "Plugin Repo"
+msgstr "Repozytorium wtyczki"
+
+#: includes/Checker/Check_Categories.php:55
+msgid "General"
+msgstr "Ogólne"
+
+#: includes/Checker/Checks/Plugin_Repo/Code_Obfuscation_Check.php:169
+msgid "ionCube"
+msgstr "ionCube"
+
+#: includes/Admin/Admin_Page.php:205
+msgid "No errors found."
+msgstr "Nie znaleziono błędów."
+
+#: includes/Admin/Admin_AJAX.php:444
+msgid "Invalid user permissions, you are not allowed to perform this request."
+msgstr "Brak uprawnień, nie możesz wykonać tego żądania."
+
+#: includes/Admin/Admin_AJAX.php:302
+msgid "Checks run successfully"
+msgstr "Zaliczono wszystkie testy"
+
+#: includes/Admin/Admin_Page.php:206
+msgid "Errors were found."
+msgstr "Znaleziono błędy."
+
+#. Author of the plugin
+#: plugin.php
+msgid "WordPress Performance Team and Plugin Review Team"
+msgstr "Zespół ds. wydajności WordPress i zespół ds. przeglądu wtyczek"
+
+#. Description of the plugin
+#: plugin.php
+msgid "Plugin Check is a WordPress.org tool which provides checks to help plugins meet the directory requirements and follow various best practices."
+msgstr "Plugin Check to narzędzie WordPress.org, które zapewnia kontrolę, aby pomóc wtyczkom spełnić wymagania katalogu i przestrzegać najlepszych praktyk."
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Readme_Check.php:78
+msgid "The plugin readme.txt does not exist."
+msgstr "Plik readme.txt wtyczki nie istnieje."
+
+#. translators: 1: plugin header field, 2: plugin header text domain, 3: plugin
+#. slug
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Header_Fields_Check.php:480
+msgid "The \"%1$s\" header in the plugin file does not match the slug. Found \"%2$s\", expected \"%3$s\"."
+msgstr "Nagłówek \"%1$s\" w pliku wtyczki nie pasuje do uproszczonej nazwy. Znaleziono \"%2$s\", oczekiwano \"%3$s\"."
+
+#: includes/Checker/Checks/Plugin_Repo/File_Type_Check.php:269
+msgid "Application files are not permitted."
+msgstr "Pliki aplikacji nie są dozwolone."
+
+#: includes/Checker/Checks/Plugin_Repo/File_Type_Check.php:240
+msgid "Hidden files are not permitted."
+msgstr "Pliki ukryte nie są dozwolone."
+
+#: includes/Checker/Checks/Plugin_Repo/File_Type_Check.php:155
+msgid "Phar files are not permitted."
+msgstr "Pliki Phar nie są dozwolone."
+
+#: includes/Checker/Checks/Plugin_Repo/File_Type_Check.php:129
+msgid "Compressed files are not permitted."
+msgstr "Pliki skompresowane nie są dozwolone."
+
+#: includes/Checker/Checks/Performance/Enqueued_Styles_Scope_Check.php:142
+msgid "This style is being loaded in all contexts."
+msgstr "Ten styl jest wczytywany we wszystkich kontekstach."
+
+#: includes/Admin/Admin_AJAX.php:440
+msgid "Invalid nonce"
+msgstr "Nieprawidłowy kod jednorazowy"
+
+#: includes/Admin/Admin_Page.php:344
+msgid "Check this plugin"
+msgstr "Sprawdź tę wtyczkę"
+
+#: includes/Admin/Admin_AJAX.php:185
+msgid "Runtime environment setup successful."
+msgstr "Konfiguracja środowiska wykonawczego zakończona pomyślnie."
+
+#: includes/Admin/Admin_AJAX.php:209
+msgid "Runtime environment cleanup successful."
+msgstr "Czyszczenie środowiska wykonawczego zakończone pomyślnie."
+
+#: includes/Admin/Admin_AJAX.php:211
+msgid "Runtime environment was not prepared, cleanup was not run."
+msgstr "Środowisko wykonawcze nie zostało przygotowane, czyszczenie nie zostało uruchomione."
+
+#: includes/Admin/Admin_AJAX.php:180
+msgid "No runtime checks, runtime environment was not setup."
+msgstr "Brak kontroli środowiska wykonawczego, nie zostało skonfigurowane."
+
+#: includes/Admin/Admin_AJAX.php:149
+msgid "AJAX Runner was not initialized correctly."
+msgstr "AJAX Runner nie został poprawnie zainicjowany."
+
+#: includes/Checker/Checks/Abstract_PHP_CodeSniffer_Check.php:80
+msgid "Unable to find PHPCS Runner class."
+msgstr "Nie można znaleźć klasy PHPCS Runner."
+
+#: includes/Checker/AJAX_Runner.php:62 includes/Checker/CLI_Runner.php:79
+msgid "Invalid plugin: Plugin parameter must not be empty."
+msgstr "Nieprawidłowa wtyczka: Parametr wtyczki nie może być pusty."
+
+#. translators: %s: categories
+#: includes/Checker/Abstract_Check_Runner.php:311
+msgid "Invalid categories: The %s value does not match the original request parameter."
+msgstr "Nieprawidłowe kategorie: Wartość %s nie jest zgodna z oryginalnym parametrem żądania."
+
+#. translators: %s: include-experimental
+#: includes/Checker/Abstract_Check_Runner.php:286
+msgid "Invalid flag: The %s value does not match the original request parameter."
+msgstr "Nieprawidłowa flaga: Wartość %s nie pasuje do oryginalnego parametru żądania."
+
+#: includes/Checker/Abstract_Check_Runner.php:263
+msgid "Invalid plugin: The plugin set does not match the original request parameter."
+msgstr "Nieprawidłowa wtyczka: Ustawiona wtyczka nie pasuje do oryginalnego parametru żądania."
+
+#: includes/Checker/Abstract_Check_Runner.php:241
+msgid "Invalid checks: The checks to exclude do not match the original request."
+msgstr "Nieprawidłowe kontrole: Kontrole do wykluczenia nie pasują do oryginalnego żądania."
+
+#: includes/Checker/Abstract_Check_Runner.php:219
+msgid "Invalid checks: The checks to run do not match the original request."
+msgstr "Nieprawidłowe kontrole: Kontrole do uruchomienia nie są zgodne z oryginalnym żądaniem."
+
+#. Plugin Name of the plugin
+#: plugin.php
+msgid "Plugin Check (PCP)"
+msgstr "Kontrola Wtyczek (PCP)"
+
+#: templates/results-row.php:29
+msgid "View in code editor"
+msgstr "Zobacz w edytorze kodu"
+
+#. translators: %s: tool name
+#: includes/Checker/Checks/Plugin_Repo/Code_Obfuscation_Check.php:106
+#: includes/Checker/Checks/Plugin_Repo/Code_Obfuscation_Check.php:137
+#: includes/Checker/Checks/Plugin_Repo/Code_Obfuscation_Check.php:168
+msgid "Code Obfuscation tools are not permitted. Detected: %s"
+msgstr "Narzędzia do zaciemniania kodu są niedozwolone. Wykryto: %s"
+
+#: includes/Admin/Admin_Page.php:72 includes/Admin/Admin_Page.php:73
+#: includes/Admin/Settings_Page.php:154 includes/Admin/Settings_Page.php:155
+#: templates/admin-page.php:12
+msgid "Plugin Check"
+msgstr "Sprawdź wtyczkę"
+
+#. Plugin URI of the plugin
+#: plugin.php
+msgid "https://github.com/WordPress/plugin-check"
+msgstr "https://github.com/WordPress/plugin-check/"
+
+#. translators: 1: plugin slug, 2: found trademarked term
+#: includes/Checker/Checks/Plugin_Repo/Trademarks_Check.php:412
+msgid "The plugin slug includes a restricted term. Your plugin slug - \"%1$s\" - contains the restricted term \"%2$s\" and cannot be used to begin your plugin slug. We disallow the use of certain terms in ways that are abused, or potentially infringe on and/or are misleading with regards to trademarks. You may use the term \"%2$s\" elsewhere in your plugin slug, such as \"... for %2$s\"."
+msgstr "Wybrana przez nazwa wtyczki - %1$s - zawiera zastrzeżoną frazę „%2$s” i nie może być używana do rozpoczęcia jej nazwy. Nie zezwalamy na używanie niektórych fraz w sposób, który jest nadużywany lub potencjalnie narusza i/lub wprowadza w błąd w odniesieniu do znaków towarowych. Można użyć terminu „%2$s” w innym miejscu w nazwie wtyczki, na przykład „... dla %2$s”."
+
+#. translators: %s: Search term.
+#: runtime-content/themes/wp-empty-theme/index.php:26
+msgid "Results for \"%s\""
+msgstr "Wyniki dla „%s”"
+
+#: includes/Checker/Checks/Plugin_Repo/File_Type_Check.php:199
+msgid "Version control checkouts should not be present."
+msgstr "Wykryto niedozwoloną obecność plików systemu kontroli wersji."
+
+#: includes/Admin/Admin_Page.php:117
+msgid "Checks"
+msgstr "Kontrole"
+
+#: includes/Checker/Checks/Plugin_Repo/Plugin_Readme_Check.php:385
+msgid "<strong>Your plugin has an invalid license declared.</strong><br>Please update your readme with a valid SPDX license identifier."
+msgstr "<strong>Wtyczka ma zadeklarowaną nieprawidłową licencję.</strong><br>Zaktualizuj plik readme o prawidłowy identyfikator licencji SPDX."

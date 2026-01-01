@@ -74,15 +74,19 @@
 			});
 		},
 
-		removeCountryCode: function( form ) {
+		addCountryCode: function( form ) {
 			form.find('.forminator-field--phone').each(function() {
 				var phone_element = $(this),
+					national_mode = phone_element.data('national_mode') === 'enabled',
 				    iti           = intlTelInput.getInstance(this);
-				if ( !phone_element.data('required') && iti ) {
+
+				if ( !national_mode && iti ) {
 					var dialCode = '+' + iti.getSelectedCountryData().dialCode;
 					var currentInput = phone_element.val();
-					if (dialCode === currentInput) {
-						phone_element.val('');
+					if (currentInput !== '' && !currentInput.trim().startsWith('+')) {
+						phone_element.closest('.iti').find('.iti__selected-dial-code').hide();
+						phone_element.css('padding-inline-start', '45px');
+						phone_element.val(dialCode + ' ' + currentInput);
 					}
 				}
 			});
@@ -173,8 +177,8 @@
 					$datepicker = $('body').find( '#ui-datepicker-div.forminator-custom-form-' + self.$el.data( 'form-id' ) )
 					;
 
-				// to remove dial code from the phone field which are optional so that validation doesn't throw error.
-				self.removeCountryCode( $this );
+				// add country code before submitting values to the form submissions.
+				self.addCountryCode( $this );
 
 				if( self.settings.inline_validation && self.$el.find('.forminator-uploaded-files').length > 0 && ! $saveDraft ) {
 					var file_error = self.$el.find('.forminator-uploaded-files li.forminator-has_error');
@@ -218,6 +222,7 @@
 
 					formData = new FormData(this); // reinit values
 
+					formData.append( 'form_uid', self.$el.data( 'uid' ) );
 					if ( $saveDraft && hasPagination ) {
 						formData.append( 'draft_page', formStep );
 					}
@@ -294,9 +299,29 @@
 									return false;
 								}
 
+								// Save lead_entry_id if available.
+								if ( data.success && undefined !== data.data.lead_entry_id ) {
+									const leadEntryId = data.data.lead_entry_id;
+									let leadQuizId = '';
+
+									// Get the quiz form id.
+									const leadQuizInput = $this.find('input[name=lead_quiz]');
+									if (leadQuizInput.length > 0) {
+										leadQuizId = leadQuizInput.val();
+									}
+									// Save the lead entry id in quiz hidden field attribute to be used later.
+									const entryIdInput = $('#forminator-module-'+leadQuizId).find('input[name=entry_id]');
+									if (entryIdInput.length > 0) {
+										entryIdInput.attr('lead-entry-id', leadEntryId);
+									}
+								}
+
 								// Hide validation errors
 								$this.find( '.forminator-error-message' ).not('.forminator-uploaded-files .forminator-error-message').remove();
 								$this.find( '.forminator-field' ).removeClass( 'forminator-has_error' );
+
+								// Remove invalid attribute for screen readers.
+								$this.find( 'input, select, textarea' ).removeAttr( 'aria-invalid' );
 
 								$this.find( 'button' ).removeAttr( 'disabled' );
 								$target_message.html( '' ).removeClass( 'forminator-accessible forminator-error forminator-success' );
@@ -431,12 +456,15 @@
 
 								if (data.success === true) {
 									var hideForm = typeof data.data.behav !== "undefined" && data.data.behav === 'behaviour-hide';
-									// Reset form
-									if ($this[0]) {
-										var resetEnabled = self.settings.resetEnabled;
-										if(resetEnabled && ! hideForm) {
-											$this[0].reset();
-										}
+									var redirectSameTab = typeof data.data.url !== "undefined" && typeof data.data.newtab !== "undefined" && data.data.newtab === 'sametab';
+									var resetEnabled = self.settings.resetEnabled;
+
+									// Reset the form fields to accept a new submission
+									// but skip resetting the form fields if the form behavior after submission
+									// is set to redirect to specific url on the same tab or if set to be hidden
+									if ($this[0] && resetEnabled && !hideForm && !redirectSameTab) {
+
+										$this[0].reset();
 
 										self.$el.trigger('forminator:field:condition:toggled');
 
@@ -469,13 +497,13 @@
 										//self.$el.find( '.forminator-input-file' ).val('');
 
 										// Reset selects
-										if ( $this.find('.forminator-select').length > 0 ) {
-											$this.find('.forminator-select').each(function (index, value) {
+										if ( $this.find('.forminator-select2').length > 0 ) {
+											$this.find('.forminator-select2').each(function (index, value) {
 												var defaultValue = $(value).data('default-value');
 												if ( '' === defaultValue ) {
 													defaultValue = $(value).val();
 												}
-												$(value).val(defaultValue).trigger("fui:change");
+												$(value).val(defaultValue).trigger("change.select2");
 											});
 										}
 										// Reset multiselect
@@ -494,15 +522,27 @@
 											});
 										});
 
+										// Reset Post data multiselect fields.
+										$this.find( '.forminator-field-postdata' ).each(function () {
+											let multiSelect = $(this).find( '.forminator-multiselect' );
+											multiSelect.find('input[type="checkbox"]').each(function (i, val) {
+												$(val).prop('checked', false);
+												$(val).closest('label').removeClass('forminator-is_checked');
+											});
+										});
+
 										// Reset slider.
 										$this.find('.forminator-slider').each(function () {
 											var $element = $(this),
 												$slide = $element.find('.forminator-slide'),
 												$slider = $slide.slider("option"),
-												$minRange = parseInt($slide.data('min')) || 0,
-												$maxRange = parseInt($slide.data('max')) || 100,
-												$value = parseInt($slide.data('value')) || $minRange,
-												$valueMax = parseInt($slide.data('value-max')) || $maxRange;
+												$minRange = parseFloat($slide.data('min')) || 0,
+												$maxRange = parseFloat($slide.data('max')) || 100,
+												$value = parseFloat($slide.data('value')) || $minRange,
+												$valueMax = parseFloat($slide.data('value-max')) || $maxRange;
+
+											// Remove slider custom labels.
+											$element.find('.forminator-slider-labels').remove();
 
 											$slider.create();
 											if (true === $slider.range) {
@@ -513,11 +553,11 @@
 										});
 
 										self.multi_upload_disable( $this, false );
-										$this.trigger('forminator:form:submit:success', formData);
 
 										// restart condition after form reset to ensure values of input already reset-ed too
 										$this.trigger('forminator.front.condition.restart');
 									}
+									$this.trigger('forminator:form:submit:success', formData);
 
 									if (typeof data.data.url !== "undefined") {
 
@@ -600,6 +640,8 @@
 								.addClass('forminator-loading forminator-show');
 						}
 
+						$this.trigger( 'before:forminator:form:submit', formData );
+
 						submitEvent.currentTarget.submit();
 
 						self.showLeadsLoader( self );
@@ -607,8 +649,10 @@
 				};
 
 				// payment setup
-				var paymentIsHidden = self.$el.find('div[data-is-payment="true"]')
-					.closest('.forminator-row, .forminator-col').hasClass('forminator-hidden');
+				const paymentElement = self.$el.find('div[data-is-payment="true"]');
+				const paymentIsHidden = paymentElement
+					.closest('.forminator-row, .forminator-col').hasClass('forminator-hidden') ||
+					paymentElement.closest('.forminator-pagination').hasClass('forminator-page-hidden');
 				if ( ( self.$el.data('forminatorFrontPayment') || self.$el.data('forminatorFrontStripe') ) && ! paymentIsHidden && ! $saveDraft ) {
 					setTimeout( function() {
 						self.$el.trigger('payment.before.submit.forminator', [formData, function () {
@@ -755,11 +799,24 @@
 		},
 
 		processCaptcha: function( self, e, $target_message, submitter ) {
-			var $captcha_field = self.$el.find('.forminator-g-recaptcha, .forminator-hcaptcha');
+			const $captcha_fields = self.$el.find('.forminator-g-recaptcha, .forminator-hcaptcha, .forminator-turnstile');
+			let $captcha_field, $page;
 
-			if ($captcha_field.length) {
-				//validate only first
-				$captcha_field = $($captcha_field.get(0));
+			if ($captcha_fields.length) {
+				for (let i = 0; i < $captcha_fields.length; i++) {
+					//validate only first not hidden
+					$captcha_field = $($captcha_fields.get(i));
+
+					$page = $captcha_field.closest( '.forminator-pagination' );
+					if ( ! $page.hasClass('forminator-page-hidden') ) {
+						break;
+					} else {
+						$captcha_field = null;
+					}
+				}
+			}
+
+			if ($captcha_field && $captcha_field.length) {
 				var captcha_size  = $captcha_field.data('size'),
 					$captcha_parent = $captcha_field.parent( '.forminator-col' );
 
@@ -788,6 +845,12 @@
 							}
 						}
 
+						// Ignore CAPTCHA validation after a PayPal payment.
+						if( 'forminator:submit:paypal' === submitter ) {
+							window.grecaptcha.reset(captcha_widget);
+							return true;
+						}
+
 						// reset after getResponse
 						if ( self.$el.hasClass( 'forminator_ajax' ) && 'forminator:preSubmit:paypal' !== e.type ) {
 							window.grecaptcha.reset(captcha_widget);
@@ -807,9 +870,29 @@
 						}
 					}
 
+					// Ignore CAPTCHA validation after a PayPal payment.
+					if( 'forminator:submit:paypal' === submitter ) {
+						hcaptcha.reset( captcha_widget );
+						return true;
+					}
+
 					// reset after getResponse
 					if ( self.$el.hasClass( 'forminator_ajax' ) && 'forminator:preSubmit:paypal' !== e.type ) {
 						hcaptcha.reset( captcha_widget );
+					}
+				} else if ( $captcha_field.hasClass( 'forminator-turnstile' ) ) {
+					var captcha_widget   = $captcha_field.data( 'forminator-turnstile-widget' ),
+						$captcha_response = $captcha_field.find( 'input[name="forminator-turnstile-response"]' ).val();
+
+					// Ignore CAPTCHA validation after a PayPal payment.
+					if( 'forminator:submit:paypal' === submitter ) {
+						turnstile.reset( captcha_widget );
+						return true;
+					}
+
+					// reset after getResponse
+					if ( self.$el.hasClass( 'forminator_ajax' ) && 'forminator:preSubmit:paypal' !== e.type ) {
+						turnstile.reset( captcha_widget );
 					}
 				}
 
@@ -923,6 +1006,12 @@
 				self.$el.find( '.forminator-has-been-disabled' ).attr( 'disabled', 'disabled' );
 
 				if( hasLeads ) {
+					// Get lead entry ID from hidden input to include in quiz submission
+					let leadsFormID = self.$el.find('input[name=entry_id]').attr('lead-entry-id') || '';
+					if ( leadsFormID ) {
+						ajaxData += '&lead_entry_id=' + leadsFormID;
+					}
+
 					var entry_id  = '';
 					if ( self.$el.find('input[name=entry_id]').length > 0 ) {
 						entry_id = self.$el.find('input[name=entry_id]').val();
@@ -1449,7 +1538,7 @@
 			}
 
 			function focusElement( $element ) {
-				if ( ! $element.attr("tabindex") ) {
+				if ( ! $element.attr("tabindex") && $element.is( 'div' ) ) {
 					$element.attr("tabindex", -1);
 				}
 
@@ -1507,7 +1596,9 @@
 						// Focus on first error
 						if ( i === 0 ) {
 							self.$el.trigger( 'forminator.front.pagination.focus.input', [getElement]);
-							self.focus_to_element( getElement );
+							if( getElement.is( ':visible' ) ) {
+								self.focus_to_element( getElement );
+							}
 						}
 
 						// CHECK: Timepicker field.
@@ -1528,12 +1619,7 @@
 										$( errorMarkup ).insertBefore( getColumn.find( '.forminator-error-message[data-error-field="year"]' ) );
 
 									} else {
-
-										if ( 0 === getDesc.length ) {
-											getColumn.append( errorMarkup );
-										} else {
-											$( errorMarkup ).insertBefore( getDesc );
-										}
+										forminatorUtils().add_error_message( getDesc, getColumn, errorMarkup );
 									}
 
 									if ( 0 === holderField.find( '.forminator-error-message' ).length ) {
@@ -1553,12 +1639,7 @@
 										);
 
 									} else {
-
-										if ( 0 === getDesc.length ) {
-											getColumn.append( errorMarkup );
-										} else {
-											$( errorMarkup ).insertBefore( getDesc );
-										}
+										forminatorUtils().add_error_message( getDesc, getColumn, errorMarkup );
 									}
 
 									if ( 0 === holderField.find( '.forminator-error-message' ).length ) {
@@ -1571,11 +1652,7 @@
 
 								if ( 'year' === holder.data( 'field' ) ) {
 
-									if ( 0 === getDesc.length ) {
-										getColumn.append( errorMarkup );
-									} else {
-										$( errorMarkup ).insertBefore( getDesc );
-									}
+									forminatorUtils().add_error_message( getDesc, getColumn, errorMarkup );
 
 									if ( 0 === holderField.find( '.forminator-error-message' ).length ) {
 
@@ -1610,12 +1687,7 @@
 											getColumn.find( '.forminator-error-message[data-error-field="minutes"]' )
 										);
 									} else {
-
-										if ( 0 === getDesc.length ) {
-											getColumn.append( errorMarkup );
-										} else {
-											$( errorMarkup ).insertBefore( getDesc );
-										}
+										forminatorUtils().add_error_message( getDesc, getColumn, errorMarkup );
 									}
 
 									if ( 0 === holderField.find( '.forminator-error-message' ).length ) {
@@ -1627,12 +1699,7 @@
 								}
 
 								if ( 'minutes' === holder.data( 'field' ) ) {
-
-									if ( 0 === getDesc.length ) {
-										getColumn.append( errorMarkup );
-									} else {
-										$( errorMarkup ).insertBefore( getDesc );
-									}
+									forminatorUtils().add_error_message( getDesc, getColumn, errorMarkup );
 
 									if ( 0 === holderField.find( '.forminator-error-message' ).length ) {
 
@@ -1656,12 +1723,7 @@
 								;
 
 							if ( 0 === getError.length ) {
-
-								if ( 0 === getDesc.length ) {
-									holderField.append( errorMarkup );
-								} else {
-									$( errorMarkup ).insertBefore( getDesc );
-								}
+								forminatorUtils().add_error_message( getDesc, holderField, errorMarkup );
 							}
 
 							holderError = holderField.find( '.forminator-error-message' );

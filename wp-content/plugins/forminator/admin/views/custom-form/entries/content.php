@@ -85,7 +85,6 @@ if ( $this->total_entries() > 0 ) :
 				<tbody>
 
 				<?php
-				$roles        = forminator_get_accessible_user_roles();
 				$url_entry_id = filter_input( INPUT_GET, 'entry_id', FILTER_VALIDATE_INT );
 				$url_entry_id = $url_entry_id ? $url_entry_id : 0;
 				foreach ( $this->entries_iterator() as $entries ) {
@@ -101,7 +100,14 @@ if ( $this->total_entries() > 0 ) :
 					$detail_items = $detail['items'];
 
 					// Fix for Stripe OCS and Stripe old field to show only one.
-					$item_types = wp_list_pluck( $detail_items, 'type' );
+					$detail_items_with_type = array_filter(
+						$detail_items,
+						function ( $item ) {
+							return isset( $item['type'] );
+						}
+					);
+
+					$item_types = wp_list_pluck( $detail_items_with_type, 'type' );
 					if ( in_array( 'stripe-ocs', $item_types, true ) && in_array( 'stripe', $item_types, true ) ) {
 						$stripe_key = array_search( 'stripe', $item_types, true );
 
@@ -166,8 +172,10 @@ if ( $this->total_entries() > 0 ) :
 
 								echo esc_html( $db_entry_id );
 
-								if ( ! empty( $draft_id ) ) {
-									echo '<span class="sui-tag draft-tag">' . esc_html__( 'Draft', 'forminator' ) . '</span>';
+								if ( 'draft' === $entries['status'] ) {
+									echo '<span class="sui-tag draft-tag status-tag">' . esc_html__( 'Draft', 'forminator' ) . '</span>';
+								} elseif ( 'abandoned' === $entries['status'] ) {
+									echo '<span class="sui-tag sui-tag-yellow status-tag">' . esc_html__( 'Abandoned', 'forminator' ) . '</span>';
 								}
 
 								if ( $pending_approval ) {
@@ -274,7 +282,7 @@ if ( $this->total_entries() > 0 ) :
 									<?php
 									if ( isset( $entries['activation_method'] ) && 'manual' === $entries['activation_method'] && ! empty( $entries['activation_key'] ) ) {
 										$signup = Forminator_CForm_User_Signups::get( $entries['activation_key'] );
-										if ( ! empty( $signup->user_data['role'] ) && isset( $roles[ $signup->user_data['role'] ] ) ) {
+										if ( forminator_can_approve_user_and_create_site( $signup ) ) {
 											?>
 
 										<div class="sui-actions-right">
@@ -299,7 +307,7 @@ if ( $this->total_entries() > 0 ) :
 
 									<div class="sui-actions-right">
 
-										<?php if ( empty( $entries['draft_id'] ) ) { ?>
+										<?php if ( 'active' === $entries['status'] ) { ?>
 											<button
 												role="button"
 												class="sui-button sui-button-ghost forminator-resend-notification-email"
@@ -310,11 +318,10 @@ if ( $this->total_entries() > 0 ) :
 												<?php esc_html_e( 'Resend Notification Email', 'forminator' ); ?>
 											</button>
 											<?php
-										}
-
-										if ( class_exists( 'Forminator_PDF_Generation' ) ) {
-											// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is already escaped.
-											echo Forminator_PDF_Generation::download_button( $this->form_id, $this->model->name, $entries['entry_id'] );
+											if ( class_exists( 'Forminator_PDF_Generation' ) ) {
+												// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is already escaped.
+												echo Forminator_PDF_Generation::download_button( $this->form_id, $this->model->name, $entries['entry_id'] );
+											}
 										}
 
 										if ( ( isset( $entries['activation_method'] ) && 'email' === $entries['activation_method'] ) && isset( $entries['activation_key'] ) ) {

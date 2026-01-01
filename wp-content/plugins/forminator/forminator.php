@@ -1,13 +1,14 @@
 <?php
 /**
  * Plugin Name: Forminator
- * Version: 1.38.1
+ * Version: 1.49.2
  * Plugin URI:  https://wpmudev.com/project/forminator/
- * Description: Capture user information (as detailed as you like), engage users with interactive polls that show real-time results and graphs, “no wrong answer” Facebook-style quizzes and knowledge tests.
+ * Description: Build powerful, customizable forms with ease using Forminator’s drag-and-drop builder, conditional logic, payment support, real-time analytics, and seamless integrations—no coding needed.
  * Author: WPMU DEV
  * Author URI: https://wpmudev.com
+ * Update URI: wordpress.org/plugins/forminator/
  * Requires at least: 6.4
- * Tested up to: 6.7
+ * Tested up to: 6.9
  * Requires PHP: 7.4
  * Text Domain: forminator
  * Domain Path: /languages/
@@ -152,6 +153,30 @@ if ( ! class_exists( 'Forminator' ) ) {
 				delete_option( 'forminator_activation_hook' );
 				flush_rewrite_rules();
 			}
+
+			if ( is_admin() && FORMINATOR_PRO ) {
+				// Prevent updating PRO plugin to a free version.
+				add_action( 'site_transient_update_plugins', array( __CLASS__, 'remove_free_version_update' ) );
+			}
+		}
+
+		/**
+		 * Remove free version update
+		 *
+		 * @param object|bool $transient Transient object of available updates.
+		 *
+		 * @return mixed
+		 */
+		public static function remove_free_version_update( $transient ) {
+			$slug = 'forminator/forminator.php';
+
+			if ( isset( $transient->response[ $slug ] ) ) {
+				$data = $transient->response[ $slug ];
+				if ( ! isset( $data->url ) || false === strpos( $data->url, 'wpmudev.com' ) ) {
+					unset( $transient->response[ $slug ] );
+				}
+			}
+			return $transient;
 		}
 
 		/**
@@ -354,7 +379,6 @@ if ( ! class_exists( 'Forminator' ) ) {
 			// Core files.
 			/* @noinspection PhpIncludeInspection */
 			include_once forminator_plugin_dir() . 'library/class-core.php';
-			include_once forminator_plugin_dir() . 'library/class-addon-loader.php';
 			include_once forminator_plugin_dir() . 'library/class-integration-loader.php';
 			include_once forminator_plugin_dir() . 'library/calculator/class-calculator.php';
 		}
@@ -437,8 +461,6 @@ if ( ! class_exists( 'Forminator' ) ) {
 			// Prefixed vendor autoload.
 			include_once forminator_plugin_dir() . 'library/external/vendor/autoload.php';
 
-			include_once forminator_plugin_dir() . 'library/lib/analytics/autoload.php';
-
 			if ( ! FORMINATOR_PRO ) {
 
 				if ( file_exists( forminator_plugin_dir() . 'library/lib/recommended-plugins/notice.php' ) ) {
@@ -514,11 +536,11 @@ if ( ! class_exists( 'Forminator' ) ) {
 // Functions.
 require_once plugin_dir_path( __FILE__ ) . 'functions.php';
 
-if ( file_exists( forminator_plugin_dir() . 'library/external/src/Forminator/woocommerce/action-scheduler/action-scheduler.php' ) ) {
+if ( file_exists( forminator_plugin_dir() . 'library/lib/action-scheduler/action-scheduler.php' ) ) {
 	add_action(
 		'plugins_loaded',
 		function () {
-			require_once forminator_plugin_dir() . 'library/external/src/Forminator/woocommerce/action-scheduler/action-scheduler.php';
+			require_once forminator_plugin_dir() . 'library/lib/action-scheduler/action-scheduler.php';
 		},
 		-10 // Don't change.
 	);
@@ -531,6 +553,24 @@ if ( file_exists( forminator_plugin_dir() . 'library/external/src/Forminator/woo
 			if ( ! get_option( $key ) && class_exists( 'ActionScheduler_StoreSchema' ) ) {
 				global $wpdb;
 				$table = $wpdb->prefix . ActionScheduler_StoreSchema::ACTIONS_TABLE;
+
+				// Check if table exists first.
+				$table_exists = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					$wpdb->prepare(
+						'SELECT EXISTS (
+							SELECT 1
+							FROM information_schema.tables
+							WHERE table_schema = %s
+							AND table_name = %s
+						)',
+						$wpdb->dbname,
+						$table,
+					)
+				);
+				if ( ! $table_exists ) {
+					return;
+				}
+
 				// It doesn't required cache as it run only once.
 				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$res = $wpdb->get_var( "SHOW COLUMNS FROM {$table} LIKE 'priority'" );

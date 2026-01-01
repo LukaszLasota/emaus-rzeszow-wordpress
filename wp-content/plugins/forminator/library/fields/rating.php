@@ -59,6 +59,9 @@ class Forminator_Rating extends Forminator_Field {
 		parent::__construct();
 
 		$this->name = esc_html__( 'Rating', 'forminator' );
+		$required   = __( 'This field is required. Please select a rating.', 'forminator' );
+
+		self::$default_required_messages[ $this->type ] = $required;
 	}
 
 	/**
@@ -111,6 +114,9 @@ class Forminator_Rating extends Forminator_Field {
 		$size        = self::get_property( 'size', $field, 'md' );
 		$max_rating  = self::get_property( 'max_rating', $field, 5 );
 		$suffix      = self::get_property( 'suffix', $field, true );
+		$settings    = $views_obj->model->settings;
+
+		$descr_position = self::get_description_position( $field, $settings );
 
 		$value = 0;
 		if ( isset( $draft_value['value'] ) ) {
@@ -157,7 +163,8 @@ class Forminator_Rating extends Forminator_Field {
 			$options,
 			$value,
 			$description,
-			$required
+			$required,
+			$descr_position,
 		);
 
 		$html .= '</div>';
@@ -193,10 +200,10 @@ class Forminator_Rating extends Forminator_Field {
 		$message = '';
 		$field   = $this->field;
 		if ( $this->is_required( $field ) ) {
-			$required_message = self::get_property( 'required_message', $field, '' );
+			$required_message = self::get_property( 'required_message', $field, self::$default_required_messages[ $this->type ] );
 			$required_message = apply_filters(
 				'forminator_rating_field_required_validation_message',
-				( ! empty( $required_message ) ? $required_message : esc_html__( 'This field is required. Please select a rating.', 'forminator' ) ),
+				$required_message,
 				$this->get_id( $field ),
 				$field
 			);
@@ -225,7 +232,7 @@ class Forminator_Rating extends Forminator_Field {
 					$field,
 					'required_message',
 					'',
-					esc_html__( 'This field is required. Please select a rating.', 'forminator' )
+					esc_html( self::$default_required_messages[ $this->type ] )
 				);
 
 			if ( empty( $rating_value ) ) {

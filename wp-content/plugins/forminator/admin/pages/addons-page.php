@@ -38,6 +38,13 @@ class Forminator_Addons_Page extends Forminator_Admin_Page {
 				),
 			);
 
+			if ( ! forminator_form_abandonment_disabled() ) {
+				// Extension Pack Add-on.
+				$project_info[] = array(
+					'pid' => Forminator_Admin_Addons_Page::EXTENSION_PACK_PID,
+				);
+			}
+
 			foreach ( $project_info as $project ) {
 				$project_data[] = Forminator_Admin_Addons_Page::get_project_info_from_wpmudev_dashboard( $project['pid'] );
 			}
@@ -68,6 +75,16 @@ class Forminator_Addons_Page extends Forminator_Admin_Page {
 
 		if ( empty( $projects ) && ! FORMINATOR_PRO && ! class_exists( 'WPMUDEV_Dashboard' ) ) {
 			$projects = Forminator_Admin_Addons_Page::forminator_get_static_addons();
+		}
+
+		// Remove Stripe Add-on if payments are disabled.
+		if ( forminator_payments_disabled() ) {
+			$projects = array_filter(
+				$projects,
+				function ( $project ) {
+					return 3953609 !== $project->pid;
+				}
+			);
 		}
 
 		$response['all']    = $projects;

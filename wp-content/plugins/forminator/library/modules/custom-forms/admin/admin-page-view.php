@@ -62,6 +62,13 @@ class Forminator_CForm_Page extends Forminator_Admin_Module_Edit_Page {
 		$meta['fields'] = $fields;
 		update_post_meta( $form_id, Forminator_Base_Form_Model::META_KEY, $meta );
 
+		/**
+		 * Fires after stripe migrated to stripe-ocs
+		 *
+		 * @param int $form_id Form ID.
+		 */
+		do_action( 'forminator_after_stripe_migrated', $form_id );
+
 		return true;
 	}
 
@@ -106,9 +113,11 @@ class Forminator_CForm_Page extends Forminator_Admin_Module_Edit_Page {
 			'title'           => $title,
 			'entries'         => Forminator_Form_Entry_Model::count_entries( $id ),
 			'last_entry_time' => forminator_get_latest_entry_time_by_form_id( $id ),
+			'abandoned'       => Forminator_Form_Entry_Model::count_report_entries( $id, '', '', 'abandoned' ),
 			'views'           => $views,
 			'date'            => $date,
 			'status'          => $status,
+			'model'           => $model,
 		);
 	}
 

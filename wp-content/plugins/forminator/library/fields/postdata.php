@@ -88,6 +88,9 @@ class Forminator_Postdata extends Forminator_Field {
 		parent::__construct();
 
 		$this->name = esc_html__( 'Post Data', 'forminator' );
+		$required   = __( 'This field is required. Please enter the post title.', 'forminator' );
+
+		self::$default_required_messages[ $this->type ] = $required;
 	}
 
 	/**
@@ -102,12 +105,12 @@ class Forminator_Postdata extends Forminator_Field {
 			'forminator_post_data_defaults_settings',
 			array(
 				'data_status'        => 'pending',
-				'post_title_label'   => 'Post Title',
-				'post_content_label' => 'Post Content',
-				'post_excerpt_label' => 'Post Excerpt',
-				'post_image_label'   => 'Featured Image',
-				'category_label'     => 'Category',
-				'post_tag_label'     => 'Tags',
+				'post_title_label'   => esc_attr__( 'Post Title', 'forminator' ),
+				'post_content_label' => esc_attr__( 'Post Content', 'forminator' ),
+				'post_excerpt_label' => esc_attr__( 'Post Excerpt', 'forminator' ),
+				'post_image_label'   => esc_attr__( 'Featured Image', 'forminator' ),
+				'category_label'     => esc_attr__( 'Category', 'forminator' ),
+				'post_tag_label'     => esc_attr__( 'Tags', 'forminator' ),
 				'select_author'      => 1,
 				'category_multiple'  => '0',
 				'post_tag_multiple'  => '0',
@@ -172,6 +175,8 @@ class Forminator_Postdata extends Forminator_Field {
 		$settings           = $views_obj->model->settings;
 		$this->field        = $field;
 		$this->draft_values = ! empty( $draft_value['value'] ) ? $draft_value['value'] : array();
+
+		self::$description_position = self::get_description_position( $field, $settings );
 
 		$html     = '';
 		$required = self::get_property( 'required', $field, false );
@@ -445,7 +450,7 @@ class Forminator_Postdata extends Forminator_Field {
 					$label,
 					$description,
 					$required,
-					$design
+					self::$description_position,
 				);
 
 				if ( 'wp_editor' === $type ) {
@@ -470,7 +475,8 @@ class Forminator_Postdata extends Forminator_Field {
 					$options,
 					$value,
 					$description,
-					$required
+					$required,
+					self::$description_position,
 				);
 			} elseif ( 'multiselect' === $type ) {
 				$html .= self::get_field_label( $label, $id . '-field', $required );
@@ -484,8 +490,12 @@ class Forminator_Postdata extends Forminator_Field {
 
 				$name   = $id . '-' . $field_name . '[]';
 				$get_id = $id . '-' . $field_name;
-				$html  .= '<div class="forminator-multiselect">';
 				$i      = 1;
+
+				if ( 'above' === self::$description_position ) {
+					$html .= self::get_description( $description, $get_id, self::$description_position );
+				}
+				$html .= '<div class="forminator-multiselect">';
 
 				foreach ( $options as $option ) {
 
@@ -527,8 +537,8 @@ class Forminator_Postdata extends Forminator_Field {
 
 				$html .= '</div>';
 
-				if ( ! empty( $description ) ) {
-					$html .= self::get_description( $description, $get_id );
+				if ( 'above' !== self::$description_position ) {
+					$html .= self::get_description( $description, $get_id, self::$description_position );
 				}
 			} elseif ( 'file' === $type ) {
 
@@ -558,7 +568,7 @@ class Forminator_Postdata extends Forminator_Field {
 					$label,
 					$description,
 					$required,
-					$design
+					self::$description_position,
 				);
 			}
 
@@ -664,7 +674,7 @@ class Forminator_Postdata extends Forminator_Field {
 
 					$postdata_post_title_validation_message          = apply_filters(
 						'forminator_postdata_field_post_title_validation_message',
-						( ! empty( $setting_required_message ) ? $setting_required_message : esc_html__( 'This field is required. Please enter the post title.', 'forminator' ) ),
+						( ! empty( $setting_required_message ) ? $setting_required_message : esc_html( self::$default_required_messages[ $this->type ] ) ),
 						$id
 					);
 					$this->validation_message[ $id . '-post-title' ] = $postdata_post_title_validation_message;
@@ -1094,7 +1104,7 @@ class Forminator_Postdata extends Forminator_Field {
 
 				$required_message = apply_filters(
 					'forminator_postdata_field_post_title_validation_message',
-					( ! empty( $setting_required_message ) ? $setting_required_message : esc_html__( 'This field is required. Please enter the post title.', 'forminator' ) ),
+					( ! empty( $setting_required_message ) ? $setting_required_message : self::$default_required_messages[ $this->type ] ),
 					$id,
 					$field
 				);

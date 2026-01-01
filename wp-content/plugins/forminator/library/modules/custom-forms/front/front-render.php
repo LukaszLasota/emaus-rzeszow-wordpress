@@ -377,19 +377,22 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 
 		// Load reCaptcha scripts.
 		if ( $this->has_captcha() ) {
-			$first_captcha    = $this->find_first_captcha();
-			$site_language    = get_locale();
-			$captcha_language = get_option( 'forminator_captcha_language', '' );
-			$global_language  = ! empty( $captcha_language ) ? $captcha_language : $site_language;
-			$language         = Forminator_Field::get_property( 'language', $first_captcha, $global_language );
-			$language         = ! empty( $language ) ? $language : $global_language;
+			$first_captcha = $this->find_first_captcha();
+			$language      = Forminator_Captcha::get_captcha_language( $first_captcha );
+			$ver           = FORMINATOR_VERSION;
 
-			// Check whether provider is reCaptcha or hCaptcha.
+			// Check captcha provider.
 			if ( $this->is_recaptcha() ) {
 				$method_onload = 'forminator_render_captcha';
 				$src           = 'https://www.google.com/recaptcha/api.js?hl=' . $language . '&onload=' . $method_onload . '&render=explicit';
 				$script_tag    = 'forminator-google-recaptcha';
 				$script_load   = 'grecaptcha';
+			} elseif ( $this->is_turnstile() ) {
+				$method_onload = 'forminator_render_turnstile';
+				$src           = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=' . $method_onload . '&render=explicit';
+				$script_tag    = 'forminator-turnstile';
+				$script_load   = 'turnstile';
+				$ver           = null;
 			} else {
 				$method_onload = 'forminator_render_hcaptcha';
 				$src           = 'https://js.hcaptcha.com/1/api.js?hl=' . $language . '&onload=' . $method_onload . '&render=explicit&recaptchacompat=off';
@@ -402,7 +405,7 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 					$script_tag,
 					$src,
 					array( 'jquery' ),
-					FORMINATOR_VERSION,
+					$ver,
 					true
 				);
 			} else {
@@ -604,6 +607,12 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 		if ( ! $is_ajax_load ) {
 			add_action( 'wp_footer', array( $this, 'forminator_render_front_scripts' ), 9999 );
 		}
+
+		// Render front end submission behavior scripts.
+		if ( ! $this->model->is_ajax_submit() ) {
+			add_action( 'wp_footer', array( $this, 'forminator_render_front_submission_behavior_scripts' ), 9999 );
+		}
+
 		add_action( 'admin_footer', array( $this, 'forminator_render_front_scripts' ), 9999 );
 	}
 
@@ -1104,16 +1113,37 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 		$form_settings = $this->get_form_settings();
 		$label         = esc_html__( 'Finish', 'forminator' );
 		$element_id    = ! empty( $element ) ? $element[0]['element_id'] : '';
+		$actual_label  = sprintf(
+			// translators: %d: Page number.
+			__( 'Page %d', 'forminator' ),
+			1
+		);
+		$actual_element_id = $element[0]['element_id'] ?? 'last';
 
 		if ( isset( $form_settings['paginationData']['last-steps'] ) ) {
 			$label = $form_settings['paginationData']['last-steps'];
 		}
 
+		if ( isset( $form_settings['paginationData'][ $actual_element_id . '-steps' ] ) ) {
+			$actual_label = $form_settings['paginationData'][ $actual_element_id . '-steps' ];
+		}
+
 		$html = sprintf(
-			'<div tabindex="0" role="tabpanel" id="forminator-custom-form-%3$s--page-0" class="forminator-pagination forminator-pagination-start" aria-labelledby="forminator-custom-form-%3$s--page-0-label" data-step="0" data-label="%1$s" data-name="%2$s">',
+			'<div
+				tabindex="-1"
+				role="tabpanel"
+				id="forminator-custom-form-%3$s--page-0"
+				class="forminator-pagination forminator-pagination-start"
+				aria-labelledby="forminator-custom-form-%3$s--page-0-label"
+				data-step="0"
+				data-label="%1$s"
+				data-actual-label="%4$s"
+				data-name="%2$s"
+			>',
 			esc_attr( $label ),
 			esc_attr( $element_id ),
-			esc_attr( $form_settings['form_id'] )
+			esc_attr( $form_settings['form_id'] ),
+			esc_attr( $actual_label )
 		);
 
 		return apply_filters( 'forminator_pagination_start_markup', $html, $label, $element_id );
@@ -1139,6 +1169,9 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 			'last-previous'            => esc_html__( 'Previous', 'forminator' ),
 			'pagination-labels'        => 'default',
 			'has-paypal'               => $this->has_paypal(),
+			'progress-bar-type'        => 'progress',
+			/* Translators: 1. Current page number, 2. Total number of pages. */
+			'page-number-text'         => esc_html__( 'Page %1$s of %2$s', 'forminator' ),
 		);
 
 		foreach ( $properties as $property => $value ) {
@@ -1327,8 +1360,17 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 		$form_settings       = $this->get_form_settings();
 		$label               = sprintf( '%s %s', esc_html__( 'Page ', 'forminator' ), $step );
 		$pagination_settings = $this->get_pagination_field();
+		$actual_label        = sprintf(
+			// translators: %d: Page number.
+			__( 'Page %d', 'forminator' ),
+			$step + 1
+		);
 		if ( isset( $pagination_settings[ $field['element_id'] . '-steps' ] ) ) {
 			$label = $pagination_settings[ $field['element_id'] . '-steps' ];
+		}
+		$actual_element_id = $pagination[ $step ]['element_id'] ?? 'last';
+		if ( isset( $pagination_settings[ $actual_element_id . '-steps' ] ) ) {
+			$actual_label = $pagination_settings[ $actual_element_id . '-steps' ];
 		}
 		$element_id = '';
 		if ( ! empty( $pagination ) ) {
@@ -1342,11 +1384,24 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 		}
 
 		$html = sprintf(
-			'</div><div tabindex="0" role="tabpanel" id="forminator-custom-form-%4$s--page-%1$s" class="forminator-pagination" aria-labelledby="forminator-custom-form-%4$s--page-%1$s-label" aria-hidden="true" data-step="%1$s" data-label="%2$s" data-name="%3$s" hidden>',
+			'</div><div
+				tabindex="-1"
+				role="tabpanel"
+				id="forminator-custom-form-%4$s--page-%1$s"
+				class="forminator-pagination"
+				aria-labelledby="forminator-custom-form-%4$s--page-%1$s-label"
+				aria-hidden="true"
+				data-step="%1$s"
+				data-label="%2$s"
+				data-actual-label="%5$s"
+				data-name="%3$s"
+				hidden
+			>',
 			esc_attr( $step ),
 			esc_attr( $label ),
 			esc_attr( $element_id ),
-			esc_attr( $form_settings['form_id'] )
+			esc_attr( $form_settings['form_id'] ),
+			esc_attr( $actual_label )
 		);
 
 		return apply_filters( 'forminator_pagination_step_markup', $html, $step, $label, $element_id );
@@ -1417,6 +1472,13 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 			$field['element_id'] .= $field['group_suffix'];
 		}
 		$draft_value = isset( $this->draft_data[ $field['element_id'] ] ) ? $this->draft_data[ $field['element_id'] ] : null;
+
+		// Add custom value for radio, select, or checkbox if applicable.
+		if ( null !== $draft_value && in_array( $type, array( 'radio', 'select', 'checkbox' ), true ) ) {
+			if ( isset( $this->draft_data[ 'custom-' . $field['element_id'] ] ) ) {
+				$draft_value['custom_value'] = $this->draft_data[ 'custom-' . $field['element_id'] ];
+			}
+		}
 
 		// Get field object.
 		/**
@@ -1711,6 +1773,25 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 		if ( ! empty( $fields ) ) {
 			foreach ( $fields as $field ) {
 				if ( 'captcha' === $field['type'] && 'recaptcha' === $field['captcha_provider'] ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if form has Cloudflare turnstile captcha.
+	 *
+	 * @return bool
+	 */
+	public function is_turnstile() {
+		$fields = $this->get_fields();
+
+		if ( ! empty( $fields ) ) {
+			foreach ( $fields as $field ) {
+				if ( 'captcha' === $field['type'] && 'turnstile' === $field['captcha_provider'] ) {
 					return true;
 				}
 			}
@@ -2151,7 +2232,8 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 		$nonce      = $this->nonce_field( 'forminator_submit_form' . $form_id, 'forminator_nonce' );
 		$post_id    = $this->get_post_id();
 		$has_paypal = $this->has_paypal();
-		$form_type  = isset( $this->model->settings['form-type'] ) ? $this->model->settings['form-type'] : '';
+		$settings   = $this->get_form_settings();
+		$form_type  = $settings['form-type'] ?? '';
 
 		if ( $has_paypal ) {
 			if ( ! ( self::$paypal instanceof Forminator_Paypal_Express ) ) {
@@ -2166,7 +2248,10 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 				$html .= '<input type="hidden" name="payment_gateway_total" value="" />';
 				$html .= $this->get_paypal_button_markup( $form_id );
 			}
-			$html .= $this->get_button_markup();
+			$fields = $this->model->get_fields();
+			if ( count( $fields ) ) {
+				$html .= $this->get_button_markup();
+			}
 		}
 
 		$html .= $nonce;
@@ -2181,7 +2266,7 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 		}
 
 		if ( $this->is_login_form() ) {
-			$redirect_url = ! empty( $this->model->settings['redirect-url'] ) ? $this->model->settings['redirect-url'] : admin_url();
+			$redirect_url = ! empty( $settings['redirect-url'] ) ? $settings['redirect-url'] : admin_url();
 			$redirect_url = forminator_replace_variables( $redirect_url, $form_id );
 			$html        .= sprintf( '<input type="hidden" name="redirect_to" value="%s">', esc_url( $redirect_url ) );
 		}
@@ -2196,7 +2281,7 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 			$html .= sprintf( '<input type="hidden" name="action" value="%s">', 'forminator_submit_form_custom-forms' );
 		}
 
-		if ( isset( $this->model->settings['use_save_and_continue'] ) && filter_var( $this->model->settings['use_save_and_continue'], FILTER_VALIDATE_BOOLEAN ) ) {
+		if ( isset( $settings['use_save_and_continue'] ) && filter_var( $settings['use_save_and_continue'], FILTER_VALIDATE_BOOLEAN ) ) {
 			$html .= '<input type="hidden" name="save_draft" value="false">';
 
 			if ( ! empty( $this->draft_id ) ) {
@@ -2206,12 +2291,12 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 
 		$html .= $this->do_after_render_form_for_addons();
 
+		$html = apply_filters( 'forminator_render_form_submit_markup', $html, $form_id, $post_id, $nonce, $settings );
 		if ( $render ) {
-			$html = apply_filters( 'forminator_render_form_submit_markup', $html, $form_id, $post_id, $nonce );
 			echo wp_kses_post( $html );
 		} else {
 			/* @noinspection PhpInconsistentReturnPointsInspection */
-			return apply_filters( 'forminator_render_form_submit_markup', $html, $form_id, $post_id, $nonce );
+			return $html;
 		}
 	}
 
@@ -2547,6 +2632,20 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 						jQuery(forminatorFront.forminator_selector).find('.forminator-pagination-footer').hide();
 					}
 				}
+			});
+		</script>
+		<?php
+	}
+
+	/**
+	 * Render Front-end behavior Script
+	 *
+	 * @since 1.39
+	 */
+	public function forminator_render_front_submission_behavior_scripts() {
+		?>
+		<script type="text/javascript">
+			jQuery(function () {
 				if (typeof ForminatorFormNewTabRedirect !== 'undefined') {
 					var forminatorFront = ForminatorFormNewTabRedirect.url;
 					if (typeof forminatorFront !== 'undefined') {
@@ -3259,7 +3358,7 @@ class Forminator_CForm_Front extends Forminator_Render_Form {
 	 * @return bool
 	 */
 	public function get_skip_text( $form_settings ) {
-		$skip_text = isset( $form_settings['skip-text'] ) ? esc_html( $form_settings['skip-text'] ) : esc_html__( 'Skip and continue', 'forminator' );
+		$skip_text = ! empty( $form_settings['skip-text'] ) ? esc_html( $form_settings['skip-text'] ) : esc_html__( 'Skip and continue', 'forminator' );
 
 		return $skip_text;
 	}

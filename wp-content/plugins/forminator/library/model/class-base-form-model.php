@@ -15,7 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @property  string $status
  */
 abstract class Forminator_Base_Form_Model {
-	const META_KEY = 'forminator_form_meta';
+	const META_KEY      = 'forminator_form_meta';
+	const TEMP_META_KEY = 'forminator_temp_form_meta';
 	/**
 	 * Form ID
 	 *
@@ -156,6 +157,83 @@ abstract class Forminator_Base_Form_Model {
 	}
 
 	/**
+	 * Save temporary settings
+	 *
+	 * @param int   $id Module ID.
+	 * @param array $module_data Module data.
+	 *
+	 * @return bool
+	 */
+	public static function save_temp_settings( int $id, array $module_data ): bool {
+		unset( $module_data['pdfs'] ); // Remove PDFs from temp settings.
+		$response = update_post_meta( $id, self::TEMP_META_KEY, $module_data );
+		// It can be false, if new data is the same as old data.
+		if ( ! $response && self::get_temp_settings( $id ) === $module_data ) {
+			return true;
+		}
+
+		return (bool) $response;
+	}
+
+	/**
+	 * Get temporary settings
+	 *
+	 * @param int $id Module ID.
+	 *
+	 * @return array|bool
+	 */
+	public static function get_temp_settings( int $id ) {
+		$temp_meta = get_post_meta( $id, self::TEMP_META_KEY, true );
+
+		if ( ! empty( $temp_meta ) && is_array( $temp_meta ) ) {
+			return $temp_meta;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Remove temporary settings
+	 *
+	 * @param int $id Module ID.
+	 * @return bool
+	 */
+	public static function remove_temp_settings( int $id ): bool {
+		$response = delete_post_meta( $id, self::TEMP_META_KEY );
+
+		return (bool) $response;
+	}
+
+	/**
+	 * Add temp saved changes to the data
+	 *
+	 * @param array                           $data Data.
+	 * @param Forminator_Base_Form_Model|null $model Model.
+	 *
+	 * @return array
+	 */
+	public static function add_saved_changes( $data, $model ) {
+		if ( $model ) {
+			$data['originalSettings'] = $data['currentForm'];
+
+			$saved_changes = self::get_temp_settings( $model->id );
+			// Add saved changes to the data.
+			if ( ! empty( $saved_changes ) ) {
+				$data['currentForm'] = $saved_changes;
+				if ( isset( $data['originalSettings']['pdfs'] ) ) {
+					// If PDFs are set in original settings, we need to keep them in the current form.
+					$data['currentForm']['pdfs'] = $data['originalSettings']['pdfs'];
+				} else {
+					// If PDFs are not set in original settings, we need to remove them from the current form.
+					unset( $data['currentForm']['pdfs'] );
+				}
+			}
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Get fields
 	 *
 	 * @return Forminator_Form_Field_Model[]
@@ -224,6 +302,40 @@ abstract class Forminator_Base_Form_Model {
 		);
 
 		return $grouped_fields;
+	}
+
+
+	/**
+	 * Get filtered fields by page break.
+	 *
+	 * @param string $page_break_id Page break ID.
+	 * @return array
+	 */
+	public function get_page_fields( $page_break_id ) {
+		$fields             = $this->get_fields();
+		$last_page_break_id = null;
+		$page_fields        = array();
+		$collecting         = false;
+		foreach ( $fields as $field ) {
+			if ( 0 === strpos( $field->slug, 'page-break-' ) ) {
+				if ( $field->element_id === $page_break_id ) {
+					$collecting = true;
+				} else {
+					$collecting = false;
+				}
+				$last_page_break_id = $field->element_id;
+			} elseif ( $collecting ) {
+				$page_fields[] = $field;
+			}
+		}
+
+		// If it's the last page break id, then the page fields are empty.
+		// Because we ignore visibility conditions on the last page.
+		if ( $page_break_id === $last_page_break_id ) {
+			$page_fields = array();
+		}
+
+		return $page_fields;
 	}
 
 	/**
@@ -704,12 +816,15 @@ abstract class Forminator_Base_Form_Model {
 			$class         = get_class( $this );
 			$object        = new $class();
 			$meta          = get_post_meta( $post->ID, self::META_KEY, true );
-			$maps          = array_merge( $this->get_default_maps(), $this->get_maps() );
 			$fields        = ! empty( $meta['fields'] ) ? $meta['fields'] : array();
 			$form_settings = array(
 				'version'                    => '1.0',
 				'cform-section-border-color' => '#E9E9E9',
 			);
+			if ( $fields ) {
+				$meta['fields'] = static::disable_fields( $fields );
+			}
+			$maps = array_merge( $this->get_default_maps(), $this->get_maps() );
 
 			// Update version from form settings.
 			if ( isset( $meta['settings']['version'] ) ) {
@@ -721,12 +836,35 @@ abstract class Forminator_Base_Form_Model {
 				$form_settings['cform-section-border-color'] = $meta['settings']['cform-section-border-color'];
 			}
 
+			// Decode HTML entities.
+			$decode_html_keys = array( 'notifications', 'behaviors', 'integration_conditions' );
+			foreach ( $decode_html_keys as $decode_html_key ) {
+				if ( ! empty( $meta[ $decode_html_key ] ) ) {
+					foreach ( $meta[ $decode_html_key ] as $key => $meta_data ) {
+						if ( ! empty( $meta_data['conditions'] ) ) {
+							$meta[ $decode_html_key ][ $key ]['conditions'] = forminator_decode_html_entity( $meta_data['conditions'] );
+						}
+						if ( 'notifications' === $decode_html_key && ! empty( $meta_data['routing'] ) ) {
+							$meta[ $decode_html_key ][ $key ]['routing'] = forminator_decode_html_entity( $meta_data['routing'] );
+						}
+					}
+				}
+			}
+			if ( ! empty( $meta['settings']['user_role'] ) ) {
+				$meta['settings']['user_role'] = forminator_decode_html_entity( $meta['settings']['user_role'] );
+			}
+
 			if ( ! empty( $maps ) ) {
 				foreach ( $maps as $map ) {
 					$attribute = $map['property'];
 					if ( 'post' === $map['type'] ) {
-						$att                  = $map['field'];
-						$object->{$attribute} = $post->{$att};
+						$att = $map['field'];
+						if ( 'pdf_form' === $post->post_status && 'name' === $attribute ) {
+							// To support non-English characters in the file name.
+							$object->{$attribute} = urldecode( $post->{$att} );
+						} else {
+							$object->{$attribute} = $post->{$att};
+						}
 					} elseif ( ! empty( $meta['fields'] ) && 'fields' === $map['field'] ) {
 							$meta['fields'] = forminator_decode_html_entity( $meta['fields'] );
 							$password_count = 0;
@@ -788,6 +926,16 @@ abstract class Forminator_Base_Form_Model {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Disable fields
+	 *
+	 * @param array $fields Fields.
+	 * @return array
+	 */
+	protected static function disable_fields( $fields ) {
+		return $fields;
 	}
 
 	/**
@@ -887,7 +1035,6 @@ abstract class Forminator_Base_Form_Model {
 					'wrapper_id' => $form_id,
 				);
 			}
-
 			$field_data                           = $field->to_formatted_array();
 			$field_data                           = $this->migrate_payments( $field_data );
 			$wrappers[ $form_id ]['parent_group'] = ! empty( $field->parent_group ) ? $field->parent_group : '';
@@ -1481,28 +1628,22 @@ abstract class Forminator_Base_Form_Model {
 	 * @since 1.6.1
 	 */
 	private static function is_global_ajax_load( $force = false ) {
-		// default disabled.
-
-		// from settings.
-		$settings_enabled = get_option( 'forminator_module_enable_load_ajax', false );
-
 		// from constant.
 		$enabled = defined( 'FORMINATOR_MODULE_ENABLE_LOAD_AJAX' ) && FORMINATOR_MODULE_ENABLE_LOAD_AJAX;
 
 		// if one is true, then its enabled.
-		$enabled = $force || $settings_enabled || $enabled;
+		$enabled = $force || $enabled;
 
 		/**
 		 * Filter flag is ajax load of module
 		 *
 		 * @param bool $enabled
-		 * @param bool $settings_enabled
 		 * @param bool $force
 		 *
 		 * @return bool
 		 * @since  1.6
 		 */
-		$enabled = apply_filters( 'forminator_module_is_ajax_load', $enabled, $settings_enabled, $force );
+		$enabled = apply_filters( 'forminator_module_is_ajax_load', $enabled, $force );
 
 		return $enabled;
 	}
@@ -1546,16 +1687,8 @@ abstract class Forminator_Base_Form_Model {
 	 * @since 1.6.1
 	 */
 	private static function is_global_use_donotcachepage_constant() {
-		// default disabled.
-
-		// from settings.
-		$settings_enabled = get_option( 'forminator_module_use_donotcachepage', false );
-
 		// from constant.
 		$enabled = defined( 'FORMINATOR_MODULE_USE_DONOTCACHEPAGE' ) && FORMINATOR_MODULE_USE_DONOTCACHEPAGE;
-
-		// if one is true, then its enabled.
-		$enabled = $settings_enabled || $enabled;
 
 		/**
 		 * Filter flag is use `DONOTCACHEPAGE` of module
@@ -1765,27 +1898,32 @@ abstract class Forminator_Base_Form_Model {
 		$post_status                 = ! empty( $model_array['status'] ) ? $model_array['status'] : '';
 		$settings                    = ! empty( $model_array['settings'] ) ? $model_array['settings'] : array();
 		$settings['previous_status'] = 'draft';
-		switch ( $type ) {
-			case 'form':
-				$fields    = ! empty( $model->fields ) ? $model->get_fields_grouped() : array();
-				$form_name = $model_array['settings']['formName'];
-				/** This action is documented in library/modules/custom-forms/admin/admin-loader.php */
-				do_action( 'forminator_custom_form_action_update', $post_id, $form_name, $post_status, $fields, $settings );
-				break;
-			case 'poll':
-				$answer = ! empty( $model->fields ) ? $model->get_fields_as_array() : array();
-				/** This action is documented in library/modules/polls/admin/admin-loader.php */
-				do_action( 'forminator_poll_action_update', $post_id, $post_status, $answer, $settings );
-				break;
-			case 'quiz':
-				$quiz_type = $model_array['quiz_type'];
-				$questions = $model_array['questions'];
-				$results   = $model_array['results'];
-				/** This action is documented in library/modules/quizzes/admin/admin-loader.php */
-				do_action( 'forminator_quiz_action_update', $post_id, $quiz_type, $post_status, $questions, $results, $settings );
-				break;
-			default:
-				break;
+		try {
+			switch ( $type ) {
+				case 'form':
+					$fields    = ! empty( $model->fields ) ? $model->get_fields_grouped() : array();
+					$form_name = $model_array['settings']['formName'];
+					/** This action is documented in library/modules/custom-forms/admin/admin-loader.php */
+					do_action( 'forminator_custom_form_action_update', $post_id, $form_name, $post_status, $fields, $settings );
+					break;
+				case 'poll':
+					$answer = ! empty( $model->fields ) ? $model->get_fields_as_array() : array();
+					/** This action is documented in library/modules/polls/admin/admin-loader.php */
+					do_action( 'forminator_poll_action_update', $post_id, $post_status, $answer, $settings );
+					break;
+				case 'quiz':
+					$quiz_type = $model_array['quiz_type'];
+					$questions = $model_array['questions'];
+					$results   = $model_array['results'];
+					/** This action is documented in library/modules/quizzes/admin/admin-loader.php */
+					do_action( 'forminator_quiz_action_update', $post_id, $quiz_type, $post_status, $questions, $results, $settings );
+					break;
+				default:
+					break;
+			}
+		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// Ignore errors coming from the add-on for now.
+			// TODO: Display an appropriate error message.
 		}
 	}
 }

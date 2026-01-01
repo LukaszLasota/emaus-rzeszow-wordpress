@@ -98,6 +98,10 @@
 			if( paypalData.layout !== 'vertical' ) {
 				style_data.tagline =  paypalData.tagline;
 			}
+			// Handle the case when PayPal is loaded in an iframe (e.g., in the theme editor).
+			if ( window.parent !== window && window.parent.paypal ) {
+				window.paypal = window.parent.paypal;
+			}
 
 			this.paypalButton = paypal.Buttons({
 				onInit: function(data, actions) {
@@ -217,7 +221,7 @@
 						self.focus_to_element($target_message);
 					}
 
-					$form.trigger('submit.frontSubmit');
+					$form.trigger('submit.frontSubmit', 'forminator:submit:paypal' );
 				},
 
 				onCancel: function (data, actions) {
@@ -356,7 +360,7 @@
 					}
 				}
 			} else {
-				if ( $element.inputmask ) {
+				if ( forminatorUtils().field_has_inputMask( $element ) ) {
 					var unmaskVal =	$element.inputmask('unmaskedvalue');
 					value = unmaskVal.replace(/,/g, '.');
 				} else {

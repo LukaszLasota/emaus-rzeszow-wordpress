@@ -71,8 +71,10 @@
 			$form.data('validator', null).unbind('validate').validate({
 
 				ignore( index, element ) {
+					const validationDisabled = $( '#forminator-field-disable_validations' ).is(':checked');
 					// Add support for hidden required fields (uploads, wp_editor) and for skipping pagination when required.
 					return (
+						validationDisabled ||
 						( $( element ).is( ':hidden:not(.do-validate)' ) &&
 								! $( element ).closest(
 									'.forminator-pagination'
@@ -120,6 +122,14 @@
 					if ( $( element ).hasClass('hasDatepicker') === false ) {
 						$( element ).valid();
 					}
+					//validate Confirm email.
+					if ( $( element ).hasClass( 'forminator-email--field' ) ) {
+						let name = $( element ).attr( 'name' ),
+							confirmEmail = $( 'input[name="confirm_' + name + '"]' );
+						if ( confirmEmail.length && confirmEmail.val() ) {
+							confirmEmail.valid();
+						}
+					}
 					$( element ).trigger('validation:focusout');
 				},
 
@@ -156,12 +166,7 @@
 									$( errorMarkup ).insertBefore( getColumn.find( '.forminator-error-message[data-error-field="year"]' ) );
 
 								} else {
-
-									if ( 0 === getDesc.length ) {
-										getColumn.append( errorMarkup );
-									} else {
-										$( errorMarkup ).insertBefore( getDesc );
-									}
+									forminatorUtils().add_error_message( getDesc, getColumn, errorMarkup );
 								}
 
 								if ( 0 === holderField.find( '.forminator-error-message' ).length ) {
@@ -181,12 +186,7 @@
 									);
 
 								} else {
-
-									if ( 0 === getDesc.length ) {
-										getColumn.append( errorMarkup );
-									} else {
-										$( errorMarkup ).insertBefore( getDesc );
-									}
+									forminatorUtils().add_error_message( getDesc, getColumn, errorMarkup );
 								}
 
 								if ( 0 === holderField.find( '.forminator-error-message' ).length ) {
@@ -198,12 +198,7 @@
 							}
 
 							if ( 'year' === holder.data( 'field' ) ) {
-
-								if ( 0 === getDesc.length ) {
-									getColumn.append( errorMarkup );
-								} else {
-									$( errorMarkup ).insertBefore( getDesc );
-								}
+								forminatorUtils().add_error_message( getDesc, getColumn, errorMarkup );
 
 								if ( 0 === holderField.find( '.forminator-error-message' ).length ) {
 
@@ -238,12 +233,7 @@
 										getColumn.find( '.forminator-error-message[data-error-field="minutes"]' )
 									);
 								} else {
-
-									if ( 0 === getDesc.length ) {
-										getColumn.append( errorMarkup );
-									} else {
-										$( errorMarkup ).insertBefore( getDesc );
-									}
+									forminatorUtils().add_error_message( getDesc, getColumn, errorMarkup );
 								}
 
 								if ( 0 === holderField.find( '.forminator-error-message' ).length ) {
@@ -255,12 +245,7 @@
 							}
 
 							if ( 'minutes' === holder.data( 'field' ) ) {
-
-								if ( 0 === getDesc.length ) {
-									getColumn.append( errorMarkup );
-								} else {
-									$( errorMarkup ).insertBefore( getDesc );
-								}
+								forminatorUtils().add_error_message( getDesc, getColumn, errorMarkup );
 
 								if ( 0 === holderField.find( '.forminator-error-message' ).length ) {
 
@@ -283,12 +268,7 @@
 						var getDesc  = holderField.find( '.forminator-description' );
 
 						if ( 0 === getError.length ) {
-
-							if ( 0 === getDesc.length ) {
-								holderField.append( errorMarkup );
-							} else {
-								$( errorMarkup ).insertBefore( getDesc );
-							}
+							forminatorUtils().add_error_message( getDesc, holderField, errorMarkup );
 						}
 
 						holderError = holderField.find( '.forminator-error-message' );
@@ -331,10 +311,16 @@
 					var errorId = holder.attr('id') + '-error';
 					var ariaDescribedby = holder.attr('aria-describedby');
 
+					// Check if the field contains custom input for the "Other" option and has an error.
+					var hasCustomOptionError = holder.closest( '.forminator-field-radio, .forminator-field-checkbox, .forminator-field-select' ).find('.forminator-custom-input.forminator-has_error').length > 0;
+
 					if ( holderDate.length > 0 ) {
 						holderError = holderDate.parent().find( '.forminator-error-message[data-error-field="' + holder.data( 'field' ) + '"]' );
 					} else if ( holderTime.length > 0 ) {
 						holderError = holderTime.parent().find( '.forminator-error-message[data-error-field="' + holder.data( 'field' ) + '"]' );
+					} else if ( hasCustomOptionError ) {
+						// If the "Other" option and has an error, don't remove the custom input error.
+						holderError = holder.closest( '.forminator-field-radio, .forminator-field-checkbox, .forminator-field-select' ).find( '#' + errorId );
 					} else {
 						holderError = holderField.find( '.forminator-error-message' );
 					}
@@ -354,12 +340,14 @@
 					// Remove invalid attribute for screen readers
 					holder.removeAttr( 'aria-invalid' );
 
-					// Remove error message
-					holderError.remove();
+					setTimeout( function () {
+						// Remove error message
+						holderError.remove();
 
-					// Remove error class
-					holderField.removeClass( 'forminator-has_error' );
-					holder.trigger('validation:unhighlight');
+						// Remove error class
+						holderField.removeClass( 'forminator-has_error' );
+						holder.trigger('validation:unhighlight');
+					}, 100 ); // Small timeout to ensure the submit button can be clicked.
 
 				},
 
@@ -370,9 +358,8 @@
 			});
 
 			$form.off('forminator.validate.signature').on('forminator.validate.signature', function () {
-				//validator.element( $( this ).find( "input[id$='_data']" ) );
 				var validator = $( this ).validate();
-				validator.form();
+				validator.element( $( this ).find( "input[id$='_data']" ) );
 			});
 
 			// Inline validation for upload field.
@@ -389,6 +376,20 @@
 			// Trigger change for the required checkbox field.
 			$( '.forminator-field.required input[type="checkbox"]' ).on( 'input', function () {
 				$( this ).not( ':checked' ).trigger( 'focusout' );
+			});
+
+			// Remove error messages after disabling validation.
+			$(document).on('change', '#forminator-field-disable_validations', function () {
+				const validationDisabled = $(this).is(':checked');
+				const validator = $form.data('validator');
+
+				if (validationDisabled && validator) {
+					validator.resetForm();
+					// Manually call unhighlight to remove error messages.
+					$form.find(':input').each(function () {
+						validator.settings.unhighlight(this);
+					});
+				}
 			});
 		}
 	});
@@ -416,21 +417,21 @@
 		return url(value, element) || url('http://' + value, element);
 	});
 	$.validator.addMethod("forminatorPhoneNational", function ( value, element ) {
-		var phone = intlTelInput.getInstance( element );
+		var iti = intlTelInput.getInstance( element );
 		var elem  = $( element );
-		if ( !elem.data('required') && value === '+' +phone.getSelectedCountryData().dialCode ) {
+		if ( !elem.data('required') && value === '+' +iti.getSelectedCountryData().dialCode ) {
 			return true;
 		}
 
 		if (
 			'undefined' !== typeof elem.data( 'country' ) &&
-			elem.data( 'country' ).toLowerCase() !== phone.getSelectedCountryData().iso2
+			elem.data( 'country' ).toLowerCase() !== iti.getSelectedCountryData().iso2
 		) {
 			return false;
 		}
 
 		// Uses intlTelInput to check if the number is valid.
-		return this.optional( element ) || phone.isValidNumber();
+		return this.optional( element ) || iti.isValidNumberPrecise();
 	});
 	$.validator.addMethod("forminatorPhoneInternational", function (value, element) {
 		const iti = intlTelInput.getInstance( element );
@@ -440,7 +441,7 @@
 		}
 
 		// Uses intlTelInput to check if the number is valid.
-		return this.optional(element) || iti.isValidNumber();
+		return this.optional(element) || iti.isValidNumberPrecise();
 	});
 	$.validator.addMethod("dateformat", function (value, element, param) {
 		// dateITA method from jQuery Validator additional. Date method is deprecated and doesn't work for all formats
@@ -509,6 +510,32 @@
 	$.validator.addMethod("trim", function( value, element, param ) {
 		return true === this.optional( element ) || 0 !== value.trim().length;
 	});
+	$.validator.addMethod("equalToClosestEmail", function (value, element, param) {
+		let target = $(element).closest('.forminator-row-with-confirmation-email').find('input[type="email"]').first();
+		return target.length && value === target.val();
+	} );
+	$.validator.addMethod("emailFilter", function (email, element, param) {
+		if ( ! email )	{
+			return true;
+		}
+		const emailList = param.email_list.split('|'),
+			isDeny = 'deny' === param.filter_type;
+
+		for (let item of emailList) {
+			// Remove spaces in email addresses.
+			item = item.replace(/[\s\n\r\t]/g, '');
+			// Escape special characters.
+			item = item.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+			// Support * as wildcard.
+			item = item.replace(/\\\*/g, '.*');
+			// Add end delimiter.
+			const regex = new RegExp(item + '$');
+			if (regex.test(email)) {
+				return ! isDeny;
+			}
+		}
+		return isDeny;
+	} );
 	$.validator.addMethod("emailWP", function (value, element, param) {
 		if (this.optional(element)) {
 			return true;
@@ -662,6 +689,37 @@
 
 		// Check if chosenTime is not true, then compare if chosenTime in seconds is >= to the limit in seconds.
 		return true !== chosenTime ? comparison: true;
+	});
+
+	// Validate custom input for "Other" option.
+	$.validator.addMethod( 'customInputForOtherOption', function ( value, element, param ) {
+		let name = $( element ).attr( 'name' );
+		let optionName = name.replace( 'custom-', '' );
+		if( param === 'radio' || param === 'single-select' ) {
+			let optionValue = null;
+			if( param === 'radio' ) {
+				optionValue = $( element ).closest( '#' + optionName ).find( 'input[name="' + optionName + '"]:checked' ).val();
+			} else {
+				optionValue = $( element ).closest( '#' + optionName ).find( 'select[name="' + optionName + '"] option:selected' ).val();
+			}
+			if( optionValue === 'custom_option' ) {
+				return 0 !== value.trim().length;
+			}
+		} else if( param === 'checkbox' || param === 'multi-select' ) {
+			let checkedOptions = null;
+			if( param === 'checkbox' ) {
+				checkedOptions = $( element ).closest( '#' + optionName ).find( 'input[name="' + optionName + '[]"]:checked' );
+			} else {
+				checkedOptions = $( element ).closest( '#' + optionName ).find( 'select[name="' + optionName + '[]"] option:selected' );
+			}
+			let optionValues = checkedOptions.map(function () {
+				return this.value;
+			}).get();
+			if( optionValues.includes( 'custom_option' ) ) {
+				return 0 !== value.trim().length;
+			}
+		}
+		return true;
 	});
 
 	function parseFloatFromString( value ) {

@@ -64,15 +64,7 @@ class Forminator_Reports {
 	 * @since 1.0
 	 */
 	public function schedule_reports() {
-		// Clear old cron schedule.
-		if ( wp_next_scheduled( 'forminator_process_report' ) ) {
-			wp_clear_scheduled_hook( 'forminator_process_report' );
-		}
-
-		// Create new schedule using AS.
-		if ( false === as_has_scheduled_action( 'forminator_process_report' ) ) {
-			as_schedule_recurring_action( time() + 20, MINUTE_IN_SECONDS, 'forminator_process_report', array(), 'forminator', true );
-		}
+		forminator_set_recurring_action( 'forminator_process_report', MINUTE_IN_SECONDS );
 	}
 
 	/**
@@ -244,6 +236,11 @@ class Forminator_Reports {
 			foreach ( $module_ids as $m => $module_id ) {
 				$views      = Forminator_Form_Views_Model::get_instance()->count_views( $module_id );
 				$submission = Forminator_Form_Entry_Model::count_report_entries( $module_id );
+				$abandoned  = Forminator_Form_Entry_Model::count_report_entries( $module_id, '', '', 'abandoned' );
+				$based_on   = $submission + $abandoned;
+				$dropoff    = 0 < $based_on
+					? number_format( ( $abandoned * 100 ) / $based_on, 1 )
+					: 0;
 				$conversion = 0 < $views
 					? number_format( ( $submission * 100 ) / $views, 1 )
 					: 0;
@@ -252,7 +249,9 @@ class Forminator_Reports {
 					'title'      => forminator_get_form_name( $module_id ),
 					'views'      => $views,
 					'submission' => $submission,
+					'abandoned'  => $abandoned,
 					'conversion' => ! empty( $conversion ) ? $conversion . '%' : '',
+					'dropoff'    => ! empty( $dropoff ) ? $dropoff . '%' : '',
 					'payments'   => null,
 				);
 				if ( Forminator_Form_Entry_Model::has_live_payment( $module_id ) ) {

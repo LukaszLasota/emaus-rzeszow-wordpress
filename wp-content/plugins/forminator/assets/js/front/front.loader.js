@@ -22,6 +22,7 @@
 		    id: '',
 		    render_id: '',
 		    is_preview: '',
+		    instant_preview: '',
 		    preview_data: [],
 			 nonce: false,
 		    last_submit_data: {},
@@ -61,6 +62,7 @@
 			param.id               = this.settings.id;
 			param.render_id        = this.settings.render_id;
 			param.is_preview       = this.settings.is_preview;
+			param.instant_preview  = this.settings.instant_preview;
 			param.preview_data     = JSON.stringify(this.settings.preview_data);
 			param.last_submit_data = this.settings.last_submit_data;
 			param.extra            = this.settings.extra;
@@ -170,7 +172,7 @@
 			    message         = '',
 			    wrapper_message = null;
 
-			wrapper_message = this.$el.find('.forminator-response-message');
+			wrapper_message = $(html).find('.forminator-response-message');
 			if (wrapper_message.length) {
 				message = wrapper_message.get(0).outerHTML;
 			}
@@ -190,6 +192,9 @@
 			// Show form only after initialized ForminatorFront to avoid showing hidden fields.
 			let $element = $('#forminator-module-' + id + '[data-forminator-render=' + render_id + ']');
 			$element.hide();
+			if ( ! this.$el.parent().has( '#forminator-instant-preview' ) ) {
+				$element.hide();
+			}
 
 			if (message) {
 				$('#forminator-module-' + id + '[data-forminator-render=' + render_id + '] .forminator-response-message')
@@ -200,8 +205,8 @@
 
 			//response.style
 			if (style) {
-				if ($('style#forminator-module-' + id).length) {
-					$('style#forminator-module-' + id).remove();
+				if ($('style#forminator-module-styles-' + id).length) {
+					$('style#forminator-module-styles-' + id).remove();
 				}
 				$('body').append(style);
 			}
@@ -291,7 +296,26 @@
 
 			// Check if script is already loaded or not.
 			if ( 0 === $( 'script[src="' + script.src + '"]' ).length ) {
-				body.appendChild(script);
+				if( window.parent !== window && script_props.src.includes( "paypal.com" ) ) {
+					// Handle the case when PayPal is loaded in an iframe (e.g., in the theme editor).
+					var parentScript = window.parent.document.createElement('script');
+						parentScript.type = 'text/javascript';
+						parentScript.src = script_props.src;
+						parentScript.async = script_props.async;
+						parentScript.defer = true;
+						parentScript.onload = function () {
+							self.script_on_load();
+						};
+
+						// Check if script is already loaded in the parent document.
+						if ( 0 === $(window.parent.document).find('script[src="' + parentScript.src + '"]').length ) {
+							window.parent.document.body.appendChild(parentScript);
+						} else {
+							self.script_on_load();
+						}
+				} else {
+					body.appendChild(script);
+				}
 			} else {
 				self.script_on_load();
 			}

@@ -312,6 +312,31 @@ class Forminator_Form_Model extends Forminator_Base_Form_Model {
 	}
 
 	/**
+	 * Disable payments fields if payments are disabled
+	 *
+	 * @param array $fields Fields.
+	 * @return array
+	 */
+	protected static function disable_fields( $fields ) {
+		$disabled_fields = apply_filters( 'forminator_disabled_fields', array() );
+
+		if ( forminator_payments_disabled() ) {
+			$disabled_fields = array_merge( $disabled_fields, array( 'stripe', 'stripe-ocs', 'paypal' ) );
+		}
+
+		if ( $disabled_fields && $fields ) {
+			$fields = array_filter(
+				$fields,
+				function ( $field ) use ( $disabled_fields ) {
+					return empty( $field['type'] ) || ! in_array( $field['type'], $disabled_fields, true );
+				}
+			);
+		}
+
+		return $fields;
+	}
+
+	/**
 	 * Flag whether ssl required when payment exists
 	 *
 	 * @since 1.7
@@ -356,6 +381,24 @@ class Forminator_Form_Model extends Forminator_Base_Form_Model {
 		foreach ( $fields as $field ) {
 			$field_array = $field->to_formatted_array();
 			if ( isset( $field_array['type'] ) && ( 'stripe' === $field_array['type'] || 'stripe-ocs' === $field_array['type'] ) ) {
+				return $field;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if Custom form has paypal field
+	 *
+	 * @since 1.41
+	 * @return object|false
+	 */
+	public function has_paypal_field() {
+		$fields = $this->get_real_fields();
+		foreach ( $fields as $field ) {
+			$field_array = $field->to_formatted_array();
+			if ( isset( $field_array['type'] ) && 'paypal' === $field_array['type'] ) {
 				return $field;
 			}
 		}

@@ -19,6 +19,7 @@ web.config
 
 # ignore backups directories
 wp-content/backup-db/
+wp-content/upgrade-temp-backup/
 wp-content/backups/
 wp-content/blogs.dir/
 wp-content/ai1wm-backups/
@@ -63,3 +64,4 @@ local-xdebuginfo.php
 
 # Custom
 .php*
+.claude/

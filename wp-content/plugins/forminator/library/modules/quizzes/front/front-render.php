@@ -349,7 +349,7 @@ class Forminator_QForm_Front extends Forminator_Render_Form {
 					$answer_id     = $field_slug . '-' . $k . $uniq_id;
 					$label         = isset( $answer['title'] ) ? $answer['title'] : '';
 					$image         = isset( $answer['image'] ) ? $answer['image'] : '';
-					$image_alt     = '';
+					$image_alt     = isset( $answer['image_filename'] ) ? $answer['image_filename'] : '';
 					$has_label     = isset( $label ) && '' !== $label;
 					$has_image     = ( isset( $image ) && ! empty( $image ) );
 					$has_image_alt = ( isset( $image_alt ) && ! empty( $image_alt ) );
@@ -777,8 +777,9 @@ class Forminator_QForm_Front extends Forminator_Render_Form {
 		$post_id = $this->get_post_id();
 
 		$submit_data  = $this->get_submit_data();
-		$pagination   = ! empty( $this->model->settings['pagination'] );
-		$result_behav = isset( $this->model->settings['results_behav'] ) ? $this->model->settings['results_behav'] : '';
+		$settings     = $this->model->settings ?? array();
+		$pagination   = ! empty( $settings['pagination'] );
+		$result_behav = $settings['results_behav'] ?? '';
 		$lead_result  = 'beginning' === $this->get_form_placement() ? $result_behav : 'end';
 		$current_url  = $this->is_ajax_load( $this->is_preview ) && isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : forminator_get_current_url();
 		$classes      = $submit_data['class'];
@@ -788,8 +789,8 @@ class Forminator_QForm_Front extends Forminator_Render_Form {
 			$html    .= self::pagination_content_start( $form_id, self::$steps_count, false );
 		}
 		$html .= '<div class="forminator-quiz--result">';
+		$label = esc_html( $submit_data['label'] );
 		if ( 'knowledge' === $this->model->quiz_type && $this->has_lead() && 'end' === $lead_result ) {
-			$label = esc_html__( 'View Results', 'forminator' );
 
 			if ( 'material' === $this->get_quiz_theme() ) {
 
@@ -811,7 +812,6 @@ class Forminator_QForm_Front extends Forminator_Render_Form {
 				);
 			}
 		} elseif ( 'nowrong' === $this->model->quiz_type || 'end' === $result_behav ) {
-			$label = $submit_data['label'];
 
 			if ( 'material' === $this->get_quiz_theme() ) {
 
@@ -856,10 +856,11 @@ class Forminator_QForm_Front extends Forminator_Render_Form {
 			$html .= '<input type="hidden" name="action" value="forminator_submit_form_quizzes" />';
 		}
 
+		$html = apply_filters( 'forminator_render_form_submit_markup', $html, $form_id, $post_id, $nonce, $settings );
 		if ( $render ) {
-			echo apply_filters( 'forminator_render_form_submit_markup', $html, $form_id, $post_id, $nonce ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		} else {
-			return apply_filters( 'forminator_render_form_submit_markup', $html, $form_id, $post_id, $nonce );
+			return $html;
 		}
 	}
 
@@ -1244,7 +1245,7 @@ class Forminator_QForm_Front extends Forminator_Render_Form {
 			$visual_style = isset( $form_settings['visual_style'] ) ? $form_settings['visual_style'] : 'list';
 
 			$wrapper = sprintf(
-				'<div id="forminator-quiz-leads-%s" class="forminator-ui forminator-quiz-leads forminator-quiz--%s" data-design="%s" %s %s>',
+				'<div id="forminator-quiz-leads-%s" class="forminator-ui forminator-quiz-leads forminator-quiz--%s" data-design="%s" data-color-option="default" %s %s>',
 				esc_attr( $form_settings['form_id'] ),
 				esc_attr( $visual_style ),
 				esc_attr( $this->get_quiz_theme() ),

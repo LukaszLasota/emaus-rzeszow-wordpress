@@ -32,7 +32,7 @@ $method  = 'get_' . forminator_get_prefix( $module_slug, '', false, true );
 $modules = Forminator_API::$method( null, 1, $num_recent, $statuses );
 ?>
 
-<div class="sui-box">
+<div id="forminator-dashboard-box-recent-<?php echo esc_attr( $module_slug ); ?>" class="sui-box">
 
 	<div class="sui-box-header">
 
@@ -42,14 +42,22 @@ $modules = Forminator_API::$method( null, 1, $num_recent, $statuses );
 
 	<div class="sui-box-body">
 
-		<p><?php echo esc_html( $description ); ?></p>
+		<p>
+		<?php
+		if ( count( $modules ) > 0 ) {
+			echo esc_html( $recent_description );
+		} else {
+			echo esc_html( $description );
+		}
+		?>
+		</p>
 
 		<?php // Strict comparison is removed for a reason! ?>
 		<?php if ( 0 === $total ) { ?>
 
 			<p><button class="sui-button sui-button-blue wpmudev-open-modal"
 				data-modal="<?php echo esc_attr( $create_dialog ); ?>">
-				<i class="sui-icon-plus" aria-hidden="true"></i> <?php esc_html_e( 'Create', 'forminator' ); ?>
+				<i class="sui-icon-plus" aria-hidden="true"></i> <?php esc_html_e( 'Add New', 'forminator' ); ?>
 			</button></p>
 
 		<?php } ?>
@@ -218,7 +226,7 @@ $modules = Forminator_API::$method( null, 1, $num_recent, $statuses );
 
 			<button class="sui-button sui-button-blue wpmudev-open-modal forminator-create-<?php echo esc_attr( $module_slug ); ?>"
 				data-modal="<?php echo esc_attr( $create_dialog ); ?>">
-				<i class="sui-icon-plus" aria-hidden="true"></i> <?php esc_html_e( 'Create', 'forminator' ); ?>
+				<i class="sui-icon-plus" aria-hidden="true"></i> <?php esc_html_e( 'Add New', 'forminator' ); ?>
 			</button>
 
 			<div class="sui-actions-right">

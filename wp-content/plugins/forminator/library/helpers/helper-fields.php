@@ -391,32 +391,35 @@ function forminator_post_categories( $type = '' ) {
  * @since 1.0
  * @since 1.5 add `user_id`
  *
- * @param bool $add_query Add query.   @since 1.15.6.
+ * @param bool $for_hidden_field For hidden field.   @since 1.15.6.
  *
  * @return mixed
  */
-function forminator_get_vars( $add_query = false ) {
+function forminator_get_vars( $for_hidden_field = false ) {
 	$vars_list = array(
-		'user_ip'         => esc_html__( 'User IP Address', 'forminator' ),
-		'date_mdy'        => esc_html__( 'Date (mm/dd/yyyy)', 'forminator' ),
-		'date_dmy'        => esc_html__( 'Date (dd/mm/yyyy)', 'forminator' ),
-		'submission_id'   => esc_html__( 'Submission ID', 'forminator' ),
-		'submission_time' => esc_html__( 'Submission Time (hh:mm:ss am/pm, timezone)', 'forminator' ),
-		'embed_id'        => esc_html__( 'Embed Post/Page ID', 'forminator' ),
-		'embed_title'     => esc_html__( 'Embed Post/Page Title', 'forminator' ),
-		'embed_url'       => esc_html__( 'Embed URL', 'forminator' ),
-		'login_url'       => esc_html__( 'Login URL', 'forminator' ),
-		'user_agent'      => esc_html__( 'HTTP User Agent', 'forminator' ),
-		'refer_url'       => esc_html__( 'HTTP Refer URL', 'forminator' ),
-		'user_id'         => esc_html__( 'User ID', 'forminator' ),
-		'user_name'       => esc_html__( 'User Display Name', 'forminator' ),
-		'user_email'      => esc_html__( 'User Email', 'forminator' ),
-		'user_login'      => esc_html__( 'User Login', 'forminator' ),
-		'custom_value'    => esc_html__( 'Custom Value', 'forminator' ),
+		'user_ip'             => esc_html__( 'User IP Address', 'forminator' ),
+		'date_mdy'            => esc_html__( 'Date (mm/dd/yyyy)', 'forminator' ),
+		'date_dmy'            => esc_html__( 'Date (dd/mm/yyyy)', 'forminator' ),
+		'submission_id'       => esc_html__( 'Submission ID', 'forminator' ),
+		'submission_time'     => esc_html__( 'Submission Time (hh:mm:ss am/pm, timezone)', 'forminator' ),
+		'submission_date'     => esc_html__( 'Submission Date (F d, Y)', 'forminator' ),
+		'submission_date_mdy' => esc_html__( 'Submission Date (mm/dd/yyyy)', 'forminator' ),
+		'submission_date_dmy' => esc_html__( 'Submission Date (dd/mm/yyyy)', 'forminator' ),
+		'embed_id'            => esc_html__( 'Embed Post/Page ID', 'forminator' ),
+		'embed_title'         => esc_html__( 'Embed Post/Page Title', 'forminator' ),
+		'embed_url'           => esc_html__( 'Embed URL', 'forminator' ),
+		'login_url'           => esc_html__( 'Login URL', 'forminator' ),
+		'user_agent'          => esc_html__( 'HTTP User Agent', 'forminator' ),
+		'refer_url'           => esc_html__( 'HTTP Refer URL', 'forminator' ),
+		'user_id'             => esc_html__( 'User ID', 'forminator' ),
+		'user_name'           => esc_html__( 'User Display Name', 'forminator' ),
+		'user_email'          => esc_html__( 'User Email', 'forminator' ),
+		'user_login'          => esc_html__( 'User Login', 'forminator' ),
 	);
 
-	if ( $add_query ) {
-		$vars_list['query'] = esc_html__( 'Query Parameter', 'forminator' );
+	if ( $for_hidden_field ) {
+		$vars_list['custom_value'] = esc_html__( 'Custom Value', 'forminator' );
+		$vars_list['query']        = esc_html__( 'Query Parameter', 'forminator' );
 	}
 
 	/**
@@ -558,7 +561,7 @@ function forminator_clear_field_id( $field_id ) {
  * @param bool                             $is_pdf Is PDF.
  * @return mixed
  */
-function forminator_replace_form_data( $content, Forminator_Form_Model $custom_form = null, Forminator_Form_Entry_Model $entry = null, $get_labels = false, $urlencode = false, $user_meta = false, $is_pdf = false ) {
+function forminator_replace_form_data( $content, ?Forminator_Form_Model $custom_form = null, ?Forminator_Form_Entry_Model $entry = null, $get_labels = false, $urlencode = false, $user_meta = false, $is_pdf = false ) {
 	if ( is_null( $content ) ) {
 		$content = '';
 	}
@@ -576,9 +579,9 @@ function forminator_replace_form_data( $content, Forminator_Form_Model $custom_f
 
 	$randomed_field_pattern  = 'field-\d+-\d+';
 	$increment_field_pattern = sprintf( '(%s)-\d+', implode( '|', $field_types ) );
-	$pattern                 = '/\{((' . $randomed_field_pattern . ')|(' . $increment_field_pattern . '))(\-[A-Za-z0-9-_]+)?\}/';
-	$print_value             = ! empty( $custom_form->settings['print_value'] )
-			? filter_var( $custom_form->settings['print_value'], FILTER_VALIDATE_BOOLEAN ) : false;
+
+	$pattern = '/\{((' . $randomed_field_pattern . ')|(' . $increment_field_pattern . '))(\-[A-Za-z0-9-_]+)?(\-\*)?\}/';
+
 	// Find all field ID's.
 	if ( preg_match_all( $pattern, $content, $matches ) ) {
 		if ( ! isset( $matches[0] ) || ! is_array( $matches[0] ) ) {
@@ -586,77 +589,169 @@ function forminator_replace_form_data( $content, Forminator_Form_Model $custom_f
 		}
 		foreach ( $matches[0] as $match ) {
 			$element_id = forminator_clear_field_id( $match );
-			$value      = '';
+			// For repeated fields.
+			if ( '-*' === substr( $element_id, -2 ) ) {
+				$element_id = substr( $element_id, 0, -2 );
 
-			// For HTML field we get the relevant field label instead of field value for select, radio and checkboxes and for them themselves.
-			if ( $get_labels && ! $print_value && ( strpos( $element_id, 'radio' ) === 0
-					|| strpos( $element_id, 'select' ) === 0
-					|| strpos( $element_id, 'checkbox' ) === 0
-					) ) {
-				$value = forminator_replace_field_data( $custom_form, $element_id, $data, false, $is_pdf );
-			} elseif ( ( strpos( $element_id, 'postdata' ) !== false
-						|| strpos( $element_id, 'upload' ) !== false
-						|| strpos( $element_id, 'html' ) !== false
-						|| strpos( $element_id, 'section' ) !== false
-						|| strpos( $element_id, 'signature' ) !== false )
-					&& $custom_form && $entry ) {
-				$value = forminator_get_field_from_form_entry( $element_id, $custom_form, $entry, $user_meta );
+				// Get matched repeated elements from the form data.
+				$available_repeated_elements = array_filter(
+					$data,
+					function ( $key ) use ( $element_id ) {
+						$split_element = explode( '-', $element_id );
+						if ( in_array( $split_element[0], array( 'address', 'time', 'date', 'slider', 'name' ), true ) ) {
+							if ( 2 === count( $split_element ) ) {
+								// For cases like address-1-* and time-1-*.
+								$split_key  = explode( '-', $key );
+								$third_item = isset( $split_key[2] ) ? $split_key[2] : '';
+								if ( isset( $split_key[3] ) ) {
+									return false;
+								}
+								return strpos( $key, $element_id . '-' ) === 0 && intval( $third_item ) > 0;
+							} else {
+								// For cases like address-1-city-* and time-1-hours-*.
+								$start = implode( '-', array_slice( $split_element, 0, 2 ) );
+								$end   = implode( '-', array_slice( $split_element, 2 ) );
 
-				if ( strpos( $element_id, 'html' ) !== false ) {
-					$value = forminator_replace_form_data( $value, $custom_form, $entry, $get_labels );
+								// For cases like address-1-2-city, address-1-3-city [saved entry format].
+								$pattern_number_in_middle = sprintf( '/^%s-\d+-%s$/', preg_quote( $start, '/' ), preg_quote( $end, '/' ) );
+								// For cases like address-1-city-2, address-1-city-3 [form post-data format].
+								$pattern_number_at_end = sprintf( '/^%s-%s-\d+$/', preg_quote( $start, '/' ), preg_quote( $end, '/' ) );
+								return preg_match( $pattern_number_in_middle, $key ) || preg_match( $pattern_number_at_end, $key );
+							}
+						} else {
+							return strpos( $key, $element_id . '-' ) === 0;
+						}
+					},
+					ARRAY_FILTER_USE_KEY
+				);
+
+				// Value of first repeated field.
+				$value = forminator_get_value_from_form_entry( $element_id, $custom_form, $entry, $get_labels, $urlencode, $user_meta, $is_pdf );
+
+				$repeated_field_values = array();
+				if ( ! empty( $available_repeated_elements ) ) {
+					if ( '' !== $value ) {
+						$repeated_field_values[] = $value;
+					}
+					foreach ( array_keys( $available_repeated_elements ) as $repeated_element_id ) {
+						$field_value = forminator_get_value_from_form_entry( $repeated_element_id, $custom_form, $entry, $get_labels, $urlencode, $user_meta, $is_pdf );
+						if ( '' !== $field_value ) {
+							$repeated_field_values[] = $field_value;
+						}
+					}
+					if ( ! empty( $repeated_field_values ) ) {
+						$value = '<p>' . implode( '</p><p>', $repeated_field_values ) . '</p>';
+					}
 				}
-			} elseif ( isset( $data[ $element_id ] ) ) {
-
-				if ( strpos( $element_id, 'number' ) !== false ) {
-					$field = $custom_form->get_field( $element_id, true );
-					$value = Forminator_Field::forminator_number_formatting( $field, $data[ $element_id ] );
-				} elseif (
-					false !== stripos( $element_id, 'time' ) &&
-					( false !== stripos( $element_id, '-hours' ) || false !== stripos( $element_id, '-minutes' ) )
-				) {
-					$value = str_pad( $data[ $element_id ], 2, '0', STR_PAD_LEFT );
-				} elseif ( strpos( $element_id, 'calculation' ) !== false ) {
-					$calc_field = $custom_form->get_field( $element_id, true );
-					$value      = Forminator_Field::forminator_number_formatting( $calc_field, $data[ $element_id ] );
-				} else {
-					$value = $data[ $element_id ];
-				}
-			} elseif ( false !== stripos( $element_id, 'date' ) ) {
-				// element with suffixes, etc.
-				// use submitted `data` since its possible to disable DB storage,.
-				// causing Forminator_Form_Entry_Model = nothing.
-				// and cant be used as reference.
-
-				// DATE.
-				$day_element_id    = $element_id . '-day';
-				$month_element_id  = $element_id . '-month';
-				$year_element_id   = $element_id . '-year';
-				$format_element_id = $element_id . '-format';
-
-				if ( isset( $data[ $day_element_id ] ) && isset( $data[ $month_element_id ] ) && isset( $data[ $year_element_id ] ) ) {
-					$meta_value = array(
-						'day'    => $data[ $day_element_id ],
-						'month'  => $data[ $month_element_id ],
-						'year'   => $data[ $year_element_id ],
-						'format' => $data[ $format_element_id ],
-					);
-					$value      = Forminator_Form_Entry_Model::meta_value_to_string( 'date', $meta_value, true );
-				}
+			} else {
+				$value = forminator_get_value_from_form_entry( $element_id, $custom_form, $entry, $get_labels, $urlencode, $user_meta, $is_pdf );
 			}
 
-			// If array, convert it to string.
-			if ( is_array( $value ) ) {
-				$value = implode( ', ', $value );
+			// If null, set to empty string.
+			if ( is_null( $value ) ) {
+				$value = '';
 			}
-			if ( $urlencode ) {
-				$value = rawurlencode( $value );
+			if ( ! $urlencode ) {
+				$content = forminator_replace_placeholder_in_urls( $content, $match, $value );
 			}
-
 			$content = str_replace( $match, $value, $content );
 		}
 	}
 
 	return apply_filters( 'forminator_replace_form_data', $content, $data, $original_content );
+}
+
+/**
+ * Get value from from entry
+ *
+ * @since 1.46
+ * @param string                           $element_id Field Id.
+ * @param Forminator_Form_Model|null       $custom_form Forminator_Form_Model.
+ * @param Forminator_Form_Entry_Model|null $entry Forminator_Form_Entry_Model.
+ * @param bool                             $get_labels Optional. Set true for getting labels instead of values for select, radio and checkbox.
+ * @param bool                             $urlencode Encode URL.
+ * @param mixed                            $user_meta User meta.
+ * @param bool                             $is_pdf Is PDF.
+ * @return mixed
+ */
+function forminator_get_value_from_form_entry( $element_id, ?Forminator_Form_Model $custom_form = null, ?Forminator_Form_Entry_Model $entry = null, $get_labels = false, $urlencode = false, $user_meta = false, $is_pdf = false ) {
+	$value       = '';
+	$print_value = ! empty( $custom_form->settings['print_value'] )
+			? filter_var( $custom_form->settings['print_value'], FILTER_VALIDATE_BOOLEAN ) : false;
+	$data        = Forminator_CForm_Front_Action::$prepared_data;
+	if ( $is_pdf ) {
+		$data = recreate_prepared_data( $custom_form, $entry );
+	}
+	// For HTML field we get the relevant field label instead of field value for select, radio and checkboxes and for them themselves.
+	if ( $get_labels && ( strpos( $element_id, 'radio' ) === 0
+		|| strpos( $element_id, 'select' ) === 0
+		|| strpos( $element_id, 'checkbox' ) === 0
+		) ) {
+		$value = forminator_replace_field_data( $custom_form, $element_id, $data, $is_pdf, $print_value );
+	} elseif ( ( strpos( $element_id, 'postdata' ) !== false
+			|| strpos( $element_id, 'upload' ) !== false
+			|| strpos( $element_id, 'html' ) !== false
+			|| strpos( $element_id, 'section' ) !== false
+			|| strpos( $element_id, 'signature' ) !== false )
+		&& $custom_form && $entry ) {
+		$value = forminator_get_field_from_form_entry( $element_id, $custom_form, $entry, $user_meta );
+
+		if ( strpos( $element_id, 'html' ) !== false ) {
+			$value = forminator_replace_form_data( $value, $custom_form, $entry, $get_labels );
+		}
+	} elseif ( isset( $data[ $element_id ] ) ) {
+
+		if ( strpos( $element_id, 'number' ) !== false
+			|| strpos( $element_id, 'currency' ) !== false
+			|| strpos( $element_id, 'calculation' ) !== false ) {
+			$field = $custom_form->get_field( $element_id, true );
+			$value = Forminator_Field::forminator_number_formatting( $field, $data[ $element_id ] );
+		} elseif (
+			false !== stripos( $element_id, 'time' ) &&
+			( false !== stripos( $element_id, '-hours' ) || false !== stripos( $element_id, '-minutes' ) )
+		) {
+			$value = str_pad( $data[ $element_id ], 2, '0', STR_PAD_LEFT );
+		} elseif ( false !== stripos( $element_id, 'hidden' )
+			&& 'submission_id' === $data[ $element_id ] ) {
+			$value = forminator_get_submission_id( $custom_form, $entry );
+		} else {
+			$value = $data[ $element_id ];
+		}
+	} elseif ( false !== stripos( $element_id, 'date' ) ) {
+		// element with suffixes, etc.
+		// use submitted `data` since its possible to disable DB storage,.
+		// causing Forminator_Form_Entry_Model = nothing.
+		// and cant be used as reference.
+
+		// DATE.
+		$day_element_id    = $element_id . '-day';
+		$month_element_id  = $element_id . '-month';
+		$year_element_id   = $element_id . '-year';
+		$format_element_id = $element_id . '-format';
+
+		if ( isset( $data[ $day_element_id ] ) && isset( $data[ $month_element_id ] ) && isset( $data[ $year_element_id ] ) ) {
+			$meta_value = array(
+				'day'    => $data[ $day_element_id ],
+				'month'  => $data[ $month_element_id ],
+				'year'   => $data[ $year_element_id ],
+				'format' => $data[ $format_element_id ],
+			);
+			$value      = Forminator_Form_Entry_Model::meta_value_to_string( 'date', $meta_value, true );
+		}
+	}
+	if ( false !== strpos( $element_id, 'group' ) ) {
+		$value = forminator_prepare_formatted_group_field( $element_id, $custom_form, $entry );
+	}
+
+	// If array, convert it to string.
+	if ( is_array( $value ) ) {
+		$value = implode( ', ', $value );
+	}
+	if ( $urlencode ) {
+		$value = rawurlencode( $value );
+	}
+
+	return $value;
 }
 
 /**
@@ -667,12 +762,12 @@ function forminator_replace_form_data( $content, Forminator_Form_Model $custom_f
  * @param Forminator_Form_Model $custom_form Forminator_Form_Model.
  * @param string                $element_id Element Id.
  * @param array                 $data Data.
- * @param bool                  $quiz_mail Quiz mail.
  * @param bool                  $is_pdf Is PDF.
+ * @param bool                  $print_value Whether to show values instead of labels.
  *
  * @return mixed
  */
-function forminator_replace_field_data( $custom_form, $element_id, $data, $quiz_mail = false, $is_pdf = false ) {
+function forminator_replace_field_data( $custom_form, $element_id, $data, $is_pdf = false, $print_value = false ) {
 	$field_value = isset( $data[ $element_id ] ) ? $data[ $element_id ] : null;
 	$value       = '';
 	if ( ! is_null( $field_value ) ) {
@@ -680,22 +775,17 @@ function forminator_replace_field_data( $custom_form, $element_id, $data, $quiz_
 		$fields_slugs  = wp_list_pluck( $form_fields, 'slug' );
 		$parent_id     = preg_replace( '/(-[^-]+)-[^-]+$/', '$1', $element_id );
 		$field_key     = array_search( $parent_id, $fields_slugs, true );
-		$field_options = false !== $field_key && ! empty( $form_fields[ $field_key ]->raw['options'] )
-				? wp_list_pluck( $form_fields[ $field_key ]->options, 'label', 'value' )
-				: array();
-		if ( $quiz_mail ) {
-			if ( false !== strpos( $field_value, ',' ) ) {
-				$field_value = array_map( 'trim', explode( ',', $field_value ) );
+		$field_options = array();
+		if ( false !== $field_key && ! empty( $form_fields[ $field_key ]->raw['options'] ) ) {
+			// Include both label and image data for each option.
+			foreach ( $form_fields[ $field_key ]->raw['options'] as $option ) {
+				$field_options[ $option['value'] ] = array(
+					'label' => $option['label'],
+					'image' => isset( $option['image'] ) ? $option['image'] : '',
+				);
 			}
-
-			$selected_values = is_array( $field_value ) ? $field_value : array( $field_value );
-
-			if ( is_array( $field_value ) ) {
-				$value = array_keys( array_intersect( $field_options, array_map( 'stripslashes', $selected_values ) ) );
-			} else {
-				$value = implode( ', ', array_keys( array_intersect( $field_options, array_map( 'stripslashes', $selected_values ) ) ) );
-			}
-		} elseif ( $is_pdf ) {
+		}
+		if ( $is_pdf ) {
 			// Since PDFs use entry meta which is already from the database, it has been processed already.
 			if ( is_array( $field_value ) && isset( $field_value['value'] ) ) {
 				$value = $field_value['value'];
@@ -704,7 +794,54 @@ function forminator_replace_field_data( $custom_form, $element_id, $data, $quiz_
 			}
 		} else {
 			$selected_values = is_array( $field_value ) ? $field_value : array( $field_value );
-			$value           = implode( ', ', array_keys( array_intersect( array_flip( $field_options ), array_map( 'stripslashes', $selected_values ) ) ) );
+			$selected_values = array_map( 'htmlspecialchars_decode', $selected_values );
+			$field           = $custom_form->get_field( $element_id, true );
+
+			// Check if we should display images for radio/checkbox fields.
+			$enable_images = Forminator_Field::get_property( 'enable_images', $field, false, 'bool' );
+
+			// Check if we're in email context using parent class static property.
+			$is_email = false;
+			if ( class_exists( 'Forminator_Mail' ) && method_exists( 'Forminator_Mail', 'is_email_context' ) ) {
+				$is_email = Forminator_Mail::is_email_context();
+			}
+
+			if ( ! empty( $field_options ) ) {
+				$display_items = array();
+				foreach ( $selected_values as $selected_value ) {
+					$selected_value = stripslashes( $selected_value );
+
+					if ( isset( $field_options[ $selected_value ] ) ) {
+						$option_data  = $field_options[ $selected_value ];
+						$display_text = $print_value ? $selected_value : $option_data['label'];
+
+						// Handle custom option text enhancement.
+						if ( 'custom_option' === $selected_value ) {
+							$enable_custom_option = Forminator_Field::get_property( 'enable_custom_option', $field, false );
+							$custom_value         = $data[ 'custom-' . $element_id ] ?? '';
+							// Append the custom input value for the "Other" option.
+							if ( $enable_custom_option && '' !== $custom_value ) {
+								$display_text .= ': ' . $custom_value;
+							}
+						}
+
+						// Apply image markup if enabled and this is for email.
+						if ( $enable_images && $is_email && ! empty( $option_data['image'] ) ) {
+							$display_items[] = forminator_get_email_image_markup( $option_data['image'], $display_text, $display_text, 'field' );
+						} else {
+							$display_items[] = $display_text;
+						}
+					} else {
+						$display_items[] = $selected_value;
+					}
+				}
+				if ( $enable_images && $is_email ) {
+					// To display images on new lines in emails.
+					$value = implode( '<br/>', $display_items );
+				} else {
+					$value = implode( ', ', $display_items );
+				}
+			}
 		}
 	}
 
@@ -742,12 +879,35 @@ function forminator_replace_custom_form_data( $content, Forminator_Form_Model $c
 		if ( strpos( $content, $custom_form_data ) !== false ) {
 			if ( is_callable( $function ) ) {
 				$replacer = call_user_func( $function, $custom_form, $entry );
+				$content  = forminator_replace_placeholder_in_urls( $content, $custom_form_data, $replacer );
 				$content  = str_replace( $custom_form_data, $replacer, $content );
 			}
 		}
 	}
 
 	return apply_filters( 'forminator_replace_custom_form_data', $content, $custom_form, Forminator_CForm_Front_Action::$prepared_data, $entry, $excluded, $custom_form_datas );
+}
+
+/**
+ * Replace placeholder occurrences inside URLs with provided value.
+ *
+ * @param string $content Original content.
+ * @param string $placeholder Placeholder.
+ * @param string $value       Replacement value.
+ *
+ * @return string Updated content.
+ */
+function forminator_replace_placeholder_in_urls( string $content, string $placeholder, string $value ): string {
+	$value   = rawurlencode( $value );
+	$pattern = '#https?://[^\s"\'<>()]*' . preg_quote( $placeholder, '#' ) . '[^\s"\'<>()]*#i';
+
+	return preg_replace_callback(
+		$pattern,
+		static function ( $matches ) use ( $placeholder, $value ) {
+			return str_replace( $placeholder, $value, $matches[0] );
+		},
+		$content
+	);
 }
 
 /**
@@ -768,6 +928,34 @@ function forminator_get_formatted_form_entry( Forminator_Form_Model $custom_form
 	$filter_name = $exclude_empty ? 'forminator_get_formatted_form_non_empty_entry' : 'forminator_get_formatted_form_entry';
 
 	return apply_filters( $filter_name, $html, $custom_form, Forminator_CForm_Front_Action::$prepared_data, $entry, $ignored_field_types );
+}
+
+/**
+ * Prepare Html Formatted of group field for email notification
+ *
+ * @param string                      $group_id Group ID.
+ * @param Forminator_Form_Model       $custom_form Forminator_Form_Model.
+ * @param Forminator_Form_Entry_Model $entry Forminator_Form_Entry_Model.
+ * @param boolean                     $exclude_empty Exclude empty form entry.
+ *
+ * @return string
+ */
+function forminator_prepare_formatted_group_field( string $group_id, Forminator_Form_Model $custom_form, Forminator_Form_Entry_Model $entry, bool $exclude_empty = false ): string {
+	$group_fields = $custom_form->get_grouped_fields( $group_id );
+
+	$value  = '<hr>';
+	$value .= forminator_prepare_formatted_form_entry( $custom_form, $entry, $exclude_empty, $group_fields );
+	$value .= '<hr>';
+
+	$original_keys = wp_list_pluck( $group_fields, 'slug' );
+	$repeater_keys = forminator_get_cloned_field_keys( $entry, $original_keys );
+
+	foreach ( $repeater_keys as $repeater_slug ) {
+		$value .= forminator_prepare_formatted_form_entry( $custom_form, $entry, $exclude_empty, $group_fields, $repeater_slug );
+		$value .= '<hr>';
+	}
+
+	return $value;
 }
 
 /**
@@ -846,7 +1034,7 @@ function forminator_prepare_formatted_form_entry(
 			$content = forminator_replace_custom_form_data( $content, $custom_form, $entry );
 			$html   .= '</' . $list_tag . '>';
 			if ( ! empty( $label ) && $show_label ) {
-				$html .= '<h4><b>' . $label . '</b></h4>';
+				$html .= '<h4><b>' . Forminator_Field::convert_markdown( $label ) . '</b></h4>';
 			}
 			$html .= $content;
 			$html .= '<' . $list_tag . '>';
@@ -855,22 +1043,10 @@ function forminator_prepare_formatted_form_entry(
 		} elseif ( 'group' === $field_type ) {
 			$label = $form_field->get_label_for_entry();
 			if ( ! empty( $label ) && $show_label ) {
-				$html .= '<b>' . $label . '</b><br/>';
+				$html .= '<b>' . Forminator_Field::convert_markdown( $label ) . '</b><br/>';
 			}
 
-			$group_fields = $custom_form->get_grouped_fields( $field_id );
-
-			$html .= '<hr>';
-			$html .= forminator_prepare_formatted_form_entry( $custom_form, $entry, $exclude_empty, $group_fields );
-			$html .= '<hr>';
-
-			$original_keys = wp_list_pluck( $group_fields, 'slug' );
-			$repeater_keys = forminator_get_cloned_field_keys( $entry, $original_keys );
-
-			foreach ( $repeater_keys as $repeater_slug ) {
-				$html .= forminator_prepare_formatted_form_entry( $custom_form, $entry, $exclude_empty, $group_fields, $repeater_slug );
-				$html .= '<hr>';
-			}
+			$html .= forminator_prepare_formatted_group_field( $field_id, $custom_form, $entry, $exclude_empty );
 		} else {
 			$slug = $form_field->slug . $repeater_suffix;
 			if ( strpos( $slug, 'radio' ) !== false
@@ -890,8 +1066,14 @@ function forminator_prepare_formatted_form_entry(
 				$html .= '<li>';
 				$label = $form_field->get_label_for_entry();
 
-				if ( ! empty( $label ) && $show_label ) {
-					$html .= '<b>' . $label . '</b><br/>';
+				$display_label = $show_label;
+				// Hide label for multiple name field.
+				if ( 'name' === $field_type && ! empty( $field_array['multiple_name'] ) && 'true' === $field_array['multiple_name'] ) {
+					$display_label = false;
+				}
+
+				if ( ! empty( $label ) && $display_label ) {
+					$html .= '<b>' . Forminator_Field::convert_markdown( $label ) . '</b><br/>';
 				}
 				if ( isset( $value ) && '' !== $value ) {
 					$html .= $value . '<br/>';
@@ -981,12 +1163,12 @@ function forminator_get_formatted_form_name( Forminator_Form_Model $custom_form,
  *
  * @since 1.1
  *
- * @param Forminator_Form_Model       $custom_form Forminator_Form_Model.
+ * @param Forminator_Form_Model|null  $custom_form Forminator_Form_Model.
  * @param Forminator_Form_Entry_Model $entry Forminator_Form_Entry_Model.
  *
  * @return string
  */
-function forminator_get_submission_id( Forminator_Form_Model $custom_form, $entry = null ) {
+function forminator_get_submission_id( ?Forminator_Form_Model $custom_form = null, $entry = null ) {
 	return is_object( $entry ) && isset( $entry->entry_id ) ? esc_html( $entry->entry_id ) : 0;
 }
 
@@ -1145,56 +1327,80 @@ function forminator_replace_variables( $content, $id = false, $entry = null ) {
 		$refer_url = forminator_get_referer_url( $embed_url );
 		$login_url = forminator_get_login_url( $embed_url );
 
-		$variables = array(
-			// Handle User IP Address variable.
-			'{user_ip}'            => forminator_user_ip(),
-			// Handle Date (F d, Y) variable.
-			'{date}'               => date_i18n( 'F d, Y', forminator_local_timestamp(), true ),
-			// Handle Date (mm/dd/yyyy) variable.
-			'{date_mdy}'           => date_i18n( 'm/d/Y', forminator_local_timestamp(), true ),
-			// Handle Date (dd/mm/yyyy) variable.
-			'{date_dmy}'           => date_i18n( 'd/m/Y', forminator_local_timestamp(), true ),
-			// Submission ID.
-			'{submission_id}'      => forminator_get_submission_id( new Forminator_Form_Model(), $entry ),
-			// Submission time.
-			'{submission_time}'    => date_i18n( 'g:i:s a, T', forminator_local_timestamp(), true ),
-			// Handle Embed Post/Page ID variable.
-			'{embed_id}'           => forminator_get_post_data( 'ID', $post_id ),
-			// Handle Embed Post/Page Title variable.
-			'{embed_title}'        => forminator_get_post_data( 'post_title', $post_id ),
-			// Handle Embed URL variable.
-			'{embed_url}'          => $embed_url,
-			// Handle HTTP User Agent variable.
-			// some browser not sending HTTP_USER_AGENT or some servers probably stripped this value.
-			'{user_agent}'         => isset( $_SERVER['HTTP_USER_AGENT'] ) ? esc_html( sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) ) : '',
-			// Handle site url variable.
-			'{site_url}'           => site_url(),
-			// Handle login url variable.
-			'{login_url}'          => $login_url,
-			// Handle HTTP Refer URL variable.
-			'{refer_url}'          => $refer_url,
-			'{http_refer}'         => $refer_url,
-			// Handle User ID variable.
-			'{user_id}'            => forminator_get_user_data( 'ID' ),
-			// Handle User Display Name variable.
-			'{user_name}'          => forminator_get_user_data( 'display_name' ),
-			// Handle User Email variable.
-			'{user_email}'         => forminator_get_user_data( 'user_email' ),
-			// Handle User Login variable.
-			'{user_login}'         => forminator_get_user_data( 'user_login' ),
-			// Handle Submissions number.
-			'{submissions_number}' => Forminator_Form_Entry_Model::count_entries( $id ),
-			// Handle site title variable.
-			'{site_title}'         => get_bloginfo( 'name' ),
-		);
-		// Handle form_name data.
-		if ( strpos( $content, '{form_name}' ) !== false ) {
-			$variables['{form_name}'] = ( false !== $id ) ? esc_html( forminator_get_form_name( $id ) ) : '';
+		// Use the date from the entry if date_created_sql exists.
+		if ( ! empty( $entry->date_created_sql ) ) {
+			$date_created = strtotime( $entry->date_created_sql );
+		} else {
+			$date_created = forminator_local_timestamp();
 		}
 
-		// handle form_id.
+		$variables = array(
+			// Handle User IP Address variable.
+			'{user_ip}'             => forminator_user_ip(),
+			// Handle Date (F d, Y) variable.
+			'{date}'                => date_i18n( 'F d, Y', forminator_local_timestamp(), true ),
+			// Handle Date (mm/dd/yyyy) variable.
+			'{date_mdy}'            => date_i18n( 'm/d/Y', forminator_local_timestamp(), true ),
+			// Handle Date (dd/mm/yyyy) variable.
+			'{date_dmy}'            => date_i18n( 'd/m/Y', forminator_local_timestamp(), true ),
+			// Submission ID.
+			'{submission_id}'       => forminator_get_submission_id( new Forminator_Form_Model(), $entry ),
+			// Submission time.
+			'{submission_time}'     => date_i18n( 'g:i:s a, T', $date_created, true ),
+			// Submission Date (F d, Y) variable.
+			'{submission_date}'     => date_i18n( 'F d, Y', $date_created, true ),
+			// Submission Date (mm/dd/yyyy) variable.
+			'{submission_date_mdy}' => date_i18n( 'm/d/Y', $date_created, true ),
+			// Submission Date (dd/mm/yyyy) variable.
+			'{submission_date_dmy}' => date_i18n( 'd/m/Y', $date_created, true ),
+			// Handle Embed Post/Page ID variable.
+			'{embed_id}'            => forminator_get_post_data( 'ID', $post_id ),
+			// Handle Embed Post/Page Title variable.
+			'{embed_title}'         => forminator_get_post_data( 'post_title', $post_id ),
+			// Handle Embed URL variable.
+			'{embed_url}'           => $embed_url,
+			// Handle HTTP User Agent variable.
+			// some browser not sending HTTP_USER_AGENT or some servers probably stripped this value.
+			'{user_agent}'          => isset( $_SERVER['HTTP_USER_AGENT'] ) ? esc_html( sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) ) : '',
+			// Handle site url variable.
+			'{site_url}'            => site_url(),
+			// Handle login url variable.
+			'{login_url}'           => $login_url,
+			// Handle HTTP Refer URL variable.
+			'{refer_url}'           => $refer_url,
+			'{http_refer}'          => $refer_url,
+			// Handle User ID variable.
+			'{user_id}'             => forminator_get_user_data( 'ID' ),
+			// Handle User Display Name variable.
+			'{user_name}'           => forminator_get_user_data( 'display_name' ),
+			// Handle User Email variable.
+			'{user_email}'          => forminator_get_user_data( 'user_email' ),
+			// Handle User Login variable.
+			'{user_login}'          => forminator_get_user_data( 'user_login' ),
+			// Handle site title variable.
+			'{site_title}'          => get_bloginfo( 'name' ),
+		);
 		if ( $id ) {
+			// Handle form_name data.
+			if ( strpos( $content, '{form_name}' ) !== false ) {
+				$variables['{form_name}'] = esc_html( forminator_get_form_name( $id ) );
+			}
+			// handle form_id.
 			$variables['{form_id}'] = $id;
+			// Handle Submissions number.
+			$variables['{submissions_number}'] = Forminator_Form_Entry_Model::count_entries( $id );
+		} else {
+			$variables['{form_name}']          = '';
+			$variables['{form_id}']            = '';
+			$variables['{submissions_number}'] = '';
+		}
+
+		foreach ( $variables as $placeholder => $value ) {
+			// If null, set to empty string.
+			if ( is_null( $value ) ) {
+				$value = '';
+			}
+			$content = forminator_replace_placeholder_in_urls( $content, $placeholder, $value );
 		}
 
 		$content = str_replace( array_keys( $variables ), array_values( $variables ), $content );
@@ -1224,6 +1430,12 @@ function forminator_replace_variables( $content, $id = false, $entry = null ) {
  */
 function render_entry( $item, $column_name, $field = null, $type = '', $remove_empty = false, $att_id_only = false, $separator = '<br>', $show_label = true ) {
 	$data = $item->get_meta( $column_name, '' );
+
+	// Check if we're in email context using parent class static property.
+	$is_email = false;
+	if ( class_exists( 'Forminator_Mail' ) && method_exists( 'Forminator_Mail', 'is_email_context' ) ) {
+		$is_email = Forminator_Mail::is_email_context();
+	}
 
 	$is_calculation = false;
 	if ( stripos( $column_name, 'calculation' ) !== false ) {
@@ -1267,9 +1479,17 @@ function render_entry( $item, $column_name, $field = null, $type = '', $remove_e
 							$files_count = count( $file_urls );
 							foreach ( $file_urls as $index => $file_url ) {
 								$file_name = basename( $file_url );
-								$file_name = "<a href='" . esc_url( $file_url ) . "' target='_blank' rel='noreferrer' title='" . esc_html__( 'View File', 'forminator' ) . "'>$file_name</a>";
-								$output   .= $file_name;
-								$output   .= $index < $files_count - 1 ? $separator : '';
+
+								if ( $is_email && forminator_can_display_as_image( $file_url ) ) {
+									// For email notifications, display image if possible.
+									$output .= forminator_get_email_image_markup( $file_url, $file_name, '', 'upload' );
+								} else {
+									// Default link display.
+									$file_name = "<a href='" . esc_url( $file_url ) . "' target='_blank' rel='noreferrer' title='" . esc_html__( 'View File', 'forminator' ) . "'>$file_name</a>";
+									$output   .= $file_name;
+								}
+
+								$output .= $index < $files_count - 1 ? $separator : '';
 							}
 						}
 					} elseif ( ! is_int( $key ) ) {
@@ -1286,29 +1506,30 @@ function render_entry( $item, $column_name, $field = null, $type = '', $remove_e
 
 								$output .= '<ul>';
 
-									$output .= '<li>';
-									$output .= '<b>' . esc_html__( 'Title', 'forminator' ) . ':</b> ';
-									$output .= '<a href="' . $url . '" target="_blank" rel="noopener noreferrer" title="' . esc_attr__( 'Edit Post', 'forminator' ) . '">'
-													. $title .
-												'</a>';
-									$output .= '</li>';
+								$title_label = $field['post_title_label'] ?? esc_html__( 'Title', 'forminator' );
+								$output     .= '<li>';
+								$output     .= '<b>' . Forminator_Field::convert_markdown( esc_html( $title_label ) ) . ':</b> ';
+								$output     .= '<a href="' . $url . '" target="_blank" rel="noopener noreferrer" title="' . esc_attr__( 'Edit Post', 'forminator' ) . '">' . $title . '</a>';
+								$output     .= '</li>';
 
 									// Content.
 								if ( ! empty( $data['value']['post-content'] ) ) {
-									$post_content = $data['value']['post-content'];
-									$output      .= '<li>';
-									$output      .= '<b>' . esc_html__( 'Content', 'forminator' ) . ':</b>' . $separator;
-									$output      .= wp_kses( $post_content, 'post' );
-									$output      .= '</li>';
+									$post_content  = $data['value']['post-content'];
+									$content_label = $field['post_content_label'] ?? esc_html__( 'Content', 'forminator' );
+									$output       .= '<li>';
+									$output       .= '<b>' . Forminator_Field::convert_markdown( esc_html( $content_label ) ) . ':</b>' . $separator;
+									$output       .= wp_kses( $post_content, 'post' );
+									$output       .= '</li>';
 								}
 
 									// Excerpt.
 								if ( ! empty( $data['value']['post-excerpt'] ) ) {
-									$post_excerpt = $data['value']['post-excerpt'];
-									$output      .= '<li>';
-									$output      .= '<b>' . esc_html__( 'Excerpt', 'forminator' ) . ':</b>' . $separator;
-									$output      .= wp_strip_all_tags( $post_excerpt );
-									$output      .= '</li>';
+									$post_excerpt  = $data['value']['post-excerpt'];
+									$excerpt_label = $field['post_excerpt_label'] ?? esc_html__( 'Excerpt', 'forminator' );
+									$output       .= '<li>';
+									$output       .= '<b>' . Forminator_Field::convert_markdown( esc_html( $excerpt_label ) ) . ':</b>' . $separator;
+									$output       .= wp_strip_all_tags( $post_excerpt );
+									$output       .= '</li>';
 								}
 
 									// Category.
@@ -1325,12 +1546,10 @@ function render_entry( $item, $column_name, $field = null, $type = '', $remove_e
 									// In case of deleted categories.
 									if ( ! empty( $post_category ) ) {
 										$category_count = count( $post_category );
-										$label          = ( 1 === $category_count ) ?
-											esc_html__( 'Category', 'forminator' ) :
-											esc_html__( 'Categories', 'forminator' );
+										$label          = $field['category_label'] ?? ( ( 1 === $category_count ) ? esc_html__( 'Category', 'forminator' ) : esc_html__( 'Categories', 'forminator' ) );
 
 										$output .= '<li>';
-										$output .= '<b>' . $label . ':</b> ';
+										$output .= '<b>' . Forminator_Field::convert_markdown( esc_html( $label ) ) . ':</b> ';
 										$output .= implode( ',', $post_category );
 										$output .= '</li>';
 									}
@@ -1350,12 +1569,10 @@ function render_entry( $item, $column_name, $field = null, $type = '', $remove_e
 									// In case of deleted tags.
 									if ( ! empty( $term_query->terms ) ) {
 										$term_count = count( $term_query->terms );
-										$label      = ( 1 === $term_count ) ?
-											esc_html__( 'Tag', 'forminator' ) :
-											esc_html__( 'Tags', 'forminator' );
+										$label      = $field['post_tag_label'] ?? ( ( 1 === $term_count ) ? esc_html__( 'Tag', 'forminator' ) : esc_html__( 'Tags', 'forminator' ) );
 
 										$output .= '<li>';
-										$output .= '<b>' . $label . ':</b> ';
+										$output .= '<b>' . Forminator_Field::convert_markdown( esc_html( $label ) ) . ':</b> ';
 										$output .= implode( ',', $term_query->terms );
 										$output .= '</li>';
 									}
@@ -1364,8 +1581,9 @@ function render_entry( $item, $column_name, $field = null, $type = '', $remove_e
 									// Featured Image.
 								if ( ! empty( $data['value']['post-image'] ) && ! empty( $data['value']['post-image']['attachment_id'] ) ) {
 									$post_image_id = $data['value']['post-image']['attachment_id'];
+									$image_label   = $field['post_image_label'] ?? esc_html__( 'Featured image', 'forminator' );
 									$output       .= '<li>';
-									$output       .= '<b>' . esc_html__( 'Featured image', 'forminator' ) . ':</b>' . $separator;
+									$output       .= '<b>' . Forminator_Field::convert_markdown( esc_html( $image_label ) ) . ':</b>' . $separator;
 									$output       .= wp_get_attachment_image( $post_image_id, array( 100, 100 ) );
 									$output       .= '</li>';
 								}
@@ -1500,10 +1718,21 @@ function render_entry( $item, $column_name, $field = null, $type = '', $remove_e
 									}
 								}
 
+								// Date sub-field labels.
+								if ( 'day' === $key_slug && ! empty( $field['day_label'] ) ) {
+									$key = $field['day_label'];
+								}
+								if ( 'month' === $key_slug && ! empty( $field['month_label'] ) ) {
+									$key = $field['month_label'];
+								}
+								if ( 'year' === $key_slug && ! empty( $field['year_label'] ) ) {
+									$key = $field['year_label'];
+								}
+
 								if ( $remove_empty && empty( $value ) ) {
 									$output .= '';
 								} elseif ( $show_label ) {
-										$output .= sprintf( '<strong>%1$s : </strong> %2$s', esc_html( $key ), esc_html( $value ) ) . $separator;
+										$output .= sprintf( '<strong>%1$s : </strong> %2$s', Forminator_Field::convert_markdown( esc_html( $key ) ), esc_html( $value ) ) . $separator;
 								} else {
 									$output .= esc_html( $value ) . $separator;
 								}
@@ -1548,7 +1777,8 @@ function render_entry( $item, $column_name, $field = null, $type = '', $remove_e
 					$output = substr( trim( $output ), 0, - 1 );
 
 				}
-			} elseif ( is_array( $data ) ) {
+				// If it is an array and not an upload field.
+			} elseif ( is_array( $data ) && stripos( $column_name, 'upload' ) === false ) {
 				$output = implode( ', ', $data );
 			}
 
@@ -1617,260 +1847,259 @@ function forminator_remove_prefixes( $field_id ) {
  * @return array
  */
 function forminator_get_countries_list() {
-	return apply_filters(
-		'forminator_countries_list',
-		array(
-			'AF' => esc_html__( 'Afghanistan', 'forminator' ),
-			'AL' => esc_html__( 'Albania', 'forminator' ),
-			'DZ' => esc_html__( 'Algeria', 'forminator' ),
-			'AS' => esc_html__( 'American Samoa', 'forminator' ),
-			'AD' => esc_html__( 'Andorra', 'forminator' ),
-			'AO' => esc_html__( 'Angola', 'forminator' ),
-			'AI' => esc_html__( 'Anguilla', 'forminator' ),
-			'AQ' => esc_html__( 'Antarctica', 'forminator' ),
-			'AG' => esc_html__( 'Antigua and Barbuda', 'forminator' ),
-			'AR' => esc_html__( 'Argentina', 'forminator' ),
-			'AM' => esc_html__( 'Armenia', 'forminator' ),
-			'AU' => esc_html__( 'Australia', 'forminator' ),
-			'AW' => esc_html__( 'Aruba', 'forminator' ),
-			'AT' => esc_html__( 'Austria', 'forminator' ),
-			'AZ' => esc_html__( 'Azerbaijan', 'forminator' ),
-			'BS' => esc_html__( 'Bahamas', 'forminator' ),
-			'BH' => esc_html__( 'Bahrain', 'forminator' ),
-			'BD' => esc_html__( 'Bangladesh', 'forminator' ),
-			'BB' => esc_html__( 'Barbados', 'forminator' ),
-			'BY' => esc_html__( 'Belarus', 'forminator' ),
-			'BE' => esc_html__( 'Belgium', 'forminator' ),
-			'BZ' => esc_html__( 'Belize', 'forminator' ),
-			'BJ' => esc_html__( 'Benin', 'forminator' ),
-			'BM' => esc_html__( 'Bermuda', 'forminator' ),
-			'BT' => esc_html__( 'Bhutan', 'forminator' ),
-			'BO' => esc_html__( 'Bolivia', 'forminator' ),
-			'BA' => esc_html__( 'Bosnia and Herzegovina', 'forminator' ),
-			'BW' => esc_html__( 'Botswana', 'forminator' ),
-			'BV' => esc_html__( 'Bouvet Island', 'forminator' ),
-			'BR' => esc_html__( 'Brazil', 'forminator' ),
-			'IO' => esc_html__( 'British Indian Ocean Territory', 'forminator' ),
-			'BN' => esc_html__( 'Brunei', 'forminator' ),
-			'BG' => esc_html__( 'Bulgaria', 'forminator' ),
-			'BF' => esc_html__( 'Burkina Faso', 'forminator' ),
-			'BI' => esc_html__( 'Burundi', 'forminator' ),
-			'KH' => esc_html__( 'Cambodia', 'forminator' ),
-			'CM' => esc_html__( 'Cameroon', 'forminator' ),
-			'CA' => esc_html__( 'Canada', 'forminator' ),
-			'CV' => esc_html__( 'Cabo Verde', 'forminator' ),
-			'KY' => esc_html__( 'Cayman Islands', 'forminator' ),
-			'CF' => esc_html__( 'Central African Republic', 'forminator' ),
-			'TD' => esc_html__( 'Chad', 'forminator' ),
-			'CL' => esc_html__( 'Chile', 'forminator' ),
-			'CN' => html_entity_decode( esc_html__( 'China, People\'s Republic of', 'forminator' ), ENT_QUOTES ),
-			'CX' => esc_html__( 'Christmas Island', 'forminator' ),
-			'CC' => esc_html__( 'Cocos Islands', 'forminator' ),
-			'CO' => esc_html__( 'Colombia', 'forminator' ),
-			'KM' => esc_html__( 'Comoros', 'forminator' ),
-			'CD' => esc_html__( 'Congo, Democratic Republic of the', 'forminator' ),
-			'CG' => esc_html__( 'Congo, Republic of the', 'forminator' ),
-			'CK' => esc_html__( 'Cook Islands', 'forminator' ),
-			'CR' => esc_html__( 'Costa Rica', 'forminator' ),
-			'CI' => html_entity_decode( esc_html__( 'Côte d\'Ivoire', 'forminator' ), ENT_QUOTES ),
-			'HR' => esc_html__( 'Croatia', 'forminator' ),
-			'CU' => esc_html__( 'Cuba', 'forminator' ),
-			'CW' => esc_html__( 'Curaçao', 'forminator' ),
-			'CY' => esc_html__( 'Cyprus', 'forminator' ),
-			'CZ' => esc_html__( 'Czech Republic', 'forminator' ),
-			'DK' => esc_html__( 'Denmark', 'forminator' ),
-			'DJ' => esc_html__( 'Djibouti', 'forminator' ),
-			'DM' => esc_html__( 'Dominica', 'forminator' ),
-			'DO' => esc_html__( 'Dominican Republic', 'forminator' ),
-			'TL' => esc_html__( 'East Timor', 'forminator' ),
-			'EC' => esc_html__( 'Ecuador', 'forminator' ),
-			'EG' => esc_html__( 'Egypt', 'forminator' ),
-			'SV' => esc_html__( 'El Salvador', 'forminator' ),
-			'GQ' => esc_html__( 'Equatorial Guinea', 'forminator' ),
-			'ER' => esc_html__( 'Eritrea', 'forminator' ),
-			'EE' => esc_html__( 'Estonia', 'forminator' ),
-			'ET' => esc_html__( 'Ethiopia', 'forminator' ),
-			'FK' => esc_html__( 'Falkland Islands', 'forminator' ),
-			'FO' => esc_html__( 'Faroe Islands', 'forminator' ),
-			'FJ' => esc_html__( 'Fiji', 'forminator' ),
-			'FI' => esc_html__( 'Finland', 'forminator' ),
-			'FR' => esc_html__( 'France', 'forminator' ),
-			'FX' => esc_html__( 'France, Metropolitan', 'forminator' ),
-			'GF' => esc_html__( 'French Guiana', 'forminator' ),
-			'PF' => esc_html__( 'French Polynesia', 'forminator' ),
-			'TF' => esc_html__( 'French South Territories', 'forminator' ),
-			'GA' => esc_html__( 'Gabon', 'forminator' ),
-			'GM' => esc_html__( 'Gambia', 'forminator' ),
-			'GE' => esc_html__( 'Georgia', 'forminator' ),
-			'DE' => esc_html__( 'Germany', 'forminator' ),
-			'GG' => esc_html__( 'Guernsey', 'forminator' ),
-			'GH' => esc_html__( 'Ghana', 'forminator' ),
-			'GI' => esc_html__( 'Gibraltar', 'forminator' ),
-			'GR' => esc_html__( 'Greece', 'forminator' ),
-			'GL' => esc_html__( 'Greenland', 'forminator' ),
-			'GD' => esc_html__( 'Grenada', 'forminator' ),
-			'GP' => esc_html__( 'Guadeloupe', 'forminator' ),
-			'GU' => esc_html__( 'Guam', 'forminator' ),
-			'GT' => esc_html__( 'Guatemala', 'forminator' ),
-			'GN' => esc_html__( 'Guinea', 'forminator' ),
-			'GW' => esc_html__( 'Guinea-Bissau', 'forminator' ),
-			'GY' => esc_html__( 'Guyana', 'forminator' ),
-			'HT' => esc_html__( 'Haiti', 'forminator' ),
-			'HM' => esc_html__( 'Heard Island And Mcdonald Island', 'forminator' ),
-			'HN' => esc_html__( 'Honduras', 'forminator' ),
-			'HK' => esc_html__( 'Hong Kong', 'forminator' ),
-			'HU' => esc_html__( 'Hungary', 'forminator' ),
-			'IS' => esc_html__( 'Iceland', 'forminator' ),
-			'IN' => esc_html__( 'India', 'forminator' ),
-			'ID' => esc_html__( 'Indonesia', 'forminator' ),
-			'IR' => esc_html__( 'Iran', 'forminator' ),
-			'IQ' => esc_html__( 'Iraq', 'forminator' ),
-			'IE' => esc_html__( 'Ireland', 'forminator' ),
-			'IL' => esc_html__( 'Israel', 'forminator' ),
-			'IT' => esc_html__( 'Italy', 'forminator' ),
-			'JM' => esc_html__( 'Jamaica', 'forminator' ),
-			'JP' => esc_html__( 'Japan', 'forminator' ),
-			'JE' => esc_html__( 'Jersey', 'forminator' ),
-			'JT' => esc_html__( 'Johnston Island', 'forminator' ),
-			'JO' => esc_html__( 'Jordan', 'forminator' ),
-			'KZ' => esc_html__( 'Kazakhstan', 'forminator' ),
-			'KE' => esc_html__( 'Kenya', 'forminator' ),
-			'KI' => esc_html__( 'Kiribati', 'forminator' ),
-			'KP' => html_entity_decode( esc_html__( 'Korea, Democratic People\'s Republic of', 'forminator' ), ENT_QUOTES ),
-			'KR' => esc_html__( 'Korea, Republic of', 'forminator' ),
-			'XK' => esc_html__( 'Kosovo', 'forminator' ),
-			'KW' => esc_html__( 'Kuwait', 'forminator' ),
-			'KG' => esc_html__( 'Kyrgyzstan', 'forminator' ),
-			'LA' => html_entity_decode( esc_html__( 'Lao People\'s Democratic Republic', 'forminator' ), ENT_QUOTES ),
-			'LV' => esc_html__( 'Latvia', 'forminator' ),
-			'LB' => esc_html__( 'Lebanon', 'forminator' ),
-			'LS' => esc_html__( 'Lesotho', 'forminator' ),
-			'LR' => esc_html__( 'Liberia', 'forminator' ),
-			'LY' => esc_html__( 'Libya', 'forminator' ),
-			'LI' => esc_html__( 'Liechtenstein', 'forminator' ),
-			'LT' => esc_html__( 'Lithuania', 'forminator' ),
-			'LU' => esc_html__( 'Luxembourg', 'forminator' ),
-			'MO' => esc_html__( 'Macau', 'forminator' ),
-			'MK' => esc_html__( 'North Macedonia', 'forminator' ),
-			'MG' => esc_html__( 'Madagascar', 'forminator' ),
-			'MW' => esc_html__( 'Malawi', 'forminator' ),
-			'MY' => esc_html__( 'Malaysia', 'forminator' ),
-			'MV' => esc_html__( 'Maldives', 'forminator' ),
-			'ML' => esc_html__( 'Mali', 'forminator' ),
-			'MT' => esc_html__( 'Malta', 'forminator' ),
-			'MH' => esc_html__( 'Marshall Islands', 'forminator' ),
-			'MQ' => esc_html__( 'Martinique', 'forminator' ),
-			'MR' => esc_html__( 'Mauritania', 'forminator' ),
-			'MU' => esc_html__( 'Mauritius', 'forminator' ),
-			'YT' => esc_html__( 'Mayotte', 'forminator' ),
-			'MX' => esc_html__( 'Mexico', 'forminator' ),
-			'FM' => esc_html__( 'Micronesia', 'forminator' ),
-			'MD' => esc_html__( 'Moldova', 'forminator' ),
-			'MC' => esc_html__( 'Monaco', 'forminator' ),
-			'MN' => esc_html__( 'Mongolia', 'forminator' ),
-			'MS' => esc_html__( 'Montserrat', 'forminator' ),
-			'ME' => esc_html__( 'Montenegro', 'forminator' ),
-			'MA' => esc_html__( 'Morocco', 'forminator' ),
-			'MZ' => esc_html__( 'Mozambique', 'forminator' ),
-			'MM' => esc_html__( 'Myanmar', 'forminator' ),
-			'NA' => esc_html__( 'Namibia', 'forminator' ),
-			'NR' => esc_html__( 'Nauru', 'forminator' ),
-			'NP' => esc_html__( 'Nepal', 'forminator' ),
-			'NL' => esc_html__( 'Netherlands', 'forminator' ),
-			'AN' => esc_html__( 'Netherlands Antilles', 'forminator' ),
-			'NC' => esc_html__( 'New Caledonia', 'forminator' ),
-			'NZ' => esc_html__( 'New Zealand', 'forminator' ),
-			'NI' => esc_html__( 'Nicaragua', 'forminator' ),
-			'NE' => esc_html__( 'Niger', 'forminator' ),
-			'NG' => esc_html__( 'Nigeria', 'forminator' ),
-			'NU' => esc_html__( 'Niue', 'forminator' ),
-			'NF' => esc_html__( 'Norfolk Island', 'forminator' ),
-			'MP' => esc_html__( 'Northern Mariana Islands', 'forminator' ),
-			'NO' => esc_html__( 'Norway', 'forminator' ),
-			'OM' => esc_html__( 'Oman', 'forminator' ),
-			'PK' => esc_html__( 'Pakistan', 'forminator' ),
-			'PW' => esc_html__( 'Palau', 'forminator' ),
-			'PS' => esc_html__( 'Palestine, State of', 'forminator' ),
-			'PA' => esc_html__( 'Panama', 'forminator' ),
-			'PG' => esc_html__( 'Papua New Guinea', 'forminator' ),
-			'PY' => esc_html__( 'Paraguay', 'forminator' ),
-			'PE' => esc_html__( 'Peru', 'forminator' ),
-			'PH' => esc_html__( 'Philippines', 'forminator' ),
-			'PN' => esc_html__( 'Pitcairn Islands', 'forminator' ),
-			'PL' => esc_html__( 'Poland', 'forminator' ),
-			'PT' => esc_html__( 'Portugal', 'forminator' ),
-			'PR' => esc_html__( 'Puerto Rico', 'forminator' ),
-			'QA' => esc_html__( 'Qatar', 'forminator' ),
-			'RE' => esc_html__( 'Reunion Island', 'forminator' ),
-			'RO' => esc_html__( 'Romania', 'forminator' ),
-			'RU' => esc_html__( 'Russia', 'forminator' ),
-			'RW' => esc_html__( 'Rwanda', 'forminator' ),
-			'KN' => esc_html__( 'Saint Kitts and Nevis', 'forminator' ),
-			'LC' => esc_html__( 'Saint Lucia', 'forminator' ),
-			'VC' => esc_html__( 'Saint Vincent and the Grenadines', 'forminator' ),
-			'WS' => esc_html__( 'Samoa', 'forminator' ),
-			'SH' => esc_html__( 'Saint Helena', 'forminator' ),
-			'PM' => html_entity_decode( esc_html__( 'Saint Pierre & Miquelon', 'forminator' ), ENT_QUOTES ),
-			'SM' => esc_html__( 'San Marino', 'forminator' ),
-			'ST' => esc_html__( 'Sao Tome and Principe', 'forminator' ),
-			'SA' => esc_html__( 'Saudi Arabia', 'forminator' ),
-			'SN' => esc_html__( 'Senegal', 'forminator' ),
-			'RS' => esc_html__( 'Serbia', 'forminator' ),
-			'SC' => esc_html__( 'Seychelles', 'forminator' ),
-			'SL' => esc_html__( 'Sierra Leone', 'forminator' ),
-			'SG' => esc_html__( 'Singapore', 'forminator' ),
-			'MF' => esc_html__( 'Sint Maarten', 'forminator' ),
-			'SK' => esc_html__( 'Slovakia', 'forminator' ),
-			'SI' => esc_html__( 'Slovenia', 'forminator' ),
-			'SB' => esc_html__( 'Solomon Islands', 'forminator' ),
-			'SO' => esc_html__( 'Somalia', 'forminator' ),
-			'ZA' => esc_html__( 'South Africa', 'forminator' ),
-			'GS' => esc_html__( 'South Georgia and South Sandwich', 'forminator' ),
-			'ES' => esc_html__( 'Spain', 'forminator' ),
-			'LK' => esc_html__( 'Sri Lanka', 'forminator' ),
-			'XX' => esc_html__( 'Stateless Persons', 'forminator' ),
-			'SD' => esc_html__( 'Sudan', 'forminator' ),
-			'SS' => esc_html__( 'Sudan, South', 'forminator' ),
-			'SR' => esc_html__( 'Suriname', 'forminator' ),
-			'SJ' => esc_html__( 'Svalbard and Jan Mayen', 'forminator' ),
-			'SZ' => esc_html__( 'Swaziland', 'forminator' ),
-			'SE' => esc_html__( 'Sweden', 'forminator' ),
-			'CH' => esc_html__( 'Switzerland', 'forminator' ),
-			'SY' => esc_html__( 'Syria', 'forminator' ),
-			'TW' => esc_html__( 'Taiwan, Republic of China', 'forminator' ),
-			'TJ' => esc_html__( 'Tajikistan', 'forminator' ),
-			'TZ' => esc_html__( 'Tanzania', 'forminator' ),
-			'TH' => esc_html__( 'Thailand', 'forminator' ),
-			'TG' => esc_html__( 'Togo', 'forminator' ),
-			'TK' => esc_html__( 'Tokelau', 'forminator' ),
-			'TO' => esc_html__( 'Tonga', 'forminator' ),
-			'TT' => esc_html__( 'Trinidad and Tobago', 'forminator' ),
-			'TN' => esc_html__( 'Tunisia', 'forminator' ),
-			'TR' => esc_html__( 'Turkey', 'forminator' ),
-			'TM' => esc_html__( 'Turkmenistan', 'forminator' ),
-			'TC' => esc_html__( 'Turks And Caicos Islands', 'forminator' ),
-			'TV' => esc_html__( 'Tuvalu', 'forminator' ),
-			'UG' => esc_html__( 'Uganda', 'forminator' ),
-			'UA' => esc_html__( 'Ukraine', 'forminator' ),
-			'AE' => esc_html__( 'United Arab Emirates', 'forminator' ),
-			'GB' => esc_html__( 'United Kingdom', 'forminator' ),
-			'UM' => esc_html__( 'US Minor Outlying Islands', 'forminator' ),
-			'US' => esc_html__( 'United States of America (USA)', 'forminator' ),
-			'UY' => esc_html__( 'Uruguay', 'forminator' ),
-			'UZ' => esc_html__( 'Uzbekistan', 'forminator' ),
-			'VU' => esc_html__( 'Vanuatu', 'forminator' ),
-			'VA' => esc_html__( 'Vatican City', 'forminator' ),
-			'VE' => esc_html__( 'Venezuela', 'forminator' ),
-			'VN' => esc_html__( 'Vietnam', 'forminator' ),
-			'VG' => esc_html__( 'Virgin Islands, British', 'forminator' ),
-			'VI' => esc_html__( 'Virgin Islands, U.S.', 'forminator' ),
-			'WF' => esc_html__( 'Wallis And Futuna Islands', 'forminator' ),
-			'EH' => esc_html__( 'Western Sahara', 'forminator' ),
-			'YE' => esc_html__( 'Yemen', 'forminator' ),
-			'ZM' => esc_html__( 'Zambia', 'forminator' ),
-			'ZW' => esc_html__( 'Zimbabwe', 'forminator' ),
-		)
+	$countries = array(
+		'AF' => esc_html__( 'Afghanistan', 'forminator' ),
+		'AL' => esc_html__( 'Albania', 'forminator' ),
+		'DZ' => esc_html__( 'Algeria', 'forminator' ),
+		'AS' => esc_html__( 'American Samoa', 'forminator' ),
+		'AD' => esc_html__( 'Andorra', 'forminator' ),
+		'AO' => esc_html__( 'Angola', 'forminator' ),
+		'AI' => esc_html__( 'Anguilla', 'forminator' ),
+		'AQ' => esc_html__( 'Antarctica', 'forminator' ),
+		'AG' => esc_html__( 'Antigua and Barbuda', 'forminator' ),
+		'AR' => esc_html__( 'Argentina', 'forminator' ),
+		'AM' => esc_html__( 'Armenia', 'forminator' ),
+		'AU' => esc_html__( 'Australia', 'forminator' ),
+		'AW' => esc_html__( 'Aruba', 'forminator' ),
+		'AT' => esc_html__( 'Austria', 'forminator' ),
+		'AZ' => esc_html__( 'Azerbaijan', 'forminator' ),
+		'BS' => esc_html__( 'Bahamas', 'forminator' ),
+		'BH' => esc_html__( 'Bahrain', 'forminator' ),
+		'BD' => esc_html__( 'Bangladesh', 'forminator' ),
+		'BB' => esc_html__( 'Barbados', 'forminator' ),
+		'BY' => esc_html__( 'Belarus', 'forminator' ),
+		'BE' => esc_html__( 'Belgium', 'forminator' ),
+		'BZ' => esc_html__( 'Belize', 'forminator' ),
+		'BJ' => esc_html__( 'Benin', 'forminator' ),
+		'BM' => esc_html__( 'Bermuda', 'forminator' ),
+		'BT' => esc_html__( 'Bhutan', 'forminator' ),
+		'BO' => esc_html__( 'Bolivia', 'forminator' ),
+		'BA' => esc_html__( 'Bosnia and Herzegovina', 'forminator' ),
+		'BW' => esc_html__( 'Botswana', 'forminator' ),
+		'BV' => esc_html__( 'Bouvet Island', 'forminator' ),
+		'BR' => esc_html__( 'Brazil', 'forminator' ),
+		'IO' => esc_html__( 'British Indian Ocean Territory', 'forminator' ),
+		'BN' => esc_html__( 'Brunei', 'forminator' ),
+		'BG' => esc_html__( 'Bulgaria', 'forminator' ),
+		'BF' => esc_html__( 'Burkina Faso', 'forminator' ),
+		'BI' => esc_html__( 'Burundi', 'forminator' ),
+		'KH' => esc_html__( 'Cambodia', 'forminator' ),
+		'CM' => esc_html__( 'Cameroon', 'forminator' ),
+		'CA' => esc_html__( 'Canada', 'forminator' ),
+		'CV' => esc_html__( 'Cabo Verde', 'forminator' ),
+		'KY' => esc_html__( 'Cayman Islands', 'forminator' ),
+		'CF' => esc_html__( 'Central African Republic', 'forminator' ),
+		'TD' => esc_html__( 'Chad', 'forminator' ),
+		'CL' => esc_html__( 'Chile', 'forminator' ),
+		'CN' => html_entity_decode( esc_html__( 'China, People\'s Republic of', 'forminator' ), ENT_QUOTES ),
+		'CX' => esc_html__( 'Christmas Island', 'forminator' ),
+		'CC' => esc_html__( 'Cocos Islands', 'forminator' ),
+		'CO' => esc_html__( 'Colombia', 'forminator' ),
+		'KM' => esc_html__( 'Comoros', 'forminator' ),
+		'CD' => esc_html__( 'Congo, Democratic Republic of the', 'forminator' ),
+		'CG' => esc_html__( 'Congo, Republic of the', 'forminator' ),
+		'CK' => esc_html__( 'Cook Islands', 'forminator' ),
+		'CR' => esc_html__( 'Costa Rica', 'forminator' ),
+		'CI' => html_entity_decode( esc_html__( 'Côte d\'Ivoire', 'forminator' ), ENT_QUOTES ),
+		'HR' => esc_html__( 'Croatia', 'forminator' ),
+		'CU' => esc_html__( 'Cuba', 'forminator' ),
+		'CW' => esc_html__( 'Curaçao', 'forminator' ),
+		'CY' => esc_html__( 'Cyprus', 'forminator' ),
+		'CZ' => esc_html__( 'Czech Republic', 'forminator' ),
+		'DK' => esc_html__( 'Denmark', 'forminator' ),
+		'DJ' => esc_html__( 'Djibouti', 'forminator' ),
+		'DM' => esc_html__( 'Dominica', 'forminator' ),
+		'DO' => esc_html__( 'Dominican Republic', 'forminator' ),
+		'TL' => esc_html__( 'East Timor', 'forminator' ),
+		'EC' => esc_html__( 'Ecuador', 'forminator' ),
+		'EG' => esc_html__( 'Egypt', 'forminator' ),
+		'SV' => esc_html__( 'El Salvador', 'forminator' ),
+		'GQ' => esc_html__( 'Equatorial Guinea', 'forminator' ),
+		'ER' => esc_html__( 'Eritrea', 'forminator' ),
+		'EE' => esc_html__( 'Estonia', 'forminator' ),
+		'ET' => esc_html__( 'Ethiopia', 'forminator' ),
+		'FK' => esc_html__( 'Falkland Islands', 'forminator' ),
+		'FO' => esc_html__( 'Faroe Islands', 'forminator' ),
+		'FJ' => esc_html__( 'Fiji', 'forminator' ),
+		'FI' => esc_html__( 'Finland', 'forminator' ),
+		'FR' => esc_html__( 'France', 'forminator' ),
+		'FX' => esc_html__( 'France, Metropolitan', 'forminator' ),
+		'GF' => esc_html__( 'French Guiana', 'forminator' ),
+		'PF' => esc_html__( 'French Polynesia', 'forminator' ),
+		'TF' => esc_html__( 'French South Territories', 'forminator' ),
+		'GA' => esc_html__( 'Gabon', 'forminator' ),
+		'GM' => esc_html__( 'Gambia', 'forminator' ),
+		'GE' => esc_html__( 'Georgia', 'forminator' ),
+		'DE' => esc_html__( 'Germany', 'forminator' ),
+		'GG' => esc_html__( 'Guernsey', 'forminator' ),
+		'GH' => esc_html__( 'Ghana', 'forminator' ),
+		'GI' => esc_html__( 'Gibraltar', 'forminator' ),
+		'GR' => esc_html__( 'Greece', 'forminator' ),
+		'GL' => esc_html__( 'Greenland', 'forminator' ),
+		'GD' => esc_html__( 'Grenada', 'forminator' ),
+		'GP' => esc_html__( 'Guadeloupe', 'forminator' ),
+		'GU' => esc_html__( 'Guam', 'forminator' ),
+		'GT' => esc_html__( 'Guatemala', 'forminator' ),
+		'GN' => esc_html__( 'Guinea', 'forminator' ),
+		'GW' => esc_html__( 'Guinea-Bissau', 'forminator' ),
+		'GY' => esc_html__( 'Guyana', 'forminator' ),
+		'HT' => esc_html__( 'Haiti', 'forminator' ),
+		'HM' => esc_html__( 'Heard Island And Mcdonald Island', 'forminator' ),
+		'HN' => esc_html__( 'Honduras', 'forminator' ),
+		'HK' => esc_html__( 'Hong Kong', 'forminator' ),
+		'HU' => esc_html__( 'Hungary', 'forminator' ),
+		'IS' => esc_html__( 'Iceland', 'forminator' ),
+		'IN' => esc_html__( 'India', 'forminator' ),
+		'ID' => esc_html__( 'Indonesia', 'forminator' ),
+		'IR' => esc_html__( 'Iran', 'forminator' ),
+		'IQ' => esc_html__( 'Iraq', 'forminator' ),
+		'IE' => esc_html__( 'Ireland', 'forminator' ),
+		'IL' => esc_html__( 'Israel', 'forminator' ),
+		'IT' => esc_html__( 'Italy', 'forminator' ),
+		'JM' => esc_html__( 'Jamaica', 'forminator' ),
+		'JP' => esc_html__( 'Japan', 'forminator' ),
+		'JE' => esc_html__( 'Jersey', 'forminator' ),
+		'JT' => esc_html__( 'Johnston Island', 'forminator' ),
+		'JO' => esc_html__( 'Jordan', 'forminator' ),
+		'KZ' => esc_html__( 'Kazakhstan', 'forminator' ),
+		'KE' => esc_html__( 'Kenya', 'forminator' ),
+		'KI' => esc_html__( 'Kiribati', 'forminator' ),
+		'KP' => html_entity_decode( esc_html__( 'Korea, Democratic People\'s Republic of', 'forminator' ), ENT_QUOTES ),
+		'KR' => esc_html__( 'Korea, Republic of', 'forminator' ),
+		'XK' => esc_html__( 'Kosovo', 'forminator' ),
+		'KW' => esc_html__( 'Kuwait', 'forminator' ),
+		'KG' => esc_html__( 'Kyrgyzstan', 'forminator' ),
+		'LA' => html_entity_decode( esc_html__( 'Lao People\'s Democratic Republic', 'forminator' ), ENT_QUOTES ),
+		'LV' => esc_html__( 'Latvia', 'forminator' ),
+		'LB' => esc_html__( 'Lebanon', 'forminator' ),
+		'LS' => esc_html__( 'Lesotho', 'forminator' ),
+		'LR' => esc_html__( 'Liberia', 'forminator' ),
+		'LY' => esc_html__( 'Libya', 'forminator' ),
+		'LI' => esc_html__( 'Liechtenstein', 'forminator' ),
+		'LT' => esc_html__( 'Lithuania', 'forminator' ),
+		'LU' => esc_html__( 'Luxembourg', 'forminator' ),
+		'MO' => esc_html__( 'Macau', 'forminator' ),
+		'MK' => esc_html__( 'North Macedonia', 'forminator' ),
+		'MG' => esc_html__( 'Madagascar', 'forminator' ),
+		'MW' => esc_html__( 'Malawi', 'forminator' ),
+		'MY' => esc_html__( 'Malaysia', 'forminator' ),
+		'MV' => esc_html__( 'Maldives', 'forminator' ),
+		'ML' => esc_html__( 'Mali', 'forminator' ),
+		'MT' => esc_html__( 'Malta', 'forminator' ),
+		'MH' => esc_html__( 'Marshall Islands', 'forminator' ),
+		'MQ' => esc_html__( 'Martinique', 'forminator' ),
+		'MR' => esc_html__( 'Mauritania', 'forminator' ),
+		'MU' => esc_html__( 'Mauritius', 'forminator' ),
+		'YT' => esc_html__( 'Mayotte', 'forminator' ),
+		'MX' => esc_html__( 'Mexico', 'forminator' ),
+		'FM' => esc_html__( 'Micronesia', 'forminator' ),
+		'MD' => esc_html__( 'Moldova', 'forminator' ),
+		'MC' => esc_html__( 'Monaco', 'forminator' ),
+		'MN' => esc_html__( 'Mongolia', 'forminator' ),
+		'MS' => esc_html__( 'Montserrat', 'forminator' ),
+		'ME' => esc_html__( 'Montenegro', 'forminator' ),
+		'MA' => esc_html__( 'Morocco', 'forminator' ),
+		'MZ' => esc_html__( 'Mozambique', 'forminator' ),
+		'MM' => esc_html__( 'Myanmar', 'forminator' ),
+		'NA' => esc_html__( 'Namibia', 'forminator' ),
+		'NR' => esc_html__( 'Nauru', 'forminator' ),
+		'NP' => esc_html__( 'Nepal', 'forminator' ),
+		'NL' => esc_html__( 'Netherlands', 'forminator' ),
+		'AN' => esc_html__( 'Netherlands Antilles', 'forminator' ),
+		'NC' => esc_html__( 'New Caledonia', 'forminator' ),
+		'NZ' => esc_html__( 'New Zealand', 'forminator' ),
+		'NI' => esc_html__( 'Nicaragua', 'forminator' ),
+		'NE' => esc_html__( 'Niger', 'forminator' ),
+		'NG' => esc_html__( 'Nigeria', 'forminator' ),
+		'NU' => esc_html__( 'Niue', 'forminator' ),
+		'NF' => esc_html__( 'Norfolk Island', 'forminator' ),
+		'MP' => esc_html__( 'Northern Mariana Islands', 'forminator' ),
+		'NO' => esc_html__( 'Norway', 'forminator' ),
+		'OM' => esc_html__( 'Oman', 'forminator' ),
+		'PK' => esc_html__( 'Pakistan', 'forminator' ),
+		'PW' => esc_html__( 'Palau', 'forminator' ),
+		'PS' => esc_html__( 'Palestine, State of', 'forminator' ),
+		'PA' => esc_html__( 'Panama', 'forminator' ),
+		'PG' => esc_html__( 'Papua New Guinea', 'forminator' ),
+		'PY' => esc_html__( 'Paraguay', 'forminator' ),
+		'PE' => esc_html__( 'Peru', 'forminator' ),
+		'PH' => esc_html__( 'Philippines', 'forminator' ),
+		'PN' => esc_html__( 'Pitcairn Islands', 'forminator' ),
+		'PL' => esc_html__( 'Poland', 'forminator' ),
+		'PT' => esc_html__( 'Portugal', 'forminator' ),
+		'PR' => esc_html__( 'Puerto Rico', 'forminator' ),
+		'QA' => esc_html__( 'Qatar', 'forminator' ),
+		'RE' => esc_html__( 'Reunion Island', 'forminator' ),
+		'RO' => esc_html__( 'Romania', 'forminator' ),
+		'RU' => esc_html__( 'Russia', 'forminator' ),
+		'RW' => esc_html__( 'Rwanda', 'forminator' ),
+		'KN' => esc_html__( 'Saint Kitts and Nevis', 'forminator' ),
+		'LC' => esc_html__( 'Saint Lucia', 'forminator' ),
+		'VC' => esc_html__( 'Saint Vincent and the Grenadines', 'forminator' ),
+		'WS' => esc_html__( 'Samoa', 'forminator' ),
+		'SH' => esc_html__( 'Saint Helena', 'forminator' ),
+		'PM' => html_entity_decode( esc_html__( 'Saint Pierre & Miquelon', 'forminator' ), ENT_QUOTES ),
+		'SM' => esc_html__( 'San Marino', 'forminator' ),
+		'ST' => esc_html__( 'Sao Tome and Principe', 'forminator' ),
+		'SA' => esc_html__( 'Saudi Arabia', 'forminator' ),
+		'SN' => esc_html__( 'Senegal', 'forminator' ),
+		'RS' => esc_html__( 'Serbia', 'forminator' ),
+		'SC' => esc_html__( 'Seychelles', 'forminator' ),
+		'SL' => esc_html__( 'Sierra Leone', 'forminator' ),
+		'SG' => esc_html__( 'Singapore', 'forminator' ),
+		'MF' => esc_html__( 'Sint Maarten', 'forminator' ),
+		'SK' => esc_html__( 'Slovakia', 'forminator' ),
+		'SI' => esc_html__( 'Slovenia', 'forminator' ),
+		'SB' => esc_html__( 'Solomon Islands', 'forminator' ),
+		'SO' => esc_html__( 'Somalia', 'forminator' ),
+		'ZA' => esc_html__( 'South Africa', 'forminator' ),
+		'GS' => esc_html__( 'South Georgia and South Sandwich', 'forminator' ),
+		'ES' => esc_html__( 'Spain', 'forminator' ),
+		'LK' => esc_html__( 'Sri Lanka', 'forminator' ),
+		'XX' => esc_html__( 'Stateless Persons', 'forminator' ),
+		'SD' => esc_html__( 'Sudan', 'forminator' ),
+		'SS' => esc_html__( 'Sudan, South', 'forminator' ),
+		'SR' => esc_html__( 'Suriname', 'forminator' ),
+		'SJ' => esc_html__( 'Svalbard and Jan Mayen', 'forminator' ),
+		'SZ' => esc_html__( 'Swaziland', 'forminator' ),
+		'SE' => esc_html__( 'Sweden', 'forminator' ),
+		'CH' => esc_html__( 'Switzerland', 'forminator' ),
+		'SY' => esc_html__( 'Syria', 'forminator' ),
+		'TW' => esc_html__( 'Taiwan, Republic of China', 'forminator' ),
+		'TJ' => esc_html__( 'Tajikistan', 'forminator' ),
+		'TZ' => esc_html__( 'Tanzania', 'forminator' ),
+		'TH' => esc_html__( 'Thailand', 'forminator' ),
+		'TG' => esc_html__( 'Togo', 'forminator' ),
+		'TK' => esc_html__( 'Tokelau', 'forminator' ),
+		'TO' => esc_html__( 'Tonga', 'forminator' ),
+		'TT' => esc_html__( 'Trinidad and Tobago', 'forminator' ),
+		'TN' => esc_html__( 'Tunisia', 'forminator' ),
+		'TR' => esc_html__( 'Turkey', 'forminator' ),
+		'TM' => esc_html__( 'Turkmenistan', 'forminator' ),
+		'TC' => esc_html__( 'Turks And Caicos Islands', 'forminator' ),
+		'TV' => esc_html__( 'Tuvalu', 'forminator' ),
+		'UG' => esc_html__( 'Uganda', 'forminator' ),
+		'UA' => esc_html__( 'Ukraine', 'forminator' ),
+		'AE' => esc_html__( 'United Arab Emirates', 'forminator' ),
+		'GB' => esc_html__( 'United Kingdom', 'forminator' ),
+		'UM' => esc_html__( 'US Minor Outlying Islands', 'forminator' ),
+		'US' => esc_html__( 'United States of America (USA)', 'forminator' ),
+		'UY' => esc_html__( 'Uruguay', 'forminator' ),
+		'UZ' => esc_html__( 'Uzbekistan', 'forminator' ),
+		'VU' => esc_html__( 'Vanuatu', 'forminator' ),
+		'VA' => esc_html__( 'Vatican City', 'forminator' ),
+		'VE' => esc_html__( 'Venezuela', 'forminator' ),
+		'VN' => esc_html__( 'Vietnam', 'forminator' ),
+		'VG' => esc_html__( 'Virgin Islands, British', 'forminator' ),
+		'VI' => esc_html__( 'Virgin Islands, U.S.', 'forminator' ),
+		'WF' => esc_html__( 'Wallis And Futuna Islands', 'forminator' ),
+		'EH' => esc_html__( 'Western Sahara', 'forminator' ),
+		'YE' => esc_html__( 'Yemen', 'forminator' ),
+		'ZM' => esc_html__( 'Zambia', 'forminator' ),
+		'ZW' => esc_html__( 'Zimbabwe', 'forminator' ),
 	);
+	asort( $countries );
+	return apply_filters( 'forminator_countries_list', $countries );
 }
 
 /**
@@ -1955,7 +2184,7 @@ function forminator_get_ext_types() {
 			// Audio formats.
 			'mp3|m4a|m4b' => 'audio/mpeg',
 			'ra|ram'      => 'audio/x-realaudio',
-			'wav'         => 'audio/wav',
+			'wav|x-wav'   => 'audio/wav',
 			'ogg|oga'     => 'audio/ogg',
 			'mid|midi'    => 'audio/midi',
 			'wma'         => 'audio/x-ms-wma',
@@ -2017,7 +2246,6 @@ function forminator_get_ext_types() {
 			'tar'     => 'application/x-tar',
 			'zip'     => 'application/zip',
 			'gz|gzip' => 'application/x-gzip',
-			'rar'     => 'application/rar',
 			'7z'      => 'application/x-7z-compressed',
 		),
 		'text'        => array(
@@ -2356,7 +2584,7 @@ function forminator_get_quiz_vars() {
  *
  * @return mixed
  */
-function forminator_replace_form_payment_data( $content, Forminator_Form_Model $custom_form = null, Forminator_Form_Entry_Model $entry = null ) {
+function forminator_replace_form_payment_data( $content, ?Forminator_Form_Model $custom_form = null, ?Forminator_Form_Entry_Model $entry = null ) {
 	if ( empty( $custom_form ) ) {
 		return $content;
 	}
@@ -2539,16 +2767,15 @@ function forminator_get_entry_field_value( $entry, $mapper, $sub_meta_key = '', 
 /**
  * Forminator upload path
  *
- * @return string|null
+ * @return string|null|WP_Error
  */
 function forminator_upload_root_temp() {
-	$dir = wp_upload_dir();
-
-	if ( $dir['error'] ) {
-		return null;
+	$upload_root_path = forminator_upload_root();
+	if ( is_wp_error( $upload_root_path ) ) {
+		return $upload_root_path;
 	}
 
-	return forminator_upload_root() . 'temp';
+	return $upload_root_path . 'temp';
 }
 
 /**
@@ -2556,13 +2783,13 @@ function forminator_upload_root_temp() {
  *
  * @param string $base Base type.
  *
- * @return string|null
+ * @return string|null|WP_Error
  */
 function forminator_upload_root( $base = 'path' ) {
 	$dir = wp_upload_dir();
 
 	if ( $dir['error'] ) {
-		return null;
+		return new WP_Error( 'upload_dir_error', $dir['error'] );
 	}
 
 	$upload_root = forminator_custom_upload_root( $dir, $base );
@@ -2629,6 +2856,9 @@ function forminator_get_upload_path( $form_id, $dir = '', $base = 'path' ) {
 	$sub_folder = apply_filters( 'forminator_custom_upload_subfolder', $sub_folder, $form_id, $dir );
 
 	$upload_root = forminator_upload_root( $base );
+	if ( is_wp_error( $upload_root ) ) {
+		$upload_root = null;
+	}
 
 	return wp_normalize_path( $upload_root . $sub_folder );
 }
@@ -2663,7 +2893,7 @@ function forminator_get_upload_url( $form_id, $dir = '' ) {
  *
  * @return string
  */
-function forminator_replace_lead_form_data( $content, $quiz_settings, Forminator_Form_Entry_Model $entry = null ) {
+function forminator_replace_lead_form_data( $content, $quiz_settings, ?Forminator_Form_Entry_Model $entry = null ) {
 
 	if ( isset( $quiz_settings['hasLeads'] ) && $quiz_settings['hasLeads'] ) {
 		$lead_id           = isset( $quiz_settings['leadsId'] ) ? $quiz_settings['leadsId'] : 0;
@@ -2791,10 +3021,29 @@ function forminator_trim_array( $value ) {
 }
 
 /**
+ * Convert special HTML entities back to characters
+ *
+ * @since 1.40
+ * @param array $value Value array.
+ * @return array
+ */
+function forminator_htmlspecialchars_decode_array( $value ) {
+	foreach ( $value as $key => $val ) {
+		if ( is_array( $val ) ) {
+			$value[ $key ] = forminator_htmlspecialchars_decode_array( $val );
+		} else {
+			$value[ $key ] = htmlspecialchars_decode( $val );
+		}
+	}
+
+	return $value;
+}
+
+/**
  * Get cloned fields keys
  *
  * @param object $entry Entry object.
- * @param string $original_keys All field slugs of the current group field.
+ * @param array  $original_keys All field slugs of the current group field.
  * @return array
  */
 function forminator_get_cloned_field_keys( $entry, $original_keys ) {
@@ -2890,7 +3139,7 @@ function forminator_allowed_mime_types( $mimes = array(), $allow = true ) {
 		$mimes = get_allowed_mime_types();
 	}
 	if ( ! $allow ) {
-		$filters = array( 'htm|html', 'js', 'jse', 'jar', 'php', 'php3', 'php4', 'php5', 'phtml', 'svg', 'swf', 'exe', 'html', 'htm', 'shtml', 'xhtml', 'xml', 'css', 'asp', 'aspx', 'jsp', 'sql', 'hta', 'dll', 'bat', 'com', 'sh', 'bash', 'py', 'pl', 'dfxp' );
+		$filters = array( 'htm|html', 'js', 'jse', 'jar', 'php', 'php3', 'php4', 'php5', 'phtml', 'svg', 'swf', 'exe', 'html', 'htm', 'shtml', 'xhtml', 'xml', 'css', 'asp', 'aspx', 'jsp', 'sql', 'hta', 'dll', 'bat', 'com', 'sh', 'bash', 'py', 'pl', 'dfxp', 'rar' );
 		foreach ( array_keys( $mimes ) as $mime_key ) {
 			$key = strtolower( $mime_key );
 			if ( in_array( $key, $filters, true ) ) {
@@ -3398,4 +3647,47 @@ function forminator_render_rating_field( $rating_value, $rating_items ) {
 	$output .= '</div>';
 
 	return $output;
+}
+
+/**
+ * Check if a file can be displayed as an image
+ *
+ * @param string $file_url File URL.
+ * @return bool
+ */
+function forminator_can_display_as_image( $file_url ) {
+	$image_extensions = array( 'jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'tiff', 'tif', 'ico', 'webp', 'heic' );
+	$file_extension   = strtolower( pathinfo( $file_url, PATHINFO_EXTENSION ) );
+
+	return in_array( $file_extension, $image_extensions, true );
+}
+
+/**
+ * Get image markup for email notifications
+ *
+ * @param string $image_url Image URL.
+ * @param string $alt_text Alt text for the image.
+ * @param string $label Label to display below image.
+ * @param string $context Context where this is used (radio, checkbox, signature, upload).
+ * @return string
+ */
+function forminator_get_email_image_markup( $image_url, $alt_text, $label = '', $context = '' ) {
+	$default_markup = '<img src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $alt_text ) . '" style="max-width: 300px; height: auto; margin: 5px 0;">';
+
+	if ( ! empty( $label ) ) {
+		$default_markup .= '<br/>' . esc_html( $label );
+	}
+
+	/**
+	 * Filter the image markup for email notifications
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $markup The HTML markup for the image.
+	 * @param string $image_url The URL of the image.
+	 * @param string $alt_text The alt text for the image.
+	 * @param string $label The label to display below the image.
+	 * @param string $context The context where this is used (radio, checkbox, signature, upload).
+	 */
+	return apply_filters( 'forminator_email_image_markup', $default_markup, $image_url, $alt_text, $label, $context );
 }

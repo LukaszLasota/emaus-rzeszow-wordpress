@@ -676,6 +676,22 @@ function forminator_has_hcaptcha_settings() {
 }
 
 /**
+ * Return if Cloudflare Turnstile keys are filled
+ *
+ * @return bool
+ */
+function forminator_has_turnstile_settings(): bool {
+	$key    = get_option( 'forminator_turnstile_key', false );
+	$secret = get_option( 'forminator_turnstile_secret', false );
+
+	if ( empty( $key ) || empty( $secret ) ) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
  * Return if Stripe is is_connected
  *
  * @since 1.7
@@ -1340,8 +1356,6 @@ function forminator_reset_settings() {
 	delete_option( 'forminator_retain_poll_submissions_interval_number' );
 	delete_option( 'forminator_retain_poll_submissions_interval_unit' );
 	delete_option( 'forminator_posts_map' );
-	delete_option( 'forminator_module_enable_load_ajax' );
-	delete_option( 'forminator_module_use_donotcachepage' );
 	delete_option( 'forminator_retain_quiz_submissions_interval_number' );
 	delete_option( 'forminator_retain_quiz_submissions_interval_unit' );
 	delete_option( 'forminator_dashboard_settings' );
@@ -1357,10 +1371,10 @@ function forminator_reset_settings() {
 	delete_option( 'forminator_custom_upload' );
 	delete_option( 'forminator_custom_upload_root' );
 	delete_option( 'forminator_stripe_configuration' );
+	delete_option( 'forminator_stripe_payment_intents' );
 	delete_option( 'forminator_paypal_configuration' );
-
-	$usage_tracking = get_option( 'forminator_usage_tracking', false );
 	delete_option( 'forminator_usage_tracking' );
+	delete_option( 'forminator_auto_saving' );
 
 	/**
 	 * Forminator_delete_addon_options
@@ -1404,11 +1418,9 @@ function forminator_reset_settings() {
 	/**
 	 * Fires after Settings reset
 	 *
-	 * @param bool $usage_data usage tracking data enable or not
-	 *
 	 * @since 1.27.0
 	 */
-	do_action( 'forminator_after_reset_settings', $usage_tracking );
+	do_action( 'forminator_after_reset_settings' );
 }
 
 /**
@@ -1762,6 +1774,11 @@ function forminator_get_permission( $page_slug ) {
 	if ( current_user_can( $default_cap ) || empty( $page_slug ) ) {
 		return $default_cap;
 	}
+	// If current user a guest, return the default admin cap because they don't have any capabilities anyway.
+	$user = wp_get_current_user();
+	if ( empty( $user->ID ) ) {
+		return $default_cap;
+	}
 
 	$permissions = get_option( 'forminator_permissions', array() );
 	if ( empty( $permissions ) ) {
@@ -1808,8 +1825,6 @@ function forminator_get_permission( $page_slug ) {
 			break;
 	}
 
-	// Get current user.
-	$user         = wp_get_current_user();
 	$user_allowed = false;
 	$role_allowed = false;
 
@@ -1819,10 +1834,7 @@ function forminator_get_permission( $page_slug ) {
 		// If role.
 		if ( 'role' === $permission['permission_type'] ) {
 
-			if (
-				! isset( $permission['exclude_users'] ) ||
-				empty( $permission['exclude_users'] )
-			) {
+			if ( empty( $permission['exclude_users'] ) ) {
 				$role_allowed = true;
 				continue;
 			}
@@ -1937,7 +1949,6 @@ function forminator_recursive_array_search( $needle, $haystack ) {
 function forminator_get_accessible_user_roles() {
 	// Get the current user object.
 	$current_user = wp_get_current_user();
-
 	// Check if user is logged in | Have access to create user.
 	if ( empty( $current_user ) || ! current_user_can( 'create_users' ) ) {
 		return array();
@@ -1986,18 +1997,45 @@ function forminator_validate_registration_form_settings( $settings ) {
 		}
 		$roles = forminator_get_accessible_user_roles();
 		if ( isset( $settings['registration-user-role'] ) && 'fixed' === $settings['registration-user-role'] ) {
-			if ( isset( $settings['registration-role-field'] ) && ! isset( $roles[ $settings['registration-role-field'] ] ) ) {
+			if ( isset( $settings['registration-role-field'] ) && ! isset( $roles[ $settings['registration-role-field'] ] )
+				&& 'notCreate' !== $settings['registration-role-field'] ) { // Respect the "Don't create a user in the network's main site" option.
 				return new WP_Error( 'invalid_user_role', $error_message );
 			}
 		} elseif ( ! empty( $settings['user_role'] ) && is_array( $settings['user_role'] ) ) {
 			foreach ( $settings['user_role'] as $user_role ) {
-				if ( isset( $user_role['role'] ) && ! isset( $roles[ $user_role['role'] ] ) ) {
+				if ( isset( $user_role['role'] ) && ! isset( $roles[ $user_role['role'] ] )
+					&& 'notCreate' !== $user_role['role'] ) { // Respect the "Don't create a user in the network's main site" option.
 					return new WP_Error( 'invalid_user_role', $error_message );
 				}
 			}
 		}
 	}
 	return true;
+}
+
+/**
+ * Can the current user approve a user and create a site.
+ *
+ * @param object $signup Signup.
+ * @return bool
+ */
+function forminator_can_approve_user_and_create_site( $signup ) {
+	$roles = forminator_get_accessible_user_roles();
+	if ( ! empty( $signup->user_data['role'] ) ) {
+		if ( forminator_is_main_site() ) {
+			// Either the 'Don't create a user' option is chosen, or the current user has access to the required user roles.
+			if ( 'notCreate' === $signup->user_data['role'] || isset( $roles[ $signup->user_data['role'] ] ) ) { // Respect the "Don't create a user in the network's main site" option.
+				$option_create_site = forminator_get_property( $signup->settings, 'site-registration' );
+				// Either the 'site-registration' option is disabled, or the current user has access to create sites.
+				if ( 'enable' !== $option_create_site || current_user_can( 'create_sites' ) ) {
+					return true;
+				}
+			}
+		} elseif ( isset( $roles[ $signup->user_data['role'] ] ) ) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /**
@@ -2018,4 +2056,95 @@ function forminator_can_apply_default_color( $settings ) {
 
 	$color_option = $settings[ $color_option_key ] ?? $default_color_option;
 	return 'forminator' === $color_option;
+}
+
+/**
+ * Schedule recurring action.
+ *
+ * @param string $action Action name.
+ * @param int    $interval Expiration time in seconds.
+ *
+ * @return bool
+ */
+function forminator_set_recurring_action( string $action, int $interval ): bool {
+	// Check cache first.
+	if ( get_transient( $action ) ) {
+		return true;
+	}
+
+	// if tables exist.
+	if ( ! Forminator_Core::check_action_scheduler_tables() ) {
+		return false;
+	}
+
+	// Clear old cron schedule.
+	if ( wp_next_scheduled( $action ) ) {
+		wp_clear_scheduled_hook( $action );
+	}
+
+	$scheduled = as_has_scheduled_action( $action );
+	if ( $scheduled ) {
+		// Set cache.
+		$expiration = 2 * HOUR_IN_SECONDS;
+		set_transient( $action, true, $expiration );
+	} else {
+		// Create new schedule using AS.
+		$action_id = as_schedule_recurring_action( time() + 20, $interval, $action, array(), 'forminator', true );
+		$scheduled = $action_id > 0;
+	}
+
+	return $scheduled;
+}
+
+/**
+ * Check if cloud templates are disabled
+ *
+ * @return bool
+ */
+function forminator_cloud_templates_disabled(): bool {
+	$is_disabled = apply_filters( 'forminator_disable_cloud_templates', false );
+	if ( ! $is_disabled ) {
+		if ( is_wpmu_dev_admin() ) {
+			$is_disabled = false;
+		} elseif ( forminator_can_whitelabel() ) {
+			$is_disabled = true;
+		}
+	}
+
+	return $is_disabled;
+}
+
+/**
+ * Check if user registration is enabled in WordPress settings.
+ *
+ * @return bool
+ */
+function forminator_is_user_registration_enabled() {
+	if ( is_multisite() ) {
+		$registration_option = get_site_option( 'registration' );
+		if ( in_array( $registration_option, array( 'all', 'user' ), true ) ) {
+			return true;
+		}
+	} elseif ( get_option( 'users_can_register' ) ) {
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Check if site registration is enabled in WordPress settings.
+ *
+ * @return bool
+ */
+function forminator_is_site_registration_enabled() {
+	// Allow site registration only if on the main site and site registration is enabled.
+	if ( forminator_is_main_site() ) {
+		$registration_option = get_site_option( 'registration' );
+		// Site registration is enabled only if the option is set to 'all'.
+		// For the 'blog' option, only logged-in users can register new sites, so we don't support that here.
+		if ( 'all' === $registration_option ) {
+			return true;
+		}
+	}
+	return false;
 }

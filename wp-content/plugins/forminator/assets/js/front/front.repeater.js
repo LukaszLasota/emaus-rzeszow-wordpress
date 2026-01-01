@@ -5,6 +5,23 @@
 
 	"use strict";
 
+	// Trigger repeater functions after form load.
+	forminator_handle_all_group_field_copies();
+	forminator_add_listener_on_repeater_add_remove();
+
+	// Trigger repeater functions after form load using Ajax.
+	$( document ).on( 'after.load.forminator', () => {
+		forminator_handle_all_group_field_copies();
+		forminator_add_listener_on_repeater_add_remove();
+	} );
+
+	// Trigger repeater functions after elementor popup show.
+	$( document ).on( 'elementor/popup/show', () => {
+		forminator_handle_all_group_field_copies();
+		forminator_add_listener_on_repeater_add_remove();
+	} );
+
+	function forminator_handle_all_group_field_copies() {
 	setTimeout( function() {
 		// Init Group fields. Clone group fields if minimum more than 1.
 		$( 'div.forminator-all-group-copies' ).each( function() {
@@ -43,8 +60,10 @@
 
 		} );
 	}, 100 );
+	}
 
 	// Click on Add Item \ Remove Item.
+	function forminator_add_listener_on_repeater_add_remove() {
 	$( 'form.forminator-custom-form' ).on( 'click', '.forminator-repeater-remove, .forminator-repeater-add', function( e ) {
 		e.stopImmediatePropagation();
 		e.preventDefault();
@@ -67,6 +86,7 @@
 
 		forminatorHideIrrelevantActions( fieldOptions, groupField );
 	});
+	}
 
 	/**
 	 * Remove item
@@ -88,7 +108,7 @@
 		}
 
 		removingBlock.remove();
-
+		form.trigger( 'forminator-group-item-removed' );
 		form.trigger( 'forminator:recalculate' );
 	}
 
@@ -176,7 +196,12 @@
             });
         }
 
-		newBlock.find( '.select2-container, .forminator-error-message' ).remove();
+		// Remove slider custom labels in the cloned block.
+		newBlock.find('.forminator-slider').each(function () {
+			$(this).find('.forminator-slider-labels').remove();
+		});
+
+		newBlock.find( '.select2-container, .forminator-error-message, .iti__country-container' ).remove();
 
 		// Cloning Rich-Text editors.
 		newBlock.find( '.wp-editor-wrap' ).each( function() {
@@ -184,6 +209,15 @@
 			textarea.css( 'display', 'block' );
 			$( this ).replaceWith( textarea );
 		} );
+
+		// Cloning Phone fields - material mode.
+		newBlock.find('.forminator-field-phone .forminator-input-with-phone').each(function() {
+			$(this).replaceWith($(this).contents().contents());
+		});
+		// Cloning Phone fields - other modes.
+		newBlock.find('.forminator-field-phone .forminator-phone').each(function() {
+			$(this).replaceWith($(this).contents());
+		});
 
 		// Cloning Singular File Upload.
 		newBlock.find( '.forminator-file-upload [data-empty-text]' ).each( function() {
@@ -213,7 +247,7 @@
 		const regexp = new RegExp( `(forminator-field-upload-)([^"]+?)(-${formId})`, 'g' );
 		newHtml = newHtml.replace( regexp, '$1$2-' + newSuffix + '$3' );
 
-		newHtml = newHtml.replace( /hasDatepicker|forminator-has_error/g, '' );
+		newHtml = newHtml.replace( /hasDatepicker|forminator-has_error|forminator-input-with-phone/g, '' );
 
 		newHtml = forminatorUpdateCalculationFormulas( newHtml, newSuffix, baseBlock );
 

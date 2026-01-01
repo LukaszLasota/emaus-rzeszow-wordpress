@@ -31,6 +31,13 @@ class Forminator_Form_Entry_Model {
 	public $entry_id = 0;
 
 	/**
+	 * Updating entry
+	 *
+	 * @var bool
+	 */
+	public $updating_entry = false;
+
+	/**
 	 * Entry type
 	 *
 	 * @var string
@@ -57,6 +64,25 @@ class Forminator_Form_Entry_Model {
 	 * @var bool
 	 */
 	public $is_spam = false;
+
+	/**
+	 * Entry status
+	 *
+	 * @var string 'active'|'spam'|'draft'|'abandoned'
+	 */
+	public $status = 'active';
+
+	/**
+	 * Compute status using explicit source status if present, otherwise from this model's flags.
+	 *
+	 * @param object $source Source object that may contain `status`.
+	 *
+	 * @return string
+	 */
+	private function get_entry_status( $source ) {
+		return ! empty( $source->status ) ? $source->status : ( $this->is_spam ? 'spam' : ( ! empty( $this->draft_id ) ? 'draft' : 'active' ) );
+	}
+
 
 	/**
 	 * Date created in sql format 0000-00-00 00:00:00
@@ -178,11 +204,12 @@ class Forminator_Form_Entry_Model {
 			$this->time_created     = $entry_object_cache->time_created;
 			$this->meta_data        = $entry_object_cache->meta_data;
 			$this->draft_id         = $entry_object_cache->draft_id;
+			$this->status           = $this->get_entry_status( $entry_object_cache );
 
 			return $entry_object_cache;
 		} else {
 			$table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
-			$sql        = "SELECT `entry_type`, `form_id`, `is_spam`, `date_created`, `draft_id` FROM {$table_name} WHERE `entry_id` = %d";
+			$sql        = "SELECT `entry_type`, `form_id`, `is_spam`, `date_created`, `draft_id`, `status` FROM {$table_name} WHERE `entry_id` = %d";
 			$entry      = $wpdb->get_row( $wpdb->prepare( $sql, $entry_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 			if ( $entry ) {
 				$this->entry_id         = $entry_id;
@@ -193,6 +220,7 @@ class Forminator_Form_Entry_Model {
 				$this->date_created     = date_i18n( 'j M Y', strtotime( $entry->date_created ) );
 				$this->time_created     = date_i18n( 'M j, Y @ g:i A', strtotime( $entry->date_created ) );
 				$this->draft_id         = $entry->draft_id;
+				$this->status           = $this->get_entry_status( $entry );
 				$this->load_meta();
 				wp_cache_set( $entry_id, $this, $cache_key );
 			}
@@ -230,6 +258,15 @@ class Forminator_Form_Entry_Model {
 			wp_cache_delete( $this->entry_id, self::FORM_ENTRY_CACHE_GROUP );
 			wp_cache_delete( 'poll_entries_' . $this->form_id, self::FORM_ENTRY_CACHE_GROUP );
 		}
+		if ( $this->updating_entry ) {
+			// Delete all meta data for abandoned entry.
+			$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+				$this->table_meta_name,
+				array(
+					'entry_id' => $this->entry_id,
+				)
+			);
+		}
 		foreach ( $meta_array as $meta ) {
 			if ( ! isset( $meta['name'] ) || ! isset( $meta['value'] ) ) {
 				continue;
@@ -261,6 +298,21 @@ class Forminator_Form_Entry_Model {
 				$this->meta_data[ $key ] = array(
 					'id'    => $meta_id,
 					'value' => $value,
+				);
+			}
+		}
+		if ( 'abandoned' === $this->status ) {
+			$form_uid = filter_input( INPUT_POST, 'form_uid' );
+			if ( $form_uid ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+				$meta_id = $wpdb->insert(
+					esc_sql( $this->table_meta_name ),
+					array(
+						'entry_id'     => $this->entry_id,
+						'meta_key'     => 'form_uid', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+						'meta_value'   => $form_uid, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+						'date_created' => ! empty( $entry_date ) ? $entry_date : date_i18n( 'Y-m-d H:i:s' ),
+					)
 				);
 			}
 		}
@@ -300,10 +352,10 @@ class Forminator_Form_Entry_Model {
 	/**
 	 * Get Meta
 	 *
-	 * @param string      $meta_key - the meta key.
-	 * @param bool|object $default_value - the default value.
+	 * @param string $meta_key - the meta key.
+	 * @param mixed  $default_value - the default value.
 	 *
-	 * @return bool|string
+	 * @return mixed
 	 * @since 1.0
 	 */
 	public function get_meta( $meta_key, $default_value = false ) {
@@ -318,10 +370,10 @@ class Forminator_Form_Entry_Model {
 	 * Get Grouped Meta
 	 * Sometimes the meta prefix is same
 	 *
-	 * @param string      $meta_key - the meta key.
-	 * @param bool|object $default_value - the default value.
+	 * @param string $meta_key - the meta key.
+	 * @param mixed  $default_value - the default value.
 	 *
-	 * @return bool|string
+	 * @return mixed
 	 * @since 1.0
 	 */
 	public function get_grouped_meta( $meta_key, $default_value = false ) {
@@ -357,6 +409,11 @@ class Forminator_Form_Entry_Model {
 		global $wpdb;
 		$this->delete_previous_draft( $previous_draft );
 
+		// Check if abandonment feature is disabled and prevent saving abandoned entries.
+		if ( 'abandoned' === $this->status && forminator_form_abandonment_disabled() ) {
+			return false;
+		}
+
 		if ( ! empty( $entry_id ) ) {
 			$this->entry_id = $entry_id;
 
@@ -366,28 +423,70 @@ class Forminator_Form_Entry_Model {
 		if ( empty( $data_created ) ) {
 			$data_created = date_i18n( 'Y-m-d H:i:s' );
 		}
+		// Derive status if not explicitly set.
+		$status = $this->get_entry_status( $this );
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-		$result = $wpdb->insert(
-			$this->table_name,
-			array(
-				'entry_type'   => $this->entry_type,
-				'form_id'      => $this->form_id,
-				'is_spam'      => $this->is_spam,
-				'date_created' => $data_created,
-				'draft_id'     => $this->draft_id,
-			)
-		);
+		$saved_entry_id = $this->get_saved_entry_id();
+
+		if ( ! $saved_entry_id ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$result = $wpdb->insert(
+				$this->table_name,
+				array(
+					'entry_type'   => $this->entry_type,
+					'form_id'      => $this->form_id,
+					'is_spam'      => $this->is_spam,
+					'date_created' => $data_created,
+					'draft_id'     => $this->draft_id,
+					'status'       => $status,
+				)
+			);
+
+			$this->entry_id = (int) $wpdb->insert_id;
+		} else {
+			$this->entry_id = $saved_entry_id;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$result = $wpdb->update(
+				$this->table_name,
+				array(
+					'is_spam'      => $this->is_spam,
+					'date_created' => $data_created,
+					'draft_id'     => $this->draft_id,
+					'status'       => $status,
+				),
+				array( 'entry_id' => $saved_entry_id )
+			);
+		}
 
 		if ( ! $result ) {
 			return false;
 		}
+
 		self::delete_form_entry_cache( $this->form_id );
 		wp_cache_delete( 'all_form_types', self::FORM_COUNT_CACHE_GROUP );
 		wp_cache_delete( $this->entry_type . '_form_type', self::FORM_COUNT_CACHE_GROUP );
-		$this->entry_id = (int) $wpdb->insert_id;
 
 		return true;
+	}
+
+	/**
+	 * Get saved entry id
+	 *
+	 * @return int
+	 */
+	private function get_saved_entry_id() {
+		$form_uid = filter_input( INPUT_POST, 'form_uid' );
+		if ( ! $form_uid ) {
+			return 0;
+		}
+		global $wpdb;
+		$sql      = "SELECT m.entry_id FROM {$this->table_meta_name} m JOIN {$this->table_name} e ON (m.entry_id = e.entry_id)" .
+			" WHERE e.form_id = %d AND e.status = 'abandoned' AND m.meta_key = 'form_uid' AND m.meta_value = %s";
+		$entry_id = $wpdb->get_var( $wpdb->prepare( $sql, $this->form_id, $form_uid ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+
+		$this->updating_entry = ! empty( $entry_id );
+
+		return (int) $entry_id;
 	}
 
 	/**
@@ -410,8 +509,6 @@ class Forminator_Form_Entry_Model {
 		return apply_filters(
 			'forminator_field_suffix',
 			array(
-				'min',
-				'max',
 				'hours',
 				'minutes',
 				'ampm',
@@ -436,6 +533,8 @@ class Forminator_Form_Entry_Model {
 				'post-tags',
 				'product-id',
 				'product-quantity',
+				'min',
+				'max',
 			)
 		);
 	}
@@ -504,7 +603,19 @@ class Forminator_Form_Entry_Model {
 	 * @since 1.0
 	 */
 	public static function ignored_fields() {
-		return apply_filters( 'forminator_entry_ignored_fields', array( 'html', 'page-break', 'captcha', 'section' ) );
+		$ignored_fields = array(
+			'html',
+			'page-break',
+			'captcha',
+			'section',
+		);
+		if ( forminator_payments_disabled() ) {
+			$ignored_fields[] = 'stripe';
+			$ignored_fields[] = 'paypal';
+			$ignored_fields[] = 'stripe-ocs';
+		}
+
+		return apply_filters( 'forminator_entry_ignored_fields', $ignored_fields );
 	}
 
 	/**
@@ -547,113 +658,38 @@ class Forminator_Form_Entry_Model {
 	/**
 	 * Get all entries
 	 *
-	 * @param int $form_id - the form id.
-	 *
-	 * @return Forminator_Form_Entry_Model[]
-	 * @since 1.0
-	 */
-	public static function get_entries( $form_id ) {
-		global $wpdb;
-		$entries    = array();
-		$table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
-		$sql        = "SELECT `entry_id` FROM {$table_name} WHERE `form_id` = %d AND `is_spam` = 0 ORDER BY `entry_id` DESC";
-		$results    = $wpdb->get_results( $wpdb->prepare( $sql, $form_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-
-		if ( ! empty( $results ) ) {
-			foreach ( $results as $result ) {
-				$entries[] = new Forminator_Form_Entry_Model( $result->entry_id );
-			}
-		}
-
-		return $entries;
-	}
-
-	/**
-	 * Get entries with filters
-	 *
 	 * @param int   $form_id - the form id.
 	 * @param array $filters Filters.
 	 *
 	 * @return Forminator_Form_Entry_Model[]
-	 * @since 1.10
+	 * @since 1.40
 	 */
-	public static function get_filter_entries( $form_id, $filters ) {
-		global $wpdb;
-		$entries                 = array();
-		$where                   = 'entries.`form_id` = %d AND entries.`is_spam` = 0';
-		$table_name              = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
-		$entries_meta_table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY_META );
-		if ( isset( $filters['date_created'] ) ) {
-			$date_created = $filters['date_created'];
-			if ( is_array( $date_created ) && isset( $date_created[0] ) && isset( $date_created[1] ) ) {
-				$date_created[1] = $date_created[1] . ' 23:59:00';
-				$where          .= $wpdb->prepare( ' AND ( entries.date_created >= %s AND entries.date_created <= %s )', esc_sql( $date_created[0] ), esc_sql( $date_created[1] ) );
+	public static function get_all_entries( $form_id, $filters = array() ) {
+		$per_page = apply_filters( 'forminator_get_all_entries_limit', 100, $form_id );
+		$offset   = 0;
+		$args     = array(
+			'form_id'  => $form_id,
+			'is_spam'  => 0,
+			'per_page' => $per_page,
+			'offset'   => $offset,
+		);
+		if ( ! empty( $filters ) && is_array( $filters ) ) {
+			$args = array_merge( $filters, $args );
+		}
+
+		$all_entries = array();
+		$page        = 1;
+		do {
+			$entries = self::query_entries( $args );
+			if ( ! empty( $entries ) ) {
+				$all_entries = array_merge( $all_entries, $entries );
 			}
-		}
+			$args['offset'] = $page * $per_page;
+			$total_items    = count( $entries );
+			++$page;
+		} while ( $total_items === $per_page );
 
-		if ( isset( $filters['user_status'] ) ) {
-			require_once __DIR__ . '/../modules/custom-forms/user/class-forminator-cform-user-signups.php';
-			Forminator_CForm_User_Signups::prep_signups_functionality();
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-			$ids = $wpdb->get_col(
-				"SELECT entries.entry_id
-				FROM {$entries_meta_table_name} entries
-				INNER JOIN {$wpdb->base_prefix}signups
-				AS `signups`
-				ON (entries.meta_value = `signups`.activation_key)
-				WHERE entries.meta_key='activation_key'
-				AND `signups`.active = 0"
-			);
-			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-			$not = 'approved' === $filters['user_status'] ? ' NOT' : '';
-			if ( $ids ) {
-				$where .= " AND entries.entry_id {$not} IN(" . implode( ', ', $ids ) . ')';
-			}
-		}
-
-		if ( isset( $filters['search'] ) ) {
-			$where .= $wpdb->prepare( ' AND metas.meta_value LIKE %s', '%' . $wpdb->esc_like( $filters['search'] ) . '%' );
-		}
-
-		if ( isset( $filters['min_id'] ) ) {
-			$where .= $wpdb->prepare( ' AND entries.entry_id >= %d', esc_sql( $filters['min_id'] ) );
-		}
-
-		if ( isset( $filters['max_id'] ) ) {
-			$where .= $wpdb->prepare( ' AND entries.entry_id <= %d', esc_sql( $filters['max_id'] ) );
-		}
-
-		if ( isset( $filters['entry_status'] ) ) {
-			if ( 'completed' === $filters['entry_status'] ) {
-				$where .= ' AND entries.draft_id IS NULL ';
-			} elseif ( 'draft' === $filters['entry_status'] ) {
-				$where .= ' AND entries.draft_id IS NOT NULL ';
-			}
-		}
-
-		$order_by      = 'ORDER BY entries.entry_id';
-		$valid_columns = apply_filters( 'forminator_entries_order_by', array( 'entries.entry_id', 'entries.date_created' ), $form_id );
-		if ( isset( $filters['order_by'] ) && in_array( $filters['order_by'], $valid_columns, true ) ) {
-			$order_by = 'ORDER BY ' . esc_sql( $filters['order_by'] );
-		}
-		$order = isset( $filters['order'] ) && 'ASC' === $filters['order'] ? 'ASC' : 'DESC';
-
-		// group.
-		$group_by = 'GROUP BY entries.entry_id';
-
-		$sql     = "SELECT entries.`entry_id` FROM {$table_name} entries
-						INNER JOIN {$entries_meta_table_name} AS metas
-    					ON (entries.entry_id = metas.entry_id)
- 						WHERE {$where} {$group_by} {$order_by} {$order}";
-		$results = $wpdb->get_results( $wpdb->prepare( $sql, $form_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-
-		if ( ! empty( $results ) ) {
-			foreach ( $results as $result ) {
-				$entries[] = new Forminator_Form_Entry_Model( $result->entry_id );
-			}
-		}
-
-		return $entries;
+		return $all_entries;
 	}
 
 	/**
@@ -684,29 +720,46 @@ class Forminator_Form_Entry_Model {
 		$table_name       = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY_META );
 		$entry_table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
 
+		// Cached key.
+		$cache_key = 'forminator_count_polls_with_extra_' . $form_id;
+		// Check if cached data exists.
+		$cached_data = wp_cache_get( $cache_key, self::FORM_ENTRY_CACHE_GROUP );
+		if ( ! is_array( $cached_data ) ) {
+			$cached_data = array();
+		}
 		foreach ( $fields_element_id_with_extra as $field_element_id_with_extra ) {
-			$sql       = "SELECT m.entry_id AS entry_id
-							FROM {$table_name} m
-							LEFT JOIN {$entry_table_name} e
-							ON (m.entry_id = e.entry_id)
-							WHERE e.form_id = %d
-							AND m.meta_key = %s
-							GROUP BY m.entry_id";
-			$sql       = $wpdb->prepare( $sql, $form_id, esc_sql( $field_element_id_with_extra ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$entry_ids = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$votes = array();
+			if ( isset( $cached_data[ $field_element_id_with_extra ] ) ) {
+				$votes = $cached_data[ $field_element_id_with_extra ];
+			} else {
+				$sql       = "SELECT m.entry_id AS entry_id
+								FROM {$table_name} m
+								LEFT JOIN {$entry_table_name} e
+								ON (m.entry_id = e.entry_id)
+								WHERE e.form_id = %d
+								AND m.meta_key = %s
+								GROUP BY m.entry_id";
+				$sql       = $wpdb->prepare( $sql, $form_id, esc_sql( $field_element_id_with_extra ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$entry_ids = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
-			if ( ! empty( $entry_ids ) ) {
-				$entry_id_placeholders = implode( ', ', array_fill( 0, count( $entry_ids ), '%d' ) );
+				if ( ! empty( $entry_ids ) ) {
+					$entry_id_placeholders = implode( ', ', array_fill( 0, count( $entry_ids ), '%d' ) );
 
-				$sql = "SELECT m.meta_value AS meta_value, COUNT(1) votes
-							FROM {$table_name} m
-							WHERE m.entry_id IN ({$entry_id_placeholders})
-							AND m.meta_key = 'extra'
-							GROUP BY m.meta_value ORDER BY votes DESC";
-				$sql = $wpdb->prepare( $sql, $entry_ids ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					$sql = "SELECT m.meta_value AS meta_value, COUNT(1) votes
+								FROM {$table_name} m
+								WHERE m.entry_id IN ({$entry_id_placeholders})
+								AND m.meta_key = 'extra'
+								GROUP BY m.meta_value ORDER BY votes DESC";
+					$sql = $wpdb->prepare( $sql, $entry_ids ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-				$votes = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+					$votes = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
+					$cached_data[ $field_element_id_with_extra ] = $votes;
+					// Store the result in the cache.
+					wp_cache_set( $cache_key, $cached_data, self::FORM_ENTRY_CACHE_GROUP );
+				}
+			}
+			if ( ! empty( $votes ) ) {
 				$polls_with_extras[ $field_element_id_with_extra ] = array();
 				foreach ( $votes as $vote ) {
 					$polls_with_extras[ $field_element_id_with_extra ][ $vote['meta_value'] ] = $vote['votes'];
@@ -722,36 +775,33 @@ class Forminator_Form_Entry_Model {
 	 *
 	 * @param int   $form_id - the form id.
 	 * @param mixed $db DB.
-	 * @param bool  $include_draft Include draft.
+	 * @param bool  $all_types Include draft, abandoned, etc.
 	 *
 	 * @return int - total entries
 	 * @since 1.0
 	 */
-	public static function count_entries( $form_id, $db = false, $include_draft = false ) {
+	public static function count_entries( $form_id, $db = false, $all_types = false ) {
 		if ( ! $db ) {
 			global $wpdb;
 			$db = $wpdb;
 		}
-		$entries_cache = wp_cache_get( $form_id, self::FORM_COUNT_CACHE_GROUP );
+		// Cached key.
+		$cache_key = 'forminator_count_entries_of_active_status_' . $form_id;
+		if ( $all_types ) {
+			$cache_key = 'forminator_count_entries_of_all_status_' . $form_id;
+		}
+		$entries_cache = wp_cache_get( $cache_key, self::FORM_COUNT_CACHE_GROUP );
 		$where         = '';
 
 		if ( $entries_cache ) {
 			return $entries_cache;
 		} else {
-			/*
-			 * On Submissions page we include drafts in the entries count
-			 * but in specific form submissions count (in admin.php?page=forminator-cform)
-			 * we dont count the drafts to prevent affecting conversion rate where we only count complete submissions
-			 */
-			if ( ! $include_draft ) {
-				$where = ' AND ( `draft_id` IS NULL OR `draft_id` = "" )';
-			}
-
 			$table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
-			$sql        = "SELECT count(`entry_id`) FROM {$table_name} WHERE `form_id` = %d AND `is_spam` = 0 {$where}";
+			$where      = $all_types ? " AND `status` != 'spam'" : " AND `status` = 'active'";
+			$sql        = "SELECT count(`entry_id`) FROM {$table_name} WHERE `form_id` = %d {$where}";
 			$entries    = $db->get_var( $db->prepare( $sql, $form_id ) );
 			if ( $entries ) {
-				wp_cache_set( $form_id, $entries, self::FORM_COUNT_CACHE_GROUP );
+				wp_cache_set( $cache_key, $entries, self::FORM_COUNT_CACHE_GROUP );
 
 				return $entries;
 			}
@@ -774,25 +824,41 @@ class Forminator_Form_Entry_Model {
 		$table_name       = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY_META );
 		$entry_table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
 
-		$where = '';
-		if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-			$end_date = $end_date . ' 23:59:00';
-			$where   .= $wpdb->prepare( ' AND ( e.date_created >= %s AND e.date_created <= %s )', esc_sql( $start_date ), esc_sql( $end_date ) );
+		// Cached key.
+		$cache_key = 'forminator_count_leads_' . $form_id;
+		$unique_id = md5( wp_json_encode( array( $start_date, $end_date ) ) );
+		// Get cached data.
+		$cached_data = wp_cache_get( $cache_key, self::FORM_ENTRY_CACHE_GROUP );
+		if ( ! is_array( $cached_data ) ) {
+			$cached_data = array();
 		}
+		if ( isset( $cached_data[ $unique_id ] ) ) {
+			return $cached_data[ $unique_id ];
+		} else {
+			$where = '';
+			if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
+				$end_date = $end_date . ' 23:59:00';
+				$where   .= $wpdb->prepare( ' AND ( e.date_created >= %s AND e.date_created <= %s )', esc_sql( $start_date ), esc_sql( $end_date ) );
+			}
 
-		$sql     =
-			"SELECT count(DISTINCT e.`entry_id`) FROM {$table_name} m
-    		LEFT JOIN {$entry_table_name} e ON(e.`entry_id` = m.`entry_id`)
-			WHERE e.`form_id` = %d AND m.meta_key = 'skip_form'
-			{$where}
-			AND m.meta_value = '0' AND e.`is_spam` = 0";
-		$entries = $wpdb->get_var( $wpdb->prepare( $sql, $form_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery -- false positive
+			$sql     =
+				"SELECT count(DISTINCT e.`entry_id`) FROM {$table_name} m
+				LEFT JOIN {$entry_table_name} e ON(e.`entry_id` = m.`entry_id`)
+				WHERE e.`form_id` = %d AND m.meta_key = 'skip_form'
+				{$where}
+				AND m.meta_value = '0' AND e.`status` = 'active'";
+			$entries = $wpdb->get_var( $wpdb->prepare( $sql, $form_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery -- false positive
 
-		if ( $entries ) {
+			if ( ! $entries ) {
+				$entries = 0;
+			}
+
+			$cached_data[ $unique_id ] = $entries;
+			// Store the result in the cache.
+			wp_cache_set( $cache_key, $cached_data, self::FORM_ENTRY_CACHE_GROUP );
+
 			return $entries;
 		}
-
-		return 0;
 	}
 
 
@@ -812,7 +878,7 @@ class Forminator_Form_Entry_Model {
 		$table_name       = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY_META );
 		$entry_table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
 		$sql              =
-			"SELECT count(m.`meta_id`) FROM {$table_name} m LEFT JOIN {$entry_table_name} e ON(e.`entry_id` = m.`entry_id`) WHERE e.`form_id` = %d AND m.`meta_key` = %s AND e.`is_spam` = 0";
+			"SELECT count(m.`meta_id`) FROM {$table_name} m LEFT JOIN {$entry_table_name} e ON(e.`entry_id` = m.`entry_id`) WHERE e.`form_id` = %d AND m.`meta_key` = %s AND e.`status` = 'active'";
 		$entries          = $wpdb->get_var( $wpdb->prepare( $sql, $form_id, $field ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		if ( $entries ) {
@@ -864,13 +930,11 @@ class Forminator_Form_Entry_Model {
 			$new_element_id_format = $new_element_id_format . '%';
 
 			// find old format entries of this field.
-			$sql
-				= "SELECT count(1) FROM {$table_name} m LEFT JOIN {$entry_table_name} e
+			$sql = "SELECT count(1) FROM {$table_name} m LEFT JOIN {$entry_table_name} e
 					ON (e.`entry_id` = m.`entry_id`)
-					WHERE e.form_id = {$form_id} AND m.meta_key NOT LIKE '{$new_element_id_format}' AND m.meta_value = '1' AND m.meta_key = '{$title}' LIMIT 1";
+					WHERE e.form_id = %d AND m.meta_key NOT LIKE %s AND m.meta_value = '1' AND m.meta_key = %s LIMIT 1";
 
-			// todo : it can not be prepared by $wpdb->prepare since element_id because of `LIKE` query.
-			$old_format_entries = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$old_format_entries = $wpdb->get_var( $wpdb->prepare( $sql, $form_id, esc_sql( $new_element_id_format ), esc_sql( $title ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 			// old format exist.
 			if ( $old_format_entries ) {
@@ -944,13 +1008,11 @@ class Forminator_Form_Entry_Model {
 			$new_element_id_format = $new_element_id_format . '%';
 
 			// find old format entries of this field.
-			$sql
-				= "SELECT count(1) FROM {$table_name} m LEFT JOIN {$entry_table_name} e
-					ON (e.`entry_id` = m.`entry_id`)
-					WHERE e.form_id = {$form_id} AND m.meta_key NOT LIKE '{$new_element_id_format}' AND m.meta_value = '1' AND m.meta_key = '{$title}' LIMIT 1";
+			$sql = "SELECT count(1) FROM {$table_name} m LEFT JOIN {$entry_table_name} e
+				ON (e.`entry_id` = m.`entry_id`)
+				WHERE e.form_id = %d AND m.meta_key NOT LIKE %s AND m.meta_value = '1' AND m.meta_key = %s LIMIT 1";
 
-			// todo : it can not be prepared by $wpdb->prepare since element_id because of `LIKE` query.
-			$old_format_entries = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$old_format_entries = $wpdb->get_var( $wpdb->prepare( $sql, $form_id, esc_sql( $new_element_id_format ), esc_sql( $title ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 			// old format exist.
 			if ( $old_format_entries ) {
@@ -963,7 +1025,7 @@ class Forminator_Form_Entry_Model {
 			$element_ids_placeholders = implode( ', ', array_fill( 0, count( $element_ids ), '%s' ) );
 
 			$sql
-				= "SELECT m.meta_id, m.meta_key, m.meta_value, m.date_created, e.is_spam, m.entry_id
+				= "SELECT m.meta_id, m.meta_key, m.meta_value, m.date_created, e.status, m.entry_id
 					FROM {$table_name} m LEFT JOIN {$entry_table_name} e
 					ON (e.`entry_id` = m.`entry_id`)
 					WHERE e.form_id = {$form_id} AND m.meta_key IN ({$element_ids_placeholders})";
@@ -974,7 +1036,7 @@ class Forminator_Form_Entry_Model {
 
 			foreach ( $results as $result ) {
 				$map_entries[ $result['meta_id'] ]['entry_id']     = $result['entry_id'];
-				$map_entries[ $result['meta_id'] ]['is_spam']      = $result['is_spam'];
+				$map_entries[ $result['meta_id'] ]['status']       = $result['status'];
 				$map_entries[ $result['meta_id'] ]['date_created'] = $result['date_created'];
 				$map_entries[ $result['meta_id'] ]['meta_key']     = $result['meta_key']; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				$map_entries[ $result['meta_id'] ]['meta_value']   = $result['meta_value']; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
@@ -1050,18 +1112,29 @@ class Forminator_Form_Entry_Model {
 	 */
 	public static function count_user_entries( $form_id ) {
 		global $wpdb;
-		$user_id          = get_current_user_id();
-		$table_name       = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY_META );
-		$entry_table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
-		$sql              =
-			"SELECT COUNT(*) FROM {$table_name} m LEFT JOIN {$entry_table_name} e ON(e.`entry_id` = m.`entry_id`) WHERE e.`form_id` = %d AND m.`meta_key` = '_user_id' AND m.`meta_value` = %s";
-		$amount           = $wpdb->get_var( $wpdb->prepare( $sql, $form_id, $user_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-
-		if ( $amount ) {
-			return (int) $amount;
+		$user_id = get_current_user_id();
+		// Cached key.
+		$cache_key = 'forminator_count_user_entries_' . $form_id;
+		// Get cached data.
+		$cached_data = wp_cache_get( $cache_key, self::FORM_ENTRY_CACHE_GROUP );
+		if ( ! is_array( $cached_data ) ) {
+			$cached_data = array();
 		}
+		if ( isset( $cached_data[ $user_id ] ) ) {
+			return $cached_data[ $user_id ];
+		} else {
+			$table_name              = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY_META );
+			$entry_table_name        = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
+			$sql                     =
+				"SELECT COUNT(*) FROM {$table_name} m LEFT JOIN {$entry_table_name} e ON(e.`entry_id` = m.`entry_id`) WHERE e.`form_id` = %d AND m.`meta_key` = '_user_id' AND m.`meta_value` = %s";
+			$amount                  = $wpdb->get_var( $wpdb->prepare( $sql, $form_id, $user_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$amount                  = intval( $amount );
+			$cached_data[ $user_id ] = $amount;
+			// Store the result in the cache.
+			wp_cache_set( $cache_key, $cached_data, self::FORM_ENTRY_CACHE_GROUP );
 
-		return 0;
+			return $amount;
+		}
 	}
 
 	/**
@@ -1236,6 +1309,10 @@ class Forminator_Form_Entry_Model {
 		$table_meta_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY_META );
 		$entry_model     = new Forminator_Form_Entry_Model( $entry_id );
 
+		if ( empty( $entry_model->entry_id ) ) {
+			return;
+		}
+
 		$form_id  = (int) $entry_model->form_id;
 		$entry_id = (int) $entry_id;
 		forminator_maybe_log( 'forminator_before_delete_entry', $form_id, $entry_id );
@@ -1256,7 +1333,7 @@ class Forminator_Form_Entry_Model {
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . esc_sql( $table_name ) . ' WHERE `entry_id` = %d', $entry_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		wp_cache_delete( $entry_id, self::FORM_ENTRY_CACHE_GROUP );
-		self::delete_form_entry_cache( $entry_id );
+		self::delete_form_entry_cache( $form_id );
 		wp_cache_delete( 'all_form_types', self::FORM_COUNT_CACHE_GROUP );
 		wp_cache_delete( $entry_model->entry_type . '_form_type', self::FORM_COUNT_CACHE_GROUP );
 	}
@@ -1277,19 +1354,41 @@ class Forminator_Form_Entry_Model {
 			$submission_file = isset( $settings['submission-file'] ) ? $settings['submission-file'] : 'delete';
 		}
 		if ( 'delete' === $submission_file ) {
-			foreach ( $entry_model->meta_data as $meta_data ) {
+			$upload_root = wp_upload_dir();
+			if ( empty( $upload_root['basedir'] ) ) {
+				return;
+			}
+			$upload_root = $upload_root['basedir'];
+			foreach ( $entry_model->meta_data as $slug => $meta_data ) {
 				$meta_value = $meta_data['value'];
-				if ( is_array( $meta_value ) && isset( $meta_value['file'] ) ) {
+				$field_type = Forminator_Core::get_field_type( $slug );
+				if ( in_array( $field_type, array( 'upload', 'signature' ), true )
+						&& is_array( $meta_value ) && isset( $meta_value['file'] ) ) {
 					$file_path = is_array( $meta_value['file']['file_path'] ) ? $meta_value['file']['file_path'] : array( $meta_value['file']['file_path'] );
 					if ( ! empty( $file_path ) ) {
 						foreach ( $file_path as $key => $path ) {
-							if ( ! empty( $path ) && file_exists( $path ) ) {
-								wp_delete_file( $path );
-								if ( isset( $meta_value['file']['file_url'][ $key ] ) ) {
-									$attachment_id = attachment_url_to_postid( $meta_value['file']['file_url'][ $key ] );
-									if ( $attachment_id ) {
-										wp_delete_attachment( $attachment_id );
-									}
+							$path = realpath( $path );
+							if ( ! $path || ! file_exists( $path ) ) {
+								continue;
+							}
+
+							$basename  = wp_basename( $path );
+							$sanitized = sanitize_file_name( $basename );
+							if ( $basename !== $sanitized ) {
+								continue;
+							}
+
+							$normalized_upload_root = wp_normalize_path( $upload_root );
+							$normalized_path        = wp_normalize_path( $path );
+							if ( ! empty( $normalized_upload_root ) && 0 !== strpos( $normalized_path, $normalized_upload_root ) ) {
+								continue;
+							}
+
+							wp_delete_file( $path );
+							if ( isset( $meta_value['file']['file_url'][ $key ] ) ) {
+								$attachment_id = attachment_url_to_postid( $meta_value['file']['file_url'][ $key ] );
+								if ( $attachment_id ) {
+									wp_delete_attachment( $attachment_id );
 								}
 							}
 						}
@@ -1986,8 +2085,8 @@ class Forminator_Form_Entry_Model {
 			return $entries_cache;
 		} else {
 			$table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
-			$sql        = "SELECT count(`entry_id`) FROM {$table_name} WHERE `is_spam` = %d";
-			$entries    = $wpdb->get_var( $wpdb->prepare( $sql, 0 ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$sql        = "SELECT count(`entry_id`) FROM {$table_name} WHERE `status` = 'active'";
+			$entries    = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 			if ( $entries ) {
 				wp_cache_set( 'all_form_types', $entries, self::FORM_COUNT_CACHE_GROUP );
 
@@ -2025,8 +2124,8 @@ class Forminator_Form_Entry_Model {
 			return $entries_cache;
 		} else {
 			$table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
-			$sql        = "SELECT count(`entry_id`) FROM {$table_name} WHERE `entry_type` = %s AND `is_spam` = %d";
-			$entries    = $wpdb->get_var( $wpdb->prepare( $sql, $entry_type, 0 ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$sql        = "SELECT count(`entry_id`) FROM {$table_name} WHERE `entry_type` = %s AND `status` = 'active'";
+			$entries    = $wpdb->get_var( $wpdb->prepare( $sql, $entry_type ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 			if ( $entries ) {
 				wp_cache_set( $entry_type . '_form_type', $entries, self::FORM_COUNT_CACHE_GROUP );
 
@@ -2065,10 +2164,10 @@ class Forminator_Form_Entry_Model {
 		$entry      = null;
 		$table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
 		if ( 'all' !== $entry_type ) {
-			$sql = "SELECT `entry_id` FROM {$table_name} WHERE `entry_type` = %s AND `is_spam` = 0 ORDER BY `date_created` DESC";
+			$sql = "SELECT `entry_id` FROM {$table_name} WHERE `entry_type` = %s AND `status` = 'active' ORDER BY `date_created` DESC";
 			$sql = $wpdb->prepare( $sql, $entry_type ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		} else {
-			$sql = "SELECT `entry_id` FROM {$table_name} WHERE `is_spam` = 0 ORDER BY `date_created` DESC";
+			$sql = "SELECT `entry_id` FROM {$table_name} WHERE `status` = 'active' ORDER BY `date_created` DESC";
 		}
 		$entry_id = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
@@ -2092,7 +2191,7 @@ class Forminator_Form_Entry_Model {
 		global $wpdb;
 		$entry      = null;
 		$table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
-		$sql        = "SELECT `entry_id` FROM {$table_name} WHERE `form_id` = %d AND `is_spam` = 0 ORDER BY `date_created` {$order}";
+		$sql        = "SELECT `entry_id` FROM {$table_name} WHERE `form_id` = %d AND `status` = 'active' ORDER BY `date_created` {$order}";
 		$entry_id   = $wpdb->get_var( $wpdb->prepare( $sql, $form_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		if ( ! empty( $entry_id ) ) {
@@ -2337,6 +2436,7 @@ class Forminator_Form_Entry_Model {
 							FROM {$entry_table_name} e
 							WHERE e.form_id = %d
 							AND e.date_created > %s
+							AND e.status = 'active'
 							{$end_date}
 							GROUP BY DATE(e.date_created)
 							ORDER BY e.date_created DESC";
@@ -2372,6 +2472,7 @@ class Forminator_Form_Entry_Model {
 							ON(e.`entry_id` = m.`entry_id`)
 							WHERE e.form_id = %d
 							AND e.date_created > %s
+							AND e.status = 'active'
 							AND m.meta_key = 'skip_form'
 							AND m.meta_value = ''
 							GROUP BY DATE(e.date_created)
@@ -2431,13 +2532,75 @@ class Forminator_Form_Entry_Model {
 	/**
 	 * Custom Query entries
 	 *
-	 * @param array $args Arguments.
-	 * @param int   $count pass by reference for get count.
+	 * @param array $args Arguments. `form_id` is required to retrieve entries.
 	 *
-	 * @return Forminator_Form_Entry_Model[]
+	 * @return Forminator_Form_Entry_Model[] | array
 	 * @since 1.5.4
+	 *
+	 * @since 1.40
+	 * @param bool  $get_count If true, returns an array with the keys `count` and `data`. Default: false.
 	 */
-	public static function query_entries( $args, &$count ) {
+	public static function query_entries( $args, $get_count = false ) {
+		// Check if Form ID is set.
+		if ( empty( $args['form_id'] ) ) {
+			return array();
+		}
+		$form_id            = $args['form_id'];
+		$entries            = array();
+		$total_count        = 0;
+		$cache_count_exists = false;
+		$cache_data_exists  = false;
+
+		$unique_id = md5( wp_json_encode( $args ) );
+		// Cached key.
+		$cache_key = 'forminator_query_entries_' . $form_id;
+		// Check if cached data exists.
+		$cached_data = wp_cache_get( $cache_key, self::FORM_ENTRY_CACHE_GROUP );
+		if ( ! is_array( $cached_data ) ) {
+			$cached_data = array();
+		}
+		if ( isset( $cached_data[ $unique_id ] ) ) {
+			$cache_data_exists = true;
+			if ( ! empty( $cached_data[ $unique_id ] ) && is_array( $cached_data[ $unique_id ] ) ) {
+				foreach ( $cached_data[ $unique_id ] as $result ) {
+					$entries[] = new Forminator_Form_Entry_Model( $result->entry_id );
+				}
+			}
+			// Return cached entries if count not requested.
+			if ( false === $get_count ) {
+				return $entries;
+			}
+		}
+		if ( true === $get_count ) {
+			// Convert args array to a unique key for count.
+			$count_args  = $args;
+			$remove_keys = array( 'order_by', 'order', 'offset', 'per_page' );
+			// Remove unused keys for count query.
+			foreach ( $remove_keys as $remove_key ) {
+				if ( isset( $count_args[ $remove_key ] ) ) {
+					unset( $count_args[ $remove_key ] );
+				}
+			}
+			$unique_count_id = md5( wp_json_encode( $count_args ) );
+			$count_cache_key = 'forminator_query_entries_count_' . $form_id;
+			// Check if cached data exists.
+			$cached_count = wp_cache_get( $count_cache_key, self::FORM_ENTRY_CACHE_GROUP );
+			if ( ! is_array( $cached_count ) ) {
+				$cached_count = array();
+			}
+			if ( isset( $cached_count[ $unique_count_id ] ) ) {
+				$cache_count_exists = true;
+				$total_count        = $cached_count[ $unique_count_id ];
+			}
+		}
+		// Return cached data if both count and data cache exists.
+		if ( true === $cache_data_exists && true === $cache_count_exists ) {
+			return array(
+				'count' => $total_count,
+				'data'  => $entries,
+			);
+		}
+
 		global $wpdb;
 
 		/**
@@ -2470,8 +2633,6 @@ class Forminator_Form_Entry_Model {
 		$entries_table_name      = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
 		$entries_meta_table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY_META );
 
-		$entries = array();
-
 		// Building where.
 		$where = 'WHERE 1=1';
 		// exclude Addon meta.
@@ -2483,6 +2644,17 @@ class Forminator_Form_Entry_Model {
 
 		if ( isset( $args['is_spam'] ) ) {
 			$where .= $wpdb->prepare( ' AND entries.is_spam = %s', esc_sql( $args['is_spam'] ) );
+		}
+
+		// Prefer status filter when present. Supports string or array values.
+		if ( ! empty( $args['status'] ) ) {
+			if ( is_array( $args['status'] ) ) {
+				$placeholders = implode( ',', array_fill( 0, count( $args['status'] ), '%s' ) );
+				$in           = $wpdb->prepare( $placeholders, array_map( 'esc_sql', $args['status'] ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$where       .= " AND entries.status IN ( {$in} )";
+			} else {
+				$where .= $wpdb->prepare( ' AND entries.status = %s', esc_sql( $args['status'] ) );
+			}
 		}
 
 		if ( isset( $args['date_created'] ) ) {
@@ -2519,11 +2691,15 @@ class Forminator_Form_Entry_Model {
 		}
 
 		if ( isset( $args['entry_status'] ) && 'completed' === $args['entry_status'] ) {
-			$where .= $wpdb->prepare( ' AND ( entries.draft_id IS NULL OR entries.draft_id = %s )', '' );
+			$where .= " AND entries.status = 'active'";
 		}
 
 		if ( isset( $args['entry_status'] ) && 'draft' === $args['entry_status'] ) {
-			$where .= $wpdb->prepare( ' AND entries.draft_id IS NOT NULL AND entries.draft_id != %s', '' );
+			$where .= " AND entries.status = 'draft'";
+		}
+
+		if ( isset( $args['entry_status'] ) && 'abandoned' === $args['entry_status'] ) {
+			$where .= " AND entries.status = 'abandoned'";
 		}
 
 		/**
@@ -2551,31 +2727,40 @@ class Forminator_Form_Entry_Model {
 
 		// order.
 		$order_by = 'ORDER BY entries.entry_id';
+		$order    = 'DESC';
 		if ( isset( $args['order_by'] ) ) {
-			$order_by = 'ORDER BY ' . $args['order_by']; // unesacaped.
+			$valid_order_bys = array(
+				'entries.date_created',
+				'entries.entry_id',
+			);
+			if ( in_array( $args['order_by'], $valid_order_bys, true ) ) {
+				$order_by = 'ORDER BY ' . $args['order_by'];
+			}
+
+			/**
+			 * Filter ORDER BY query to be used on query-ing entries
+			 *
+			 * @param string $order_by
+			 * @param array $args
+			 *
+			 * @since 1.5.4
+			 */
+			$order_by = apply_filters( 'forminator_query_entries_order_by', $order_by, $args );
+
+			if ( isset( $args['order'] ) && in_array( strtoupper( $args['order'] ), array( 'DESC', 'ASC' ), true ) ) {
+				$order = $args['order'];
+			}
+
+			/**
+			 * Filter order (DESC/ASC) query to be used on query-ing entries
+			 *
+			 * @param string $order
+			 * @param array $args
+			 *
+			 * @since 1.5.4
+			 */
+			$order = apply_filters( 'forminator_query_entries_order', $order, $args );
 		}
-
-		/**
-		 * Filter ORDER BY query to be used on query-ing entries
-		 *
-		 * @param string $order_by
-		 * @param array $args
-		 *
-		 * @since 1.5.4
-		 */
-		$order_by = apply_filters( 'forminator_query_entries_order_by', $order_by, $args );
-
-		$order = $args['order'];
-
-		/**
-		 * Filter order (DESC/ASC) query to be used on query-ing entries
-		 *
-		 * @param string $order
-		 * @param array $args
-		 *
-		 * @since 1.5.4
-		 */
-		$order = apply_filters( 'forminator_query_entries_order', $order, $args );
 
 		// limit.
 		$limit = $wpdb->prepare( 'LIMIT %d, %d', esc_sql( $args['offset'] ), esc_sql( $args['per_page'] ) );
@@ -2583,27 +2768,33 @@ class Forminator_Form_Entry_Model {
 		/**
 		 * Filter LIMIT query to be used on query-ing entries
 		 *
-		 * @param string $order
+		 * @param string $limit
 		 * @param array $args
 		 *
 		 * @since 1.5.4
 		 */
 		$limit = apply_filters( 'forminator_query_entries_limit', $limit, $args );
 
-		// sql count.
-		$sql_count
-			= "SELECT count(DISTINCT entries.entry_id) as total_entries
-				FROM
-  				{$entries_table_name} AS entries
-  				INNER JOIN {$entries_meta_table_name} AS metas
-    			ON (entries.entry_id = metas.entry_id)
-    			{$where}
-    			";
+		if ( true === $get_count && false === $cache_count_exists ) {
+			// sql count.
+			$sql_count
+				= "SELECT count(DISTINCT entries.entry_id) as total_entries
+					FROM
+					  {$entries_table_name} AS entries
+					  INNER JOIN {$entries_meta_table_name} AS metas
+					ON (entries.entry_id = metas.entry_id)
+					{$where}
+					";
 
-		$sql_count = apply_filters( 'forminator_query_entries_sql_count', $sql_count, $args );
-		$count     = intval( $wpdb->get_var( $sql_count ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$sql_count   = apply_filters( 'forminator_query_entries_sql_count', $sql_count, $args );
+			$total_count = intval( $wpdb->get_var( $sql_count ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
-		if ( $count > 0 ) {
+			$cached_count[ $unique_count_id ] = $total_count;
+			// Store the count in the cache.
+			wp_cache_set( $count_cache_key, $cached_count, self::FORM_ENTRY_CACHE_GROUP );
+		}
+
+		if ( false === $cache_data_exists ) {
 			// sql.
 			$sql
 				= "SELECT entries.entry_id AS entry_id
@@ -2620,9 +2811,20 @@ class Forminator_Form_Entry_Model {
 			$sql     = apply_filters( 'forminator_query_entries_sql', $sql, $args );
 			$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
+			$cached_data[ $unique_id ] = $results;
+			// Store the result in the cache.
+			wp_cache_set( $cache_key, $cached_data, self::FORM_ENTRY_CACHE_GROUP );
+
 			foreach ( $results as $result ) {
 				$entries[] = new Forminator_Form_Entry_Model( $result->entry_id );
 			}
+		}
+
+		if ( true === $get_count ) {
+			return array(
+				'count' => $total_count,
+				'data'  => $entries,
+			);
 		}
 
 		return $entries;
@@ -2717,8 +2919,7 @@ class Forminator_Form_Entry_Model {
 								WHERE e.`form_id` = %d
 								AND m.`meta_key` = '%s'
 								{$condition}
-								AND ( e.draft_id IS NULL OR e.draft_id = '' )
-								AND e.`is_spam` = 0";
+								AND e.`status` = 'active'";
 		$entries          = $wpdb->get_var( $wpdb->prepare( $sql, $form_id, esc_sql( $field_name ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		if ( ! $entries || is_wp_error( $entries ) ) {
@@ -2756,7 +2957,9 @@ class Forminator_Form_Entry_Model {
 	public function delete_previous_draft( $previous_draft ) {
 		if ( ! is_null( $previous_draft ) ) {
 			$entry_id = $this->get_entry_id_by_draft_id( $previous_draft );
-			self::delete_by_entry( $entry_id );
+			if ( ! empty( $entry_id ) ) {
+				self::delete_by_entry( $entry_id );
+			}
 		}
 	}
 
@@ -2766,28 +2969,46 @@ class Forminator_Form_Entry_Model {
 	 * @param int    $form_id Form Id.
 	 * @param string $start_date Start date.
 	 * @param string $end_date End date.
+	 * @param string $status Entries status.
 	 *
 	 * @return int
 	 */
-	public static function count_report_entries( $form_id, $start_date = '', $end_date = '' ) {
+	public static function count_report_entries( $form_id, $start_date = '', $end_date = '', $status = 'active' ) {
+		// Cached key.
+		$cache_key   = 'forminator_count_report_entries_' . $form_id;
+		$cached_data = array();
+		$unique_key  = md5( wp_json_encode( array( $start_date, $end_date, $status ) ) );
+		// Get cached data.
+		$cached_data = wp_cache_get( $cache_key, self::FORM_ENTRY_CACHE_GROUP );
+		if ( ! is_array( $cached_data ) ) {
+			$cached_data = array();
+		}
+		if ( isset( $cached_data[ $unique_key ] ) ) {
+			return $cached_data[ $unique_key ];
+		}
+
 		global $wpdb;
 		$entry_count             = 0;
-		$where                   = 'entries.`form_id` = %d AND entries.`is_spam` = 0 AND ( `draft_id` IS NULL OR `draft_id` = "" )';
+		$where                   = 'entries.`form_id` = %d AND entries.`status` = %s';
 		$table_name              = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY );
 		$entries_meta_table_name = Forminator_Database_Tables::get_table_name( Forminator_Database_Tables::FORM_ENTRY_META );
-		$end_date                = $end_date . ' 23:59:00';
 		if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
-			$where .= $wpdb->prepare( ' AND ( entries.date_created >= %s AND entries.date_created <= %s )', esc_sql( $start_date ), esc_sql( $end_date ) );
+			$end_date = $end_date . ' 23:59:00';
+			$where   .= $wpdb->prepare( ' AND ( entries.date_created >= %s AND entries.date_created <= %s )', esc_sql( $start_date ), esc_sql( $end_date ) );
 		}
 		$sql    = "SELECT count(DISTINCT entries.`entry_id`) entry_count FROM {$table_name} entries
 						LEFT JOIN {$entries_meta_table_name} AS metas
-    					ON (entries.entry_id = metas.entry_id)
- 						WHERE {$where}";
-		$result = $wpdb->get_var( $wpdb->prepare( $sql, $form_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery -- false positive
+						ON (entries.entry_id = metas.entry_id)
+						WHERE {$where}";
+		$result = $wpdb->get_var( $wpdb->prepare( $sql, $form_id, $status ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery -- false positive
 
 		if ( ! empty( $result ) ) {
 			$entry_count = $result;
 		}
+
+		$cached_data[ $unique_key ] = $entry_count;
+		// Store the result in the cache.
+		wp_cache_set( $cache_key, $cached_data, self::FORM_ENTRY_CACHE_GROUP );
 
 		return $entry_count;
 	}
@@ -2867,8 +3088,11 @@ class Forminator_Form_Entry_Model {
 	 * @return void
 	 */
 	public static function delete_form_entry_cache( int $form_id ): void {
-		// Delete cache for form count.
-		wp_cache_delete( $form_id, self::FORM_COUNT_CACHE_GROUP );
+		// Delete cache for form count entries of active status.
+		wp_cache_delete( 'forminator_count_entries_of_active_status_' . $form_id, self::FORM_COUNT_CACHE_GROUP );
+
+		// Delete cache for form count entries of all statuses.
+		wp_cache_delete( 'forminator_count_entries_of_all_status_' . $form_id, self::FORM_COUNT_CACHE_GROUP );
 
 		// Delete cache for payment count.
 		wp_cache_delete( 'live_payment_count_' . $form_id, self::FORM_COUNT_CACHE_GROUP );
@@ -2876,6 +3100,35 @@ class Forminator_Form_Entry_Model {
 		if ( 'forminator_polls' === get_post_type( $form_id ) ) {
 			// Delete cache for polls entries.
 			wp_cache_delete( 'poll_entries_' . $form_id, self::FORM_ENTRY_CACHE_GROUP );
+
+			// Delete cache for poll count.
+			wp_cache_delete( 'forminator_count_polls_with_extra_' . $form_id, self::FORM_ENTRY_CACHE_GROUP );
 		}
+
+		// Delete the cache for the form entries query.
+		self::delete_form_entries_query_cache( $form_id );
+
+		// Delete the cache for the report count.
+		wp_cache_delete( 'forminator_count_report_entries_' . $form_id, self::FORM_ENTRY_CACHE_GROUP );
+
+		// Delete the cache for counting user entries.
+		wp_cache_delete( 'forminator_count_user_entries_' . $form_id, self::FORM_ENTRY_CACHE_GROUP );
+
+		// Delete the cache for the leads count.
+		wp_cache_delete( 'forminator_count_leads_' . $form_id, self::FORM_ENTRY_CACHE_GROUP );
+	}
+
+	/**
+	 * Delete form entries query cache
+	 *
+	 * @param int $form_id Form Id.
+	 * @return void
+	 */
+	public static function delete_form_entries_query_cache( $form_id ): void {
+		// Delete the cache for entries.
+		wp_cache_delete( 'forminator_query_entries_' . $form_id, self::FORM_ENTRY_CACHE_GROUP );
+
+		// Delete the cache for entries count.
+		wp_cache_delete( 'forminator_query_entries_count_' . $form_id, self::FORM_ENTRY_CACHE_GROUP );
 	}
 }

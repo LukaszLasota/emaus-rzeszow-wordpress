@@ -51,7 +51,9 @@ class Forminator_Admin {
 
 			add_action( 'admin_notices', array( $this, 'check_stripe_addon_version' ) );
 			add_action( 'admin_notices', array( $this, 'show_cf7_importer_notice' ) );
-			add_action( 'admin_notices', array( $this, 'show_addons_update_notice' ) );
+			if ( ! forminator_addons_disabled() ) {
+				add_action( 'admin_notices', array( $this, 'show_addons_update_notice' ) );
+			}
 			add_action( 'admin_notices', array( $this, 'set_encryption_key_notice' ) );
 		}
 
@@ -213,9 +215,6 @@ class Forminator_Admin {
 
 		// TODO: remove this after converted to JS.
 		$addons = Forminator_Integration_Loader::get_instance()->get_addons()->to_array();
-
-		$old_addon_list = Forminator_Addon_Loader::get_instance()->get_addons()->to_array();
-		$addons         = array_merge( $addons, $old_addon_list );
 		foreach ( $addons as $slug => $addon_array ) {
 			$addon_class = forminator_get_addon( $slug );
 
@@ -258,7 +257,7 @@ class Forminator_Admin {
 	 * @since 1.0
 	 */
 	public function init_templates_page() {
-		$section_name = esc_html__( 'Templates', 'forminator' ) . ' <span class="menu-new-tag">' . esc_html__( 'New', 'forminator' ) . '</span>';
+		$section_name = esc_html__( 'Templates', 'forminator' );
 
 		$this->pages['forminator-templates'] = new Forminator_Templates_Page( 'forminator-templates', 'templates', $section_name, $section_name, 'forminator' );
 	}
@@ -293,7 +292,7 @@ class Forminator_Admin {
 	 * @since 1.0
 	 */
 	public function add_upgrade_page() {
-		add_action( 'admin_menu', array( $this, 'init_upgrade_page' ) );
+		add_action( 'admin_menu', array( $this, 'init_upgrade_page' ), 20 );
 	}
 
 	/**
@@ -304,8 +303,8 @@ class Forminator_Admin {
 	public function init_upgrade_page() {
 		add_submenu_page(
 			'forminator',
-			esc_html__( 'Upgrade for 80% Off!', 'forminator' ),
-			esc_html__( 'Upgrade for 80% Off!', 'forminator' ),
+			esc_html__( 'Get Forminator Pro', 'forminator' ),
+			esc_html__( 'Get Forminator Pro', 'forminator' ),
 			forminator_get_permission( 'forminator-upgrade' ),
 			'https://wpmudev.com/project/forminator-pro/?utm_source=forminator&utm_medium=plugin&utm_campaign=forminator_submenu_upsell'
 		);
@@ -430,26 +429,25 @@ class Forminator_Admin {
 	public function promote_free_plan() {
 		// Show the notice only on WP Dashboard page.
 		$screen = get_current_screen();
-		if ( 'dashboard' !== $screen->id ) {
+		if ( 'dashboard' !== $screen->id || Forminator_Hub_Connector::hub_connector_connected() ) {
 			return;
 		}
-
-		$button_1 = '<a href="https://wpmudev.com/register/?free_hub&utm_source=forminator&utm_medium=plugin&utm_campaign=forminator_wp_admin_free_plan_1" target="_blank" class="button button-primary">'
-				. esc_html__( 'Claim your free gift', 'forminator' )
+		$button_1 = '<a href="' . esc_url( Forminator_Hub_Connector::get_hub_connect_url( 'wp-dashboard-preset-template' ) ) . '" class="button button-primary">'
+				. esc_html__( 'Connect & Start Using Pro Templates', 'forminator' )
 				. '</a>';
-		$button_2 = '<button class="button" id="forminator-promote-popup-open">' . esc_html__( 'Find out more', 'forminator' ) . '</button>';
 		$remind   = '<a style="margin-left:20px;text-decoration: none;" href="#" id="forminator-promote-remind-later" data-nonce="' . esc_attr( wp_create_nonce( 'forminator_promote_remind_later' ) ) . '">' . esc_html__( 'Remind me later', 'forminator' ) . '</a>';
 
 		$message  = '<p><strong>';
-		$message .= esc_html__( 'Managing multiple WP sites for clients? Here’s a free gift to make it easier', 'forminator' );
+		$message .= esc_html__( 'Pro Form Templates—Now Free for Everyone!', 'forminator' );
 		$message .= '</strong></p>';
 		$message .= '<p>';
-		$message .= esc_html__( 'In addition to Forminator, WPMU DEV has everything you need for fast and convenient site management.', 'forminator' );
+		$message .= esc_html__( 'Build forms faster with professionally designed templates—now free in the Forminator plugin.', 'forminator' );
 		$message .= '</p>';
 		$message .= '<p>';
-		$message .= esc_html__( 'Trusted by over 50K web developers. Completely free to try.', 'forminator' );
+		$message .= esc_html__( 'Connect your site to access them instantly and unlock WPMU DEV’s full suite of tools—trusted by 50K+ developers.', 'forminator' );
+		$message .= ' <b>' . esc_html__( 'All completely free.', 'forminator' ) . '</b>';
 		$message .= '</p>';
-		$message .= '<p>' . $button_1 . '&nbsp;&nbsp;&nbsp;&nbsp;' . $button_2 . $remind . '</p>';
+		$message .= '<p>' . $button_1 . '&nbsp;' . $remind . '</p>';
 
 		echo '<div class="forminator-grouped-notice notice notice-info is-dismissible"'
 			. ' data-notice-slug="forminator_promote_free_plan"'
@@ -970,7 +968,7 @@ class Forminator_Admin {
 			if ( $can_install_pro ) {
 				$action_links['upgrade'] = '<a href="' . forminator_get_link( 'plugin', 'forminator_pluginlist_upgrade' ) . '" aria-label="' . esc_attr__( 'Upgrade to Forminator Pro', 'forminator' ) . '" style="color: #8D00B1;" target="_blank">' . esc_html__( 'Upgrade', 'forminator' ) . '</a>';
 			} else {
-				$action_links['renew'] = '<a href="' . forminator_get_link( 'plugin', 'forminator_pluginlist_renew' ) . '" aria-label="' . esc_attr__( 'Upgrade For 80% Off!', 'forminator' ) . '" style="color: #8D00B1;" target="_blank">' . esc_html__( 'Upgrade For 80% Off!', 'forminator' ) . '</a>';
+				$action_links['renew'] = '<a href="' . forminator_get_link( 'plugin', 'forminator_pluginlist_renew' ) . '" aria-label="' . esc_attr__( 'Get Forminator Pro', 'forminator' ) . '" style="color: #8D00B1;" target="_blank">' . esc_html__( 'Get Forminator Pro', 'forminator' ) . '</a>';
 			}
 		} elseif ( in_array( $membership_type, array( 'expired', 'free', 'paused', '' ), true ) && ! $can_install_pro ) {
 			$action_links['renew'] = '<a href="' . forminator_get_link( 'plugin', 'forminator_pluginlist_renew' ) . '" aria-label="' . esc_attr__( 'Renew Membership', 'forminator' ) . '" style="color: #8D00B1;" target="_blank">' . esc_html__( 'Renew Membership', 'forminator' ) . '</a>';
@@ -1053,7 +1051,7 @@ class Forminator_Admin {
 	 * Show addons update notice
 	 */
 	public function show_addons_update_notice() {
-		if ( ! FORMINATOR_PRO ) {
+		if ( ! FORMINATOR_PRO || 'forminator-addons' === filter_input( INPUT_GET, 'page' ) ) {
 			return;
 		}
 
@@ -1170,6 +1168,7 @@ class Forminator_Admin {
 				'jquery',
 				'react',
 				'react-dom',
+				'wp-element',
 			),
 			FORMINATOR_VERSION,
 			true
@@ -1325,7 +1324,7 @@ class Forminator_Admin {
 	 *
 	 * @param int|null $post_id Post ID.
 	 */
-	public static function clear_pages_cache( int $post_id = null ) {
+	public static function clear_pages_cache( ?int $post_id = null ) {
 		if ( ! is_null( $post_id ) && 'page' === get_post_type( $post_id ) ) {
 			wp_cache_delete( 'forminator_cached_pages', 'forminator-cache' );
 		}
