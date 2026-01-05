@@ -1,12 +1,22 @@
 <?php
 
-Namespace Church\Interfaces;
+namespace Church\Interfaces;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Interface ActionHookInterface
+ *
+ * Defines contract for classes that register WordPress action hooks.
+ */
 interface ActionHookInterface {
 
-	public function register_add_action();
+	/**
+	 * Register WordPress action hooks.
+	 *
+	 * @return void
+	 */
+	public function register_add_action(): void;
 }

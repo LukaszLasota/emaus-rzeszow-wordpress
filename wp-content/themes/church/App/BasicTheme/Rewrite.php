@@ -1,22 +1,41 @@
 <?php
 
-Namespace Church\BasicTheme;
+namespace Church\BasicTheme;
 
 use Church\Interfaces\ActionHookInterface;
 
+/**
+ * Class Rewrite
+ *
+ * Handles WordPress rewrite rules customization.
+ */
 class Rewrite implements ActionHookInterface {
 
-    public function __construct() {
-        $this->register_add_action();
-    }
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		$this->register_add_action();
+	}
 
-    public function register_add_action() {
-        add_action('init', array($this, 'custom_pagination_base'));
-    }
+	/**
+	 * Register WordPress action hooks.
+	 *
+	 * @return void
+	 */
+	public function register_add_action(): void {
+		add_action( 'init', array( $this, 'custom_pagination_base' ) );
+	}
 
-    public function custom_pagination_base() {
-        global $wp_rewrite;
-        $wp_rewrite->pagination_base = 'strona';
-    }
-
+	/**
+	 * Set custom pagination base for Polish language.
+	 *
+	 * Changes pagination URL from 'page' to 'strona'.
+	 *
+	 * @return void
+	 */
+	public function custom_pagination_base(): void {
+		global $wp_rewrite;
+		$wp_rewrite->pagination_base = 'strona';
+	}
 }

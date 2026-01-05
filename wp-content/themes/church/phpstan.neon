@@ -1,0 +1,10 @@
+parameters:
+    level: 8
+    paths:
+        - App/
+    bootstrapFiles:
+        - vendor/autoload.php
+    scanDirectories:
+        - ../../plugins
+    # PHPStan WordPress extension handles WordPress functions automatically
+    # No ignoreErrors needed - extension works correctly!

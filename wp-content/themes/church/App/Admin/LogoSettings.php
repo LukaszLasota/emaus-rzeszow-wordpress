@@ -1,56 +1,190 @@
 <?php
+/**
+ * LogoSettings class
+ *
+ * Handles custom logo settings page in WordPress admin.
+ *
+ * @package Church\Admin
+ */
 
 namespace Church\Admin;
 
 use Church\Interfaces\ActionHookInterface;
 
+/**
+ * Class LogoSettings
+ *
+ * Provides admin interface for custom logo upload and management.
+ */
 class LogoSettings implements ActionHookInterface {
 
-    public function __construct() {
-        $this->register_add_action();
-    }
+	/**
+	 * Nonce action name for security verification.
+	 */
+	private const NONCE_ACTION = 'save_custom_logo';
 
-    public function register_add_action() {
-        add_action('admin_menu', array($this, 'add_logo_settings_page'));
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_media_uploader'));
-    }
+	/**
+	 * Nonce field name.
+	 */
+	private const NONCE_NAME = 'custom_logo_nonce';
 
-    public function add_logo_settings_page() {
-        add_options_page(
-            'Ustawienia Logo', 
-            'Logo Strony', 
-            'manage_options', 
-            'my-custom-logo', 
-            array($this, 'display_logo_settings_page')
-        );
-    }
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		$this->register_add_action();
+	}
 
-    public function display_logo_settings_page() {
-        if (isset($_POST['submit_image_selector']) && isset($_POST['image_url']) && isset($_POST['image_id'])) {
-            update_option('my_custom_logo_setting', $_POST['image_url']);
-            update_option('my_custom_logo_setting_id', $_POST['image_id']);
-            echo '<div id="message" class="updated"><p>Logo zostało zapisane.</p></div>';
-        }
+	/**
+	 * Register WordPress action hooks.
+	 *
+	 * @return void
+	 */
+	public function register_add_action(): void {
+		add_action( 'admin_menu', array( $this, 'add_logo_settings_page' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_media_uploader' ) );
+	}
 
-        $image_url = get_option('my_custom_logo_setting', '');
-        $image_id = get_option('my_custom_logo_setting_id', '');
+	/**
+	 * Add logo settings page to WordPress admin menu.
+	 *
+	 * @return void
+	 */
+	public function add_logo_settings_page(): void {
+		add_options_page(
+			'Ustawienia Logo',
+			'Logo Strony',
+			'manage_options',
+			'my-custom-logo',
+			array( $this, 'display_logo_settings_page' )
+		);
+	}
 
-        echo '<div class="wrap"><h1>Ustawienie Logo Strony</h1>
-        <img id="logo-preview" src="' . esc_url($image_url) . '" style="max-width: 300px; max-height: 300px; display: block;"/>
-              <form method="post">
-                  <input type="hidden" id="image_url" name="image_url" value="' . esc_attr($image_url) . '" />
-                  <input type="hidden" id="image_id" name="image_id" value="' . esc_attr($image_id) . '" />
-                  <input type="button" id="upload-btn" class="button-secondary" value="Wybierz Logo">
-                  <input type="submit" name="submit_image_selector" value="Zapisz" class="button-primary">
-              </form>
-              </div>';
-    }
+	/**
+	 * Display logo settings page with upload form.
+	 *
+	 * @return void
+	 */
+	public function display_logo_settings_page(): void {
+		// Check user capabilities.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'church' ) );
+		}
 
-    public function enqueue_media_uploader() {
-        if (isset($_GET['page']) && $_GET['page'] == 'my-custom-logo') {
-            wp_enqueue_media();
-            wp_enqueue_script('my-custom-logo-script', get_template_directory_uri() . 'webpack/src/js/logo/logo.js', array(), null, true);
-        }
-    }
+		// Handle form submission.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce is verified in handle_form_submission().
+		if ( isset( $_POST['submit_image_selector'] ) ) {
+			$this->handle_form_submission();
+		}
+
+		// Get current logo settings.
+		$image_url = get_option( 'my_custom_logo_setting', '' );
+		$image_id  = get_option( 'my_custom_logo_setting_id', '' );
+
+		// Display form.
+		$this->render_settings_form( $image_url, $image_id );
+	}
+
+	/**
+	 * Handle form submission with security checks.
+	 *
+	 * @return void
+	 */
+	private function handle_form_submission(): void {
+		// Verify nonce.
+		if ( ! isset( $_POST[ self::NONCE_NAME ] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ self::NONCE_NAME ] ) ), self::NONCE_ACTION ) ) {
+			wp_die( esc_html__( 'Security check failed. Please try again.', 'church' ) );
+		}
+
+		// Sanitize and validate input.
+		$image_url = isset( $_POST['image_url'] ) ? esc_url_raw( wp_unslash( $_POST['image_url'] ) ) : '';
+		$image_id  = isset( $_POST['image_id'] ) ? absint( $_POST['image_id'] ) : 0;
+
+		// Update options.
+		update_option( 'my_custom_logo_setting', $image_url );
+		update_option( 'my_custom_logo_setting_id', $image_id );
+
+		// Show success message.
+		add_settings_error(
+			'my_custom_logo',
+			'logo_saved',
+			__( 'Logo zostało zapisane.', 'church' ),
+			'updated'
+		);
+	}
+
+	/**
+	 * Render settings form HTML.
+	 *
+	 * @param string $image_url Current logo URL.
+	 * @param string $image_id  Current logo attachment ID.
+	 * @return void
+	 */
+	private function render_settings_form( string $image_url, string $image_id ): void {
+		?>
+		<div class="wrap">
+			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+
+			<?php settings_errors( 'my_custom_logo' ); ?>
+
+			<img id="logo-preview"
+				src="<?php echo esc_url( $image_url ); ?>"
+				alt="<?php esc_attr_e( 'Logo Preview', 'church' ); ?>"
+				style="max-width: 300px; max-height: 300px; display: block; margin-bottom: 20px;"
+			/>
+
+			<form method="post" action="">
+				<?php wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME ); ?>
+
+				<input type="hidden"
+						id="image_url"
+						name="image_url"
+						value="<?php echo esc_attr( $image_url ); ?>"
+				/>
+
+				<input type="hidden"
+						id="image_id"
+						name="image_id"
+						value="<?php echo esc_attr( $image_id ); ?>"
+				/>
+
+				<p>
+					<button type="button"
+							id="upload-btn"
+							class="button button-secondary">
+						<?php esc_html_e( 'Wybierz Logo', 'church' ); ?>
+					</button>
+
+					<button type="submit"
+							name="submit_image_selector"
+							class="button button-primary">
+						<?php esc_html_e( 'Zapisz', 'church' ); ?>
+					</button>
+				</p>
+			</form>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Enqueue media uploader scripts for logo upload.
+	 *
+	 * @param string $hook Current admin page hook.
+	 * @return void
+	 */
+	public function enqueue_media_uploader( string $hook ): void {
+		// Only load on our settings page.
+		if ( 'settings_page_my-custom-logo' !== $hook ) {
+			return;
+		}
+
+		wp_enqueue_media();
+
+		/**
+		 * TODO: Enqueue logo.js script after moving it to correct location.
+		 *
+		 * File needs to be moved from webpack/src/js/logo/ to assets/js/vendor/
+		 * Current path is inaccessible via URL.
+		 */
+	}
 }
-
