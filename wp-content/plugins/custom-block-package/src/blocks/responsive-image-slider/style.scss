@@ -1,0 +1,97 @@
+.wp-block-custom-block-package-responsive-image-slider {
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+
+    .glide__arrows {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+    }
+
+    .glide__arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        color: #fff;
+        text-align: center;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 0;
+        pointer-events: auto;
+
+        &::after {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-top: 3px solid #fff;
+            border-right: 3px solid #fff;
+        }
+
+        &:hover,
+        &:focus {
+            outline: none;
+        }
+
+        &--left {
+            left: 0;
+
+            &::after {
+                transform: rotate(-135deg);
+            }
+        }
+
+        &--right {
+            right: 0;
+
+            &::after {
+                transform: rotate(45deg);
+            }
+        }
+    }
+
+    .glide__bullets {
+        position: absolute;
+        bottom: 2em;
+        left: 0;
+        right: 0;
+        text-align: center;
+        z-index: 2;
+    }
+
+    .glide__bullet {
+        background-color: rgba(255, 255, 255, 0.5);
+        width: 9px;
+        height: 9px;
+        padding: 0;
+        border: 2px solid transparent;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 0.25em 0.5em 0 rgba(0, 0, 0, 0.1);
+        margin: 0 0.25em;
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+    }
+
+    .glide__bullet--active {
+        background-color: white;
+    }
+}

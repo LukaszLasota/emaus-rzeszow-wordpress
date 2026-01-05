@@ -1,1 +1,2 @@
-@use './node_modules/@glidejs/glide/dist/css/glide.core.min.css';
+// Glide CSS is loaded via block.json editorStyle: "glide-core-style"
+@use'./style.scss';

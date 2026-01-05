@@ -11,6 +11,10 @@
     "mobileImages": {
       "type": "array",
       "default": []
+    },
+    "mobileBreakpoint": {
+      "type": "number",
+      "default": 767
     }
   },
   "editorScript": [
@@ -28,5 +32,6 @@
     "glide-core-style",
     "glide-theme-style",
     "file:./style-index.css"
-  ]
+  ],
+  "render": "file:./render.php"
 }
