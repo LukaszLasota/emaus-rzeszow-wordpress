@@ -5,8 +5,7 @@
             <?php if (is_active_sidebar('footer-header-1')) : ?>
                 <?php dynamic_sidebar('footer-header-1'); ?>
             <?php else: ?>
-                <h4>MENU</h4>
-                <?php wp_nav_menu(array('theme_location' => 'footer-one')); ?>
+                <?php wp_nav_menu(array('theme_location' => 'footer-one', 'fallback_cb' => false)); ?>
             <?php endif; ?>
         </div>
 
@@ -14,8 +13,7 @@
             <?php if (is_active_sidebar('footer-header-2')) : ?>
                 <?php dynamic_sidebar('footer-header-2'); ?>
             <?php else: ?>
-                <h4>NA SKRÓTY</h4>
-                <?php wp_nav_menu(array('theme_location' => 'footer-two')); ?>
+                <?php wp_nav_menu(array('theme_location' => 'footer-two', 'fallback_cb' => false)); ?>
             <?php endif; ?>
         </div>
 
@@ -23,8 +21,7 @@
             <?php if (is_active_sidebar('footer-header-3')) : ?>
                 <?php dynamic_sidebar('footer-header-3'); ?>
             <?php else: ?>
-                <h4>KONTAKT</h4>
-                <?php wp_nav_menu(array('theme_location' => 'footer-three')); ?>
+                <?php wp_nav_menu(array('theme_location' => 'footer-three', 'fallback_cb' => false)); ?>
             <?php endif; ?>
         </div>
 

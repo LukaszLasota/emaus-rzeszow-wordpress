@@ -46,6 +46,7 @@ class Theme {
 	 */
 	private array $admin_components = array(
 		Admin\LogoSettings::class,
+		Core\SvgSupport::class,
 	);
 
 	/**

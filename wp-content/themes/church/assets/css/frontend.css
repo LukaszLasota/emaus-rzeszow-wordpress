@@ -867,12 +867,9 @@ a:focus-visible i, a:focus-visible .icon, button:focus-visible i, button:focus-v
   margin: 0 auto;
   padding: 0 15px;
 }
-@media (min-width: 1500px) {
-  .footer .footer__container {
-    width: 45%;
-  }
-}
 .footer .footer__menu, .footer .footer__contact {
+  display: flex;
+  justify-content: center;
   flex-basis: calc(33.333% - 30px);
   margin-bottom: 20px;
 }
@@ -881,7 +878,7 @@ a:focus-visible i, a:focus-visible .icon, button:focus-visible i, button:focus-v
     flex-basis: 100%;
   }
 }
-.footer .footer__menu h4, .footer .footer__menu .widgettitle, .footer .footer__contact h4, .footer .footer__contact .widgettitle {
+.footer .footer__menu h2, .footer .footer__menu h4, .footer .footer__menu .widgettitle, .footer .footer__contact h2, .footer .footer__contact h4, .footer .footer__contact .widgettitle {
   color: white;
   margin-bottom: 15px;
   padding: 1.5rem 0.25rem;

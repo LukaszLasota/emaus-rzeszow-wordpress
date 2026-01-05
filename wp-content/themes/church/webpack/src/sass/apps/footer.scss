@@ -10,13 +10,11 @@
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 15px;
-
-        @media (min-width: 1500px) {
-            width: 45%; 
-        }
     }
 
     .footer__menu, .footer__contact {
+        display: flex;
+        justify-content: center;
         flex-basis: calc(33.333% - 30px); 
         margin-bottom: 20px;
 
@@ -24,7 +22,7 @@
             flex-basis: 100%; 
         }
 
-        h4, .widgettitle {
+        h2, h4, .widgettitle {
             color: white;
             margin-bottom: 15px;
             padding: 1.5rem 0.25rem;
