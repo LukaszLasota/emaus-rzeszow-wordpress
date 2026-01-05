@@ -28,7 +28,6 @@
   },
   "dependencies": {
     "@glidejs/glide": "^3.7.1",
-    "leaflet": "^1.9.4",
-    "swiper": "^11.1.4"
+    "leaflet": "^1.9.4"
   }
 }

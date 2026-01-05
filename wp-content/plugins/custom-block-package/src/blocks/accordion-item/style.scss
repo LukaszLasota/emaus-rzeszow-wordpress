@@ -35,12 +35,13 @@
 
         &-text {
             font-size: 1.4rem;
-            @media (max-width: 600px){
-                font-size: 1.1rem;
-            }
             padding: 0;
             margin: 0;
             width: 100%;
+
+            @media (max-width: 600px){
+                font-size: 1.1rem;
+            }
         }
     }
 

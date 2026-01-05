@@ -29,19 +29,19 @@ $editor-bg: #f9f9f9;
   
   // Gradient background - używamy background-image, bo to właściwa właściwość dla gradientów
   background-image: $gradient;
-  
-  // Fallback dla starszych przeglądarek
-  @supports not (background-clip: text) {
-    background: $gradient;
-  }
 
   // Ustawienie przezroczystego wypełnienia tekstu
   -webkit-text-fill-color: transparent;
   text-fill-color: transparent;
-  
+
   // Przycinanie gradientu do tekstu
   -webkit-background-clip: text;
   background-clip: text;
+
+  // Fallback dla starszych przeglądarek
+  @supports not (background-clip: text) {
+    background: $gradient;
+  }
 }
 
 // Style dla edytora
