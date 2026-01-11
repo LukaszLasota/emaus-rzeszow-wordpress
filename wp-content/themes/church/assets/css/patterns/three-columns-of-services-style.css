@@ -1,0 +1,36 @@
+/*!********************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/patterns/three-columns-of-services/style.scss ***!
+  \********************************************************************************************************************************************/
+/**
+ * Three Columns of Services Pattern Styles
+ */
+.pattern-three-columns-of-services {
+  padding: 3rem 0;
+  background: #751313;
+}
+.pattern-three-columns-of-services .wp-block-columns {
+  gap: 2rem;
+}
+.pattern-three-columns-of-services .wp-block-column {
+  text-align: center;
+  padding: 2rem;
+  background: #751313;
+  border-radius: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.pattern-three-columns-of-services .wp-block-column:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+.pattern-three-columns-of-services .wp-block-column h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--wp--preset--color--site-color);
+}
+.pattern-three-columns-of-services .wp-block-column p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #666;
+}
+
+/*# sourceMappingURL=three-columns-of-services-style.css.map*/

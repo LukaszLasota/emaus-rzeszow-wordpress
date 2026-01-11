@@ -1,0 +1,44 @@
+/*!**********************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/patterns/clients-section/style.scss ***!
+  \**********************************************************************************************************************************/
+/**
+ * Clients Section Pattern Styles
+ */
+.pattern-clients-section {
+  padding: 4rem 0;
+  background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+}
+.pattern-clients-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: var(--wp--preset--color--site-color);
+}
+.pattern-clients-section .clients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 2rem;
+  align-items: center;
+  justify-items: center;
+}
+.pattern-clients-section .clients-grid .client-logo {
+  width: 100%;
+  max-width: 150px;
+  height: auto;
+  opacity: 0.7;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  filter: grayscale(100%);
+}
+.pattern-clients-section .clients-grid .client-logo:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  filter: grayscale(0%);
+}
+@media (max-width: 768px) {
+  .pattern-clients-section .clients-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/*# sourceMappingURL=clients-section-style.css.map*/

@@ -35,6 +35,8 @@ class Theme {
 		BasicTheme\RegisterAssets::class,
 		BasicTheme\Rewrite::class,
 		Widgets\RegisterWidgets::class,
+		Core\PatternAssets::class,
+		Core\GroupLinkSupport::class,
 	);
 
 	/**
