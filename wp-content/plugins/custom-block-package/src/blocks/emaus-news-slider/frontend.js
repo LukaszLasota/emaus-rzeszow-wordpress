@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
       window.initGlide(slider, {
         autoplay: autoplay ? autoplaySpeed : false,
         perView: 1,
+        focusAt: 'center',
+        peek: { before: 0, after: 0 },
       });
     });
 });

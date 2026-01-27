@@ -1,4 +1,4 @@
-// Zmienne
+// Variables
 $primary-color: #333;
 $secondary-color: #777;
 $text-color: #444;
@@ -6,43 +6,20 @@ $bg-color: #fff;
 $shadow-light: rgba(0, 0, 0, 0.1);
 $shadow-medium: rgba(0, 0, 0, 0.15);
 
-// Główne style dla slidera aktualności
+// Main styles for news slider
 .emaus-news-slider {
-  margin: 30px auto; // Auto dla centrowania
+  margin: 30px auto;
   box-sizing: border-box;
-  width: 100%;
-  
-  // Kontener wewnętrzny dla slidera
+  width: 50%; // Desktop: 50%
+
+  // Mobile: 100%
+  @media (max-width: 1024px) {
+		width: 100%;
+	}
+
   .glide__track {
     width: 100%;
-  }
-  
-  // Style szerokości na desktopach
-  &.emaus-slider-width-100 {
-    width: 100%;
-  }
-  
-  &.emaus-slider-width-75 {
-    width: 75%;
-  }
-  
-  &.emaus-slider-width-50 {
-    width: 50%;
-  }
-  
-  // Media query dla urządzeń mobilnych
-  @media (max-width: 767px) {
-    &.emaus-slider-mobile-width-100 {
-      width: 90%; // Important aby nadpisać desktop
-    }
-    
-    &.emaus-slider-mobile-width-75 {
-      width: 75%;
-    }
-    
-    &.emaus-slider-mobile-width-50 {
-      width: 50%;
-    }
+    margin: 0 auto;
   }
   
   .emaus-news-heading {
@@ -103,18 +80,26 @@ $shadow-medium: rgba(0, 0, 0, 0.15);
   }
 
     
-  // Style dla nawigacji slidera
-  .glide {
-   
-    &__slides{
-      justify-content: center;
-      align-items: center;
-     
-    }
+  // Slider content wrapper - contains track and arrows, controls width
+  .slider-content-wrapper {
+    position: relative;
+    width: 50%;
+    margin: 0 auto;
 
+    @media (max-width: 767px) {
+      width: 90%;
+    }
+  }
+
+  // News slide styling
+  .news-slide {
+    border: 1px solid var(--wp--preset--color--site-color);
+  }
+
+  // Slider navigation styles
+  .glide {
     &__slide {
-      border: 1px solid var(--wp--preset--color--site-color);
-      margin: 20px 30px;
+      margin: 20px 0;
     }
 
     &__arrows {
@@ -122,13 +107,15 @@ $shadow-medium: rgba(0, 0, 0, 0.15);
       justify-content: space-between;
       position: absolute;
       top: 50%;
-      left: -10px;
-      right: -10px;
+      left: -20px;
+      right: -20px;
       transform: translateY(-50%);
       z-index: 2;
+      pointer-events: none; // Allow clicks to pass through to slide
     }
-    
-    &__arrow { 
+
+    &__arrow {
+      pointer-events: auto; // Re-enable clicks on arrows 
       border: none;
       background: var(--wp--preset--gradient--gradient-to-left-bottom);
       color: white;
@@ -153,13 +140,13 @@ $shadow-medium: rgba(0, 0, 0, 0.15);
         }
       }
       
-      // Strzałka w lewo - odwrócona zgodnie z żądaniem
+      // Left arrow
       &--left:before {
         transform: rotate(135deg);
         margin-left: 10px;
       }
-      
-      // Strzałka w prawo - odwrócona zgodnie z żądaniem
+
+      // Right arrow
       &--right:before {
         transform: rotate(-45deg);
         margin-right: 10px;

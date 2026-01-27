@@ -37,6 +37,10 @@
     "linkDestination": {
       "type": "string",
       "default": "post"
+    },
+    "headingText": {
+      "type": "string",
+      "default": "Aktualności"
     }
   },
   "supports": {
