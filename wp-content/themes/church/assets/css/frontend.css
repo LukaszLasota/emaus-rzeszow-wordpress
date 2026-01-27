@@ -584,12 +584,19 @@ img {
   }
 }
 .news {
-  display: block;
-  padding: 0 1.25rem;
+  width: 100%;
+  max-width: var(--wp--custom--content-width-desktop);
+  margin: 0 auto;
+  padding: 4rem 1rem 1rem;
+}
+@media (max-width: 767px) {
+  .news {
+    padding: 4rem 1.5rem 1rem;
+  }
 }
 .news__card {
-  width: calc(50% - 40px);
-  margin: 20px;
+  width: calc(50% - 30px);
+  margin-bottom: 25px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   border: 1px solid #008089;
@@ -597,8 +604,8 @@ img {
 }
 @media (max-width: 767px) {
   .news__card {
-    width: calc(100% - 20px);
-    margin: 30px 10px;
+    width: 100%;
+    margin-bottom: 25px;
   }
 }
 .news__image {
@@ -916,12 +923,17 @@ a:focus-visible i, a:focus-visible .icon, button:focus-visible i, button:focus-v
 }
 @media (max-width: 768px) {
   .footer .footer__menu, .footer .footer__contact {
+    flex-basis: 50%;
+    justify-content: start;
+  }
+}
+@media (max-width: 600px) {
+  .footer .footer__menu, .footer .footer__contact {
     flex-basis: 100%;
   }
 }
 .footer .footer__menu h2, .footer .footer__menu h4, .footer .footer__menu .widgettitle, .footer .footer__contact h2, .footer .footer__contact h4, .footer .footer__contact .widgettitle {
   color: white;
-  margin-bottom: 15px;
   padding: 1.5rem 0.25rem;
   font-size: 1.5rem;
   margin-bottom: 0.5rem;

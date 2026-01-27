@@ -1,6 +1,51 @@
 /******/ (() => { // webpackBootstrap
-/******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/js/masonry/masonry.js":
+/*!***********************************!*\
+  !*** ./src/js/masonry/masonry.js ***!
+  \***********************************/
+/***/ (() => {
+
+document.addEventListener("DOMContentLoaded", function () {
+  var masonryContainer = document.querySelector(".news");
+  if (!masonryContainer) return;
+
+  // Feature detection
+  if (typeof Masonry === 'undefined' || typeof imagesLoaded === 'undefined') {
+    console.warn('Masonry or imagesLoaded not loaded');
+    return;
+  }
+  var msnry = null;
+  function initMasonry() {
+    var isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    if (isDesktop && !msnry) {
+      // Initialize masonry - minimal config
+      msnry = new Masonry(masonryContainer, {
+        itemSelector: '.news__card',
+        gutter: 25
+      });
+
+      // Wait for images to load before layout
+      imagesLoaded(masonryContainer, function () {
+        msnry.layout();
+      });
+    } else if (!isDesktop && msnry) {
+      msnry.destroy();
+      msnry = null;
+    }
+  }
+  initMasonry();
+
+  // Reinit on window resize
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(initMasonry, 250);
+  });
+});
+
+/***/ }),
 
 /***/ "./src/sass/frontend.scss":
 /*!********************************!*\
@@ -8,6 +53,7 @@
   \********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 // extracted by mini-css-extract-plugin
 
@@ -20,6 +66,7 @@ __webpack_require__.r(__webpack_exports__);
   \*****************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   HamburgerMenu: () => (/* binding */ HamburgerMenu)
@@ -144,6 +191,18 @@ class HamburgerMenu {
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -174,14 +233,18 @@ class HamburgerMenu {
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 (() => {
+"use strict";
 /*!*************************!*\
   !*** ./src/frontend.ts ***!
   \*************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sass_frontend_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sass/frontend.scss */ "./src/sass/frontend.scss");
 /* harmony import */ var _js_menu_menu__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/menu/menu */ "./src/js/menu/menu.ts");
+/* harmony import */ var _js_masonry_masonry_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./js/masonry/masonry.js */ "./src/js/masonry/masonry.js");
+/* harmony import */ var _js_masonry_masonry_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_js_masonry_masonry_js__WEBPACK_IMPORTED_MODULE_2__);
+
 
 
 new _js_menu_menu__WEBPACK_IMPORTED_MODULE_1__.HamburgerMenu();
@@ -190,4 +253,4 @@ new _js_menu_menu__WEBPACK_IMPORTED_MODULE_1__.HamburgerMenu();
 
 /******/ })()
 ;
-//# sourceMappingURL=frontend.js.map?7122a11ab0ad7fd17fff
+//# sourceMappingURL=frontend.js.map?181c8737efa0c3e2fa21

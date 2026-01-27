@@ -192,14 +192,11 @@ class RegisterAssets implements ActionHookInterface {
 			return;
 		}
 
-		// Enqueue WordPress bundled Masonry library.
+		// Enqueue WordPress bundled libraries.
+		// imagesLoaded is required for reliable image handling.
+		wp_enqueue_script( 'imagesloaded' );
 		wp_enqueue_script( 'masonry' );
 
-		$this->enqueue_asset(
-			'script',
-			'masonry-settings',
-			'/assets/js/vendor/masonry.js',
-			array( 'masonry' )
-		);
+		// Masonry initialization is lazy-loaded via dynamic import in frontend.ts.
 	}
 }

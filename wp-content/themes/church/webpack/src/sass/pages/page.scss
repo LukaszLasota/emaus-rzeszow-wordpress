@@ -1,19 +1,24 @@
 .news {
-    display: block;
-    padding: 0 1.25rem;
+    width: 100%;
+ 	max-width: var(--wp--custom--content-width-desktop);
+	margin: 0 auto;
+ 	padding: 4rem 1rem 1rem;
+
+	@media (max-width: 767px) {
+		padding: 4rem 1.5rem 1rem;
+	}
 
     &__card {
-        width: calc(50% - 40px);
-        margin: 20px; 
+        width: calc(50% - 30px);
+        margin-bottom: 25px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
         border: 1px solid $color-green;
         overflow: hidden;
-      
 
         @media (max-width: 767px) {
-            width: calc(100% - 20px); 
-            margin: 30px 10px;   
+            width: 100%;
+            margin-bottom: 25px;
         }
     }
     &__image {
