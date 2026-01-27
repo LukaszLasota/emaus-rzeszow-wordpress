@@ -13,7 +13,9 @@ registerBlockType(block.name, {
 
   edit: ({ attributes, setAttributes }) => {
     const { pdfUrl, showDownload, viewerHeight, viewerWidth, btnTitle, pdfTitle } = attributes;
-    const blockProps = useBlockProps();
+    const blockProps = useBlockProps({
+      className: 'cbp-block',
+    });
 
     const onSelectPDF = (media) => {
       setAttributes({
@@ -141,7 +143,9 @@ registerBlockType(block.name, {
 
   save: ({ attributes }) => {
     const { pdfUrl, viewerHeight, viewerWidth, showDownload, btnTitle } = attributes;
-    const blockProps = useBlockProps.save();
+    const blockProps = useBlockProps.save({
+      className: 'cbp-block',
+    });
 
     return (
       <section class="statut-page" {...blockProps}>

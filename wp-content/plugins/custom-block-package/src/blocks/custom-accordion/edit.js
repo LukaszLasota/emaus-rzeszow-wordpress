@@ -3,7 +3,9 @@ import { useBlockProps, InnerBlocks } from '@wordpress/block-editor';
 import './editor.scss';
 
 const Edit = () => {
-    const blockProps = useBlockProps();
+    const blockProps = useBlockProps({
+        className: 'cbp-block',
+    });
 
     return (
         <div {...blockProps}>

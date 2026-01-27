@@ -5,7 +5,7 @@ const Save = ({ attributes }) => {
     const { title } = attributes;
 
     const blockProps = useBlockProps.save({
-        className: 'accordion__item',
+        className: 'cbp-block accordion__item',
     });
 
     return (

@@ -12,7 +12,7 @@ const Edit = ({ attributes, setAttributes }) => {
     const { title } = attributes;
 
     const blockProps = useBlockProps({
-        className: 'accordion__item',
+        className: 'cbp-block accordion__item',
     });
 
     return (
