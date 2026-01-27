@@ -7,7 +7,7 @@
 
 get_header(); ?>
 
-<main id="primary" class="site-main single-post">
+<main id="primary" class="site-main single-post news">
 
 <?php 
     $show_header = get_field('show_header');
@@ -18,7 +18,7 @@ get_header(); ?>
         </header>
     <?php endif; ?>
 
-    <div class="single-post__content-container">
+    <div class="single-post__content-container section-block">
         <?php
         if ( have_posts() ) :
             while ( have_posts() ) :

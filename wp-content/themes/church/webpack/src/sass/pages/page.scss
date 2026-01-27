@@ -1,20 +1,6 @@
 .news {
     display: block;
-    width: 96%;
-    margin: 100px auto 50px;
-
-    @media (min-width: 920px) {
-        width: var(--wp--custom--content-width-tablet);
-        margin: 150px auto 50px;
-    }
-
-    @media (min-width: 1200px) {
-        width: var(--wp--custom--content-width-desktop);
-    } 
-
-    @media (min-width: 1600px) {
-        width: var(--wp--custom--content-width-large-desktop);
-    }
+    padding: 0 1.25rem;
 
     &__card {
         width: calc(50% - 40px);
@@ -33,6 +19,7 @@
     &__image {
         width: 100%;
     }
+
     &__body{
         margin: 5px 25px 30px;
     }

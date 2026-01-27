@@ -16,6 +16,11 @@
   * Applied when Group block has a link URL set
   */
 }
+@media (max-width: 1024px) {
+  .pattern-hello-section-main-page {
+    width: 100%;
+  }
+}
 .pattern-hello-section-main-page__image img {
   max-height: 300px;
   width: auto;

@@ -5,6 +5,16 @@
 /*!*********************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/sass/frontend.scss (1) ***!
   \*********************************************************************************************************************/
+/**
+ * Custom CSS Properties from theme.json
+ *
+ * These variables should match the values in theme.json
+ * Path: theme.json -> settings.custom
+ */
+:root {
+  --wp--custom--content-width-desktop: 1300px;
+}
+
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
 /* Document
 	 ========================================================================== */
@@ -314,6 +324,67 @@ template {
   display: none;
 }
 
+.single-post__content-container, .page__content-container {
+  width: 100%;
+  max-width: var(--wp--custom--content-width-desktop);
+  margin: 0 auto;
+  padding-inline: 0.5rem;
+  padding: 30px 0 100px;
+  display: block;
+}
+.single-post__content-container h2, .single-post__content-container h3, .page__content-container h2, .page__content-container h3 {
+  padding: 50px 10px 20px 0px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 2rem;
+  width: 100%;
+}
+@media (max-width: 800px) {
+  .single-post__content-container h2, .single-post__content-container h3, .page__content-container h2, .page__content-container h3 {
+    font-size: 1.6rem;
+    padding: 50px 0;
+  }
+}
+.single-post__content-container h3, .page__content-container h3 {
+  font-size: 1.6rem;
+  padding: 25px 0;
+  margin: 5px 0 15px;
+}
+.single-post__content-container p, .single-post__content-container a, .single-post__content-container p a, .page__content-container p, .page__content-container a, .page__content-container p a {
+  font-size: 1.2rem;
+  padding: 5px 0;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
+}
+@media (max-width: 500px) {
+  .single-post__content-container p, .single-post__content-container a, .single-post__content-container p a, .page__content-container p, .page__content-container a, .page__content-container p a {
+    text-align: left;
+  }
+}
+.single-post__content-container p, .page__content-container p {
+  width: 100%;
+  text-align: justify;
+}
+.single-post__content-container a, .page__content-container a {
+  color: #007bff;
+}
+.single-post__content-container ul, .page__content-container ul {
+  font-size: 1.2rem;
+  text-decoration: none;
+  padding-left: 0px;
+  padding-bottom: 40px;
+  width: 100%;
+}
+.single-post__content-container ul li, .page__content-container ul li {
+  padding: 5px;
+  margin-left: 20px;
+  list-style-type: none;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -514,24 +585,7 @@ img {
 }
 .news {
   display: block;
-  width: 96%;
-  margin: 100px auto 50px;
-}
-@media (min-width: 920px) {
-  .news {
-    width: var(--wp--custom--content-width-tablet);
-    margin: 150px auto 50px;
-  }
-}
-@media (min-width: 1200px) {
-  .news {
-    width: var(--wp--custom--content-width-desktop);
-  }
-}
-@media (min-width: 1600px) {
-  .news {
-    width: var(--wp--custom--content-width-large-desktop);
-  }
+  padding: 0 1.25rem;
 }
 .news__card {
   width: calc(50% - 40px);
@@ -661,26 +715,13 @@ img {
 }
 
 .single-post__header {
-  width: var(--wp--custom--content-width-mobile);
+  width: 100%;
+  max-width: var(--wp--custom--content-width-desktop);
   margin-inline: auto;
 }
-@media (min-width: 920px) {
-  .single-post__header {
-    width: var(--wp--custom--content-width-tablet);
-  }
-}
-@media (min-width: 1200px) {
-  .single-post__header {
-    width: var(--wp--custom--content-width-desktop);
-  }
-}
-@media (min-width: 1600px) {
-  .single-post__header {
-    width: var(--wp--custom--content-width-large-desktop);
-  }
-}
 .single-post__title {
-  padding: 60px 10px;
+  padding: 60px 0px 30px;
+  margin-bottom: 0;
   letter-spacing: 2px;
   text-transform: uppercase;
   -webkit-background: var(--wp--preset--gradient--gradient-90-deg);

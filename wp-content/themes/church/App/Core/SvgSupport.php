@@ -74,10 +74,10 @@ class SvgSupport implements ActionHookInterface, FilterHookInterface {
 	 * @param array<string, mixed>|null $data     File data array.
 	 * @param string                    $file     Full path to the file.
 	 * @param string                    $filename The name of the file.
-	 * @param array<string, string>     $mimes    Allowed MIME types.
+	 * @param array<string, string>|null $mimes    Allowed MIME types.
 	 * @return array<string, mixed> Modified file data.
 	 */
-	public function check_svg_filetype( ?array $data, string $file, string $filename, array $mimes ): array {
+	public function check_svg_filetype( ?array $data, string $file, string $filename, ?array $mimes ): array {
 		// Only allow SVG uploads for administrators.
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return $data ?? array();
@@ -88,7 +88,7 @@ class SvgSupport implements ActionHookInterface, FilterHookInterface {
 		return array(
 			'ext'             => $filetype['ext'],
 			'type'            => $filetype['type'],
-			'proper_filename' => $data['proper_filename'] ?? false,
+			'proper_filename' => isset( $data['proper_filename'] ) ? $data['proper_filename'] : false,
 		);
 	}
 
