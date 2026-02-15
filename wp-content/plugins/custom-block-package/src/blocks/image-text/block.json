@@ -14,25 +14,13 @@
             "type": "string",
             "default": ""
         },
-        "background": {
-            "type": "boolean",
-            "default": false
-        },
-        "background_color": {
-            "type": "string",
-            "default": ""
-        },
         "imgID": {
             "type": "number",
             "default": 0
         },
-        "imgAlt": {
-            "type": "string",
-            "default": ""
-        },
-        "imgURL": {
-            "type": "string",
-            "default": ""
+        "fullWidth": {
+            "type": "boolean",
+            "default": false
         },
         "postURL": {
             "type": "object",

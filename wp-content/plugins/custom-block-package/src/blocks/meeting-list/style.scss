@@ -1,17 +1,10 @@
+@import '../../scss/abstracts/mixins';
+
 .meetings {
     h2{
-        font-size: 2rem;
-        font-weight: 400;
+        @include gradient-text();
         padding: 95px 10px;
-        width: 100%;
-        text-align: center;
-        letter-spacing: 2px;
-        -webkit-background: var(--wp--preset--gradient--gradient-to-left-bottom);
-        -moz-background: var(--wp--preset--gradient--gradient-to-left-bottom);
-        background: var(--wp--preset--gradient--gradient-to-left-bottom);
-        -webkit-text-fill-color: transparent;
-        text-fill-color: transparent;
-        -webkit-background-clip: text;
+
         @media (max-width: 600px){
             padding: 70px 10px;
         }
@@ -19,7 +12,6 @@
         @media (max-width: 1024px){
             padding: 80px 10px;
         }
-
     }
 }
 
@@ -40,6 +32,7 @@
         height: auto;
         cursor: pointer;
         transition: all 0.8s;
+        z-index: 0; // Create stacking context
 
         &::before {
             content: "";
@@ -51,7 +44,7 @@
             background: var(--wp--preset--gradient--gradient-to-left-bottom);
             opacity: 0;
             transition: opacity 0.8s;
-            z-index: -1;
+            z-index: 1;
         }
 
         &:hover::before {
@@ -64,7 +57,7 @@
 
         > * {
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
     }
 

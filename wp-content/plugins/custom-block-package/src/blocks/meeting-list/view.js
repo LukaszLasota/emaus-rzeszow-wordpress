@@ -1,37 +1,32 @@
 document.addEventListener("DOMContentLoaded", function () {
-    function initializeFlipCardEffect() {
-        const flipCards = document.querySelectorAll(".flipping-cards__card");
+    const flipCards = document.querySelectorAll(".flipping-cards__card");
 
-        flipCards.forEach((card) => {
-            card.addEventListener("click", () => {
-                const innerCard = card.querySelector(".flipping-cards__card-inner");
-                innerCard.classList.toggle("flipping-cards__card-inner--flipped");
-            });
+    // Flip card on click
+    flipCards.forEach((card) => {
+        card.addEventListener("click", () => {
+            const innerCard = card.querySelector(".flipping-cards__card-inner");
+            innerCard.classList.toggle("flipping-cards__card-inner--flipped");
         });
+    });
 
+    // Equalize card heights
+    function equalizeCardHeights() {
         const cards = document.querySelectorAll(".flipping-cards__card");
+        if (cards.length === 0) return;
 
-        if (cards.length > 0) {
-            let maxHeight = 0;
+        // Reset heights before measuring
+        cards.forEach((card) => (card.style.height = "auto"));
 
-            cards.forEach((card) => {
-                const cardHeight = card.offsetHeight;
-                if (cardHeight > maxHeight) {
-                    maxHeight = cardHeight;
-                }
-            });
-
-            cards.forEach((card) => {
-                card.style.height = `${maxHeight}px`;
-            });
-        }
-    }
-
-    initializeFlipCardEffect();
-
-    if (window.wp && window.wp.data) {
-        wp.data.subscribe(() => {
-            initializeFlipCardEffect();
+        let maxHeight = 0;
+        cards.forEach((card) => {
+            if (card.offsetHeight > maxHeight) {
+                maxHeight = card.offsetHeight;
+            }
         });
+
+        cards.forEach((card) => (card.style.height = `${maxHeight}px`));
     }
+
+    equalizeCardHeights();
+    window.addEventListener("resize", equalizeCardHeights);
 });

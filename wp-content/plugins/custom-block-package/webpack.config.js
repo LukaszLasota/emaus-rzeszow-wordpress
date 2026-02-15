@@ -1,10 +1,11 @@
 const defaultConfig = require('@wordpress/scripts/config/webpack.config');
 const path = require('path');
 const IgnoreEmitPlugin = require('ignore-emit-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 // Configure sass-loader to silence deprecation warnings
 defaultConfig.module.rules.forEach((rule) => {
-  if (rule.use) {
+  if (Array.isArray(rule.use)) {
     rule.use.forEach((loader) => {
       if (loader.loader?.includes('sass-loader')) {
         loader.options = {
@@ -53,5 +54,14 @@ module.exports = {
     ...cleanedDefaultPlugins,
 
     new IgnoreEmitPlugin(ignoredFiles),
+
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'src/blocks/map-block/images'),
+          to: path.resolve(__dirname, 'build/blocks/map-block/images'),
+        },
+      ],
+    }),
   ],
 };

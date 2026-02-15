@@ -50,21 +50,31 @@ export default function Edit({ attributes, setAttributes }) {
   useEffect(() => {
     if (!sliderRef.current) return;
 
-    const updateGlide = () => {
-      if (glideInstanceRef.current) {
-        glideInstanceRef.current.update();
-      }
-    };
+    const wrapper = sliderRef.current.parentElement;
+    if (!wrapper) return;
+
+    let delayedUpdate = null;
 
     const observer = new ResizeObserver(() => {
       requestAnimationFrame(() => {
-        updateGlide();
+        if (glideInstanceRef.current) {
+          glideInstanceRef.current.update();
+        }
       });
+
+      // Second update after sidebar animation completes
+      clearTimeout(delayedUpdate);
+      delayedUpdate = setTimeout(() => {
+        if (glideInstanceRef.current) {
+          glideInstanceRef.current.update();
+        }
+      }, 350);
     });
 
-    observer.observe(sliderRef.current);
+    observer.observe(wrapper);
 
     return () => {
+      clearTimeout(delayedUpdate);
       observer.disconnect();
     };
   }, []);

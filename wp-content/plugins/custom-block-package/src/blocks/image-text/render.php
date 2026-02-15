@@ -1,18 +1,21 @@
 <?php
 /**
- * Image Text Block Render Template
+ * Szablon renderowania bloku Obraz i Tekst
  *
- * @var array $attributes Block attributes
- * @var string $content Block content
- * @var WP_Block $block Block instance
+ * @var array $attributes Atrybuty bloku
+ * @var string $content Zawartość bloku
+ * @var WP_Block $block Instancja bloku
  */
 
 $text = $attributes['text'] ?? '';
 $img_id = $attributes['imgID'] ?? 0;
 $post_url = $attributes['postURL'] ?? ['url' => '', 'opensInNewTab' => false];
 
+$full_width = ! empty( $attributes['fullWidth'] );
+$classes = 'about-one' . ( $full_width ? ' about-one--full' : '' );
+
 $wrapper_attributes = get_block_wrapper_attributes([
-    'class' => 'about-one'
+    'class' => $classes
 ]);
 
 $link_url = $post_url['url'] ?? '';

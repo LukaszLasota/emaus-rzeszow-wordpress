@@ -22,18 +22,6 @@
       "type": "number",
       "default": 3000
     },
-    "sliderWidth": {
-      "type": "string",
-      "default": "100"
-    },
-    "mobileWidth": {
-      "type": "string",
-      "default": "100"
-    },
-    "sliderPadding": {
-      "type": "number",
-      "default": 0
-    },
     "linkDestination": {
       "type": "string",
       "default": "post"
@@ -48,10 +36,7 @@
   },
   "textdomain": "custom-block-package",
   "editorScript": "file:./index.js",
-  "editorStyle": [
-    "glide-core-style",
-    "file:./index.css"
-  ],
+  "editorStyle": "file:./index.css",
   "viewScript": [
     "glide-init-script",
     "file:./frontend.js"

@@ -1,7 +1,10 @@
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, RangeControl } from '@wordpress/components';
 import { useEffect, useRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 import L from 'leaflet';
+import markerIconUrl from './images/marker-icon.png';
+import markerShadowUrl from './images/marker-shadow.png';
 import './index.scss';
 
 const Edit = ({ attributes, setAttributes }) => {
@@ -17,11 +20,15 @@ const Edit = ({ attributes, setAttributes }) => {
             return;
         }
 
+        // Configure default icon using webpack-resolved paths
         delete L.Icon.Default.prototype._getIconUrl;
         L.Icon.Default.mergeOptions({
-            iconUrl: '/wp-content/plugins/custom-block-package/src/blocks/map-block/images/marker-icon.png',
-            iconRetinaUrl: '/wp-content/plugins/custom-block-package/src/blocks/map-block/images/marker-icon-2x.png',
-            shadowUrl: '/wp-content/plugins/custom-block-package/src/blocks/map-block/images/marker-shadow.png',
+            iconUrl: markerIconUrl,
+            shadowUrl: markerShadowUrl,
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41],
         });
 
         if (!mapInstance.current) {
@@ -38,45 +45,54 @@ const Edit = ({ attributes, setAttributes }) => {
                 const { lat, lng } = e.target.getLatLng();
                 setAttributes({ latitude: lat, longitude: lng });
             });
-
         } else {
             mapInstance.current.setView([latitude, longitude]);
             mapInstance.current.setZoom(zoom);
             marker.current.setLatLng([latitude, longitude]);
-            marker.current.getPopup().setContent(popupText);
+            marker.current.setPopupContent(popupText);
         }
     }, [latitude, longitude, zoom, popupText]);
+
+    // Cleanup map instance on unmount
+    useEffect(() => {
+        return () => {
+            if (mapInstance.current) {
+                mapInstance.current.remove();
+                mapInstance.current = null;
+            }
+        };
+    }, []);
 
     return (
         <>
             <InspectorControls>
-                <PanelBody title="Ustawienia mapy" initialOpen={true}>
+                <PanelBody title={__('Ustawienia mapy', 'custom-block-package')} initialOpen={true}>
                     <TextControl
-                        label="Szerokość geograficzna"
+                        label={__('Szerokość geograficzna', 'custom-block-package')}
                         value={latitude}
                         onChange={(value) => setAttributes({ latitude: parseFloat(value) || 0 })}
                     />
                     <TextControl
-                        label="Długość geograficzna"
+                        label={__('Długość geograficzna', 'custom-block-package')}
                         value={longitude}
                         onChange={(value) => setAttributes({ longitude: parseFloat(value) || 0 })}
                     />
                     <RangeControl
-                        label="Powiększenie"
+                        label={__('Powiększenie', 'custom-block-package')}
                         value={zoom}
                         onChange={(value) => setAttributes({ zoom: value })}
                         min={1}
                         max={18}
                     />
                     <RangeControl
-                        label="Wysokość kontenera (px)"
+                        label={__('Wysokość kontenera (px)', 'custom-block-package')}
                         value={containerHeight}
                         onChange={(value) => setAttributes({ containerHeight: value })}
                         min={200}
                         max={800}
                     />
                     <TextControl
-                        label="Treść popupu"
+                        label={__('Treść popupu', 'custom-block-package')}
                         value={popupText}
                         onChange={(value) => setAttributes({ popupText: value })}
                     />
@@ -92,7 +108,7 @@ const Edit = ({ attributes, setAttributes }) => {
             >
                 <div
                     ref={mapContainer}
-                    className="leaflet-container"
+                    className="map-container"
                     style={{
                         height: '100%',
                         width: '100%',

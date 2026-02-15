@@ -1,3 +1,5 @@
+@import '../../scss/abstracts/mixins';
+
 // Variables
 $primary-color: #333;
 $secondary-color: #777;
@@ -23,19 +25,7 @@ $shadow-medium: rgba(0, 0, 0, 0.15);
   }
   
   .emaus-news-heading {
-    font-size: 2rem;
-    line-height: 1.4;
-    font-weight: 400;
-    text-transform: uppercase;
-    width: 100%;
-    text-align: center;
-    letter-spacing: 2px;
-    -webkit-background: var(--wp--preset--gradient--gradient-to-left-bottom);
-    -moz-background: var(--wp--preset--gradient--gradient-to-left-bottom);
-    background: var(--wp--preset--gradient--gradient-to-left-bottom);
-    -webkit-text-fill-color: transparent;
-    text-fill-color: transparent;
-    -webkit-background-clip: text;
+    @include gradient-text();
   }
 
   .news-slide {
@@ -43,11 +33,10 @@ $shadow-medium: rgba(0, 0, 0, 0.15);
     text-decoration: none;
     color: inherit;
     height: 100%;
-    overflow: hidden;
     transition: transform 0.3s ease;
    
     &:hover {
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
     }
   }
   
@@ -93,7 +82,7 @@ $shadow-medium: rgba(0, 0, 0, 0.15);
 
   // News slide styling
   .news-slide {
-    border: 1px solid var(--wp--preset--color--site-color);
+    border: 1px solid var(--wp--preset--color--site-color, #333);
   }
 
   // Slider navigation styles

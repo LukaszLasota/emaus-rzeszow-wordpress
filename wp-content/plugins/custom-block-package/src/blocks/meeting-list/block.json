@@ -15,7 +15,8 @@
             "default": -1
         },
         "blockTitle": {
-            "type": "string"
+            "type": "string",
+            "default": "Nasze spotkania"
         }
     },
     "supports" : {

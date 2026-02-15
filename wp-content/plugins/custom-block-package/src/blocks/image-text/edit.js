@@ -10,7 +10,8 @@ import {
 import {
     PanelBody,
     Button,
-    Popover
+    Popover,
+    ToggleControl
 } from '@wordpress/components';
 import { Fragment, useState } from '@wordpress/element';
 import ServerSideRender from '@wordpress/server-side-render';
@@ -18,7 +19,7 @@ import block from './block.json';
 import './index.scss';
 
 const Edit = ({ attributes, setAttributes }) => {
-    const { text, imgID, postURL } = attributes;
+    const { text, imgID, postURL, fullWidth } = attributes;
     const blockProps = useBlockProps({
         className: "about-one",
     });
@@ -30,11 +31,18 @@ const Edit = ({ attributes, setAttributes }) => {
             <InspectorControls>
                 <PanelBody title={__("Ustawienia", "custom-block-package")}>
 
+                    <ToggleControl
+                        label={__("Pełna szerokość", "custom-block-package")}
+                        checked={fullWidth}
+                        onChange={(value) => setAttributes({ fullWidth: value })}
+                        __nextHasNoMarginBottom={true}
+                    />
+
                     <h2>{__("Zmień/dodaj obraz", "custom-block-package")}</h2>
 
                     <MediaUploadCheck>
                         <MediaUpload
-                            onSelect={(media) => setAttributes({ imgID: media.id, imgURL: media.url, imgAlt: media.alt })}
+                            onSelect={(media) => setAttributes({ imgID: media.id })}
                             allowedTypes={["image"]}
                             value={imgID}
                             render={({ open }) => (
@@ -42,7 +50,7 @@ const Edit = ({ attributes, setAttributes }) => {
                                     onClick={open}
                                     className="select-button"
                                 >
-                                    {!imgID ? __("Wybierz obraz", "custom-block-package") : __("Wybierz obraz", "custom-block-package")}
+                                    {!imgID ? __("Wybierz obraz", "custom-block-package") : __("Zmień obraz", "custom-block-package")}
                                 </Button>
                             )}
                         />
@@ -62,7 +70,7 @@ const Edit = ({ attributes, setAttributes }) => {
                         >
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 <LinkControl
-                                    searchInputPlaceholder="Search here..."
+                                    searchInputPlaceholder={__("Szukaj...", "custom-block-package")}
                                     value={postURL || {}}
                                     settings={[
                                         {
