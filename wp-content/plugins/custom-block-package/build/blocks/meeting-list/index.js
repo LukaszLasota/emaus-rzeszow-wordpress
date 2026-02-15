@@ -1,1 +1,336 @@
-(()=>{var e,t={459:()=>{document.addEventListener("DOMContentLoaded",function(){function e(){document.querySelectorAll(".flipping-cards__card").forEach(e=>{e.addEventListener("click",()=>{e.querySelector(".flipping-cards__card-inner").classList.toggle("flipping-cards__card-inner--flipped")})});const e=document.querySelectorAll(".flipping-cards__card");if(e.length>0){let t=0;e.forEach(e=>{const r=e.offsetHeight;r>t&&(t=r)}),e.forEach(e=>{e.style.height=`${t}px`})}}e(),window.wp&&window.wp.data&&wp.data.subscribe(()=>{e()})})},635:(e,t,r)=>{"use strict";const a=window.React,n=window.wp.blocks,c=window.wp.blockEditor,l=window.wp.data,i=window.wp.components,o=window.wp.i18n,s=JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"custom-block-package/meeting-custom-list","title":"Nasze spotkania","icon":"calendar-alt","category":"custom-blocks-from-scratch","description":"Blok wyświetlający listę niestandardowych postów typu spotkania.","keywords":["meetings","events","list"],"version":"1","textdomain":"custom-block-package","attributes":{"numberposts":{"type":"number","default":-1},"blockTitle":{"type":"string"}},"supports":{"color":{"text":true,"background":true,"gradients":true,"link":true},"align":["wide","full"],"typography":{"fontSize":true,"lineHeight":true,"fontWeight":true,"textTransform":true,"letterSpacing":true},"spacing":{"margin":true,"padding":true,"blockGap":true},"customClassName":true},"editorScript":"file:./index.js","viewScript":"file:./view.js","editorStyle":"file:./index.css","viewStyle":"file:./style-index.css","render":"file:./render.php"}');r(459),(0,n.registerBlockType)(s.name,{...s,edit({attributes:e,setAttributes:t}){const{numberposts:r,blockTitle:n,text:s}=e,p=(0,c.useBlockProps)(),d=(0,l.useSelect)(e=>e("core").getEntityRecords("postType","meetings",{per_page:r,_fields:["id","title.rendered","link","acf","content.rendered"]}),[r]),u=d?[...d].sort((e,t)=>(e.acf?.priority||0)-(t.acf?.priority||0)):[];return(0,a.createElement)("div",{...p},(0,a.createElement)(c.InspectorControls,null,(0,a.createElement)(i.PanelBody,{title:(0,o.__)("Ustawienia bloku","custom-block-package")},(0,a.createElement)(i.TextControl,{label:(0,o.__)("Liczba postów","custom-block-package"),type:"number",value:r,onChange:e=>t({numberposts:parseInt(e,10)})}))),(0,a.createElement)(c.RichText,{tagName:"h2",className:"block-title",style:{textAlign:"center",width:"100%"},placeholder:(0,o.__)("Wpisz tytuł bloku","custom-block-package"),value:n,onChange:e=>t({blockTitle:e})}),null===d?(0,a.createElement)(i.Spinner,null):0===u.length?(0,a.createElement)("p",null,(0,o.__)("Brak dostępnych spotkań.","custom-block-package")):(0,a.createElement)("div",{className:"flipping-cards"},u.map(e=>(0,a.createElement)("div",{key:e.id,className:"flipping-cards__card"},(0,a.createElement)("div",{className:"flipping-cards__card-inner"},(0,a.createElement)("div",{className:"flipping-cards__card-front"},(0,a.createElement)("h3",null,e.title.rendered),(0,a.createElement)("p",null,e.acf?.day_hour||(0,o.__)("Brak godziny","custom-block-package")),(0,a.createElement)("p",null,e.acf?.place||(0,o.__)("Brak miejsca","custom-block-package"))),(0,a.createElement)("div",{className:"flipping-cards__card-back"},(0,a.createElement)("div",{dangerouslySetInnerHTML:{__html:e.content?.rendered}})))))))},save:()=>null})}},r={};function a(e){var n=r[e];if(void 0!==n)return n.exports;var c=r[e]={exports:{}};return t[e](c,c.exports,a),c.exports}a.m=t,e=[],a.O=(t,r,n,c)=>{if(!r){var l=1/0;for(p=0;p<e.length;p++){for(var[r,n,c]=e[p],i=!0,o=0;o<r.length;o++)(!1&c||l>=c)&&Object.keys(a.O).every(e=>a.O[e](r[o]))?r.splice(o--,1):(i=!1,c<l&&(l=c));if(i){e.splice(p--,1);var s=n();void 0!==s&&(t=s)}}return t}c=c||0;for(var p=e.length;p>0&&e[p-1][2]>c;p--)e[p]=e[p-1];e[p]=[r,n,c]},a.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t),(()=>{var e={137:0,320:0,125:0};a.O.j=t=>0===e[t];var t=(t,r)=>{var n,c,[l,i,o]=r,s=0;if(l.some(t=>0!==e[t])){for(n in i)a.o(i,n)&&(a.m[n]=i[n]);if(o)var p=o(a)}for(t&&t(r);s<l.length;s++)c=l[s],a.o(e,c)&&e[c]&&e[c][0](),e[c]=0;return a.O(p)},r=globalThis.webpackChunkcustom_block_package=globalThis.webpackChunkcustom_block_package||[];r.forEach(t.bind(null,0)),r.push=t.bind(null,r.push.bind(r))})();var n=a.O(void 0,[125],()=>a(635));n=a.O(n)})();
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/blocks/meeting-list/block.json":
+/*!********************************************!*\
+  !*** ./src/blocks/meeting-list/block.json ***!
+  \********************************************/
+/***/ ((module) => {
+
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"custom-block-package/meeting-custom-list","title":"Nasze spotkania","icon":"calendar-alt","category":"custom-blocks-from-scratch","description":"Blok wyświetlający listę niestandardowych postów typu spotkania.","keywords":["meetings","events","list"],"version":"1","textdomain":"custom-block-package","attributes":{"numberposts":{"type":"number","default":-1},"blockTitle":{"type":"string","default":"Nasze spotkania"}},"supports":{"color":{"text":true,"background":true,"gradients":true,"link":true},"align":["wide","full"],"typography":{"fontSize":true,"lineHeight":true,"fontWeight":true,"textTransform":true,"letterSpacing":true},"spacing":{"margin":true,"padding":true,"blockGap":true},"customClassName":true},"editorScript":"file:./index.js","viewScript":"file:./view.js","editorStyle":"file:./index.css","viewStyle":"file:./style-index.css","render":"file:./render.php"}');
+
+/***/ }),
+
+/***/ "./src/blocks/meeting-list/index.js":
+/*!******************************************!*\
+  !*** ./src/blocks/meeting-list/index.js ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
+/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _wordpress_server_side_render__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/server-side-render */ "@wordpress/server-side-render");
+/* harmony import */ var _wordpress_server_side_render__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_server_side_render__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./block.json */ "./src/blocks/meeting-list/block.json");
+/* harmony import */ var _index_scss__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./index.scss */ "./src/blocks/meeting-list/index.scss");
+/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./style.scss */ "./src/blocks/meeting-list/style.scss");
+
+
+
+
+
+
+
+
+
+(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_1__.registerBlockType)(_block_json__WEBPACK_IMPORTED_MODULE_6__.name, {
+  ..._block_json__WEBPACK_IMPORTED_MODULE_6__,
+  edit({
+    attributes,
+    setAttributes
+  }) {
+    const {
+      numberposts,
+      blockTitle
+    } = attributes;
+    const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)({
+      className: 'meetings'
+    });
+    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      ...blockProps
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+      title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Ustawienia bloku", "custom-block-package")
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextControl, {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Tytuł bloku", "custom-block-package"),
+      value: blockTitle,
+      onChange: value => setAttributes({
+        blockTitle: value
+      })
+    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextControl, {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Liczba postów", "custom-block-package"),
+      type: "number",
+      value: numberposts,
+      onChange: value => setAttributes({
+        numberposts: parseInt(value, 10)
+      })
+    }))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)((_wordpress_server_side_render__WEBPACK_IMPORTED_MODULE_5___default()), {
+      block: _block_json__WEBPACK_IMPORTED_MODULE_6__.name,
+      attributes: attributes
+    }));
+  },
+  save: () => null
+});
+
+/***/ }),
+
+/***/ "./src/blocks/meeting-list/index.scss":
+/*!********************************************!*\
+  !*** ./src/blocks/meeting-list/index.scss ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./src/blocks/meeting-list/style.scss":
+/*!********************************************!*\
+  !*** ./src/blocks/meeting-list/style.scss ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "@wordpress/block-editor":
+/*!*************************************!*\
+  !*** external ["wp","blockEditor"] ***!
+  \*************************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["blockEditor"];
+
+/***/ }),
+
+/***/ "@wordpress/blocks":
+/*!********************************!*\
+  !*** external ["wp","blocks"] ***!
+  \********************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["blocks"];
+
+/***/ }),
+
+/***/ "@wordpress/components":
+/*!************************************!*\
+  !*** external ["wp","components"] ***!
+  \************************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["components"];
+
+/***/ }),
+
+/***/ "@wordpress/i18n":
+/*!******************************!*\
+  !*** external ["wp","i18n"] ***!
+  \******************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["i18n"];
+
+/***/ }),
+
+/***/ "@wordpress/server-side-render":
+/*!******************************************!*\
+  !*** external ["wp","serverSideRender"] ***!
+  \******************************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["serverSideRender"];
+
+/***/ }),
+
+/***/ "react":
+/*!************************!*\
+  !*** external "React" ***!
+  \************************/
+/***/ ((module) => {
+
+module.exports = window["React"];
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/chunk loaded */
+/******/ 	(() => {
+/******/ 		var deferred = [];
+/******/ 		__webpack_require__.O = (result, chunkIds, fn, priority) => {
+/******/ 			if(chunkIds) {
+/******/ 				priority = priority || 0;
+/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
+/******/ 				deferred[i] = [chunkIds, fn, priority];
+/******/ 				return;
+/******/ 			}
+/******/ 			var notFulfilled = Infinity;
+/******/ 			for (var i = 0; i < deferred.length; i++) {
+/******/ 				var [chunkIds, fn, priority] = deferred[i];
+/******/ 				var fulfilled = true;
+/******/ 				for (var j = 0; j < chunkIds.length; j++) {
+/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every((key) => (__webpack_require__.O[key](chunkIds[j])))) {
+/******/ 						chunkIds.splice(j--, 1);
+/******/ 					} else {
+/******/ 						fulfilled = false;
+/******/ 						if(priority < notFulfilled) notFulfilled = priority;
+/******/ 					}
+/******/ 				}
+/******/ 				if(fulfilled) {
+/******/ 					deferred.splice(i--, 1)
+/******/ 					var r = fn();
+/******/ 					if (r !== undefined) result = r;
+/******/ 				}
+/******/ 			}
+/******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	(() => {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"blocks/meeting-list/index": 0,
+/******/ 			"blocks/meeting-list/style-index": 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		__webpack_require__.O.j = (chunkId) => (installedChunks[chunkId] === 0);
+/******/ 		
+/******/ 		// install a JSONP callback for chunk loading
+/******/ 		var webpackJsonpCallback = (parentChunkLoadingFunction, data) => {
+/******/ 			var [chunkIds, moreModules, runtime] = data;
+/******/ 			// add "moreModules" to the modules object,
+/******/ 			// then flag all "chunkIds" as loaded and fire callback
+/******/ 			var moduleId, chunkId, i = 0;
+/******/ 			if(chunkIds.some((id) => (installedChunks[id] !== 0))) {
+/******/ 				for(moduleId in moreModules) {
+/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 					}
+/******/ 				}
+/******/ 				if(runtime) var result = runtime(__webpack_require__);
+/******/ 			}
+/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
+/******/ 			for(;i < chunkIds.length; i++) {
+/******/ 				chunkId = chunkIds[i];
+/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 					installedChunks[chunkId][0]();
+/******/ 				}
+/******/ 				installedChunks[chunkId] = 0;
+/******/ 			}
+/******/ 			return __webpack_require__.O(result);
+/******/ 		}
+/******/ 		
+/******/ 		var chunkLoadingGlobal = globalThis["webpackChunkcustom_block_package"] = globalThis["webpackChunkcustom_block_package"] || [];
+/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
+/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["blocks/meeting-list/style-index"], () => (__webpack_require__("./src/blocks/meeting-list/index.js")))
+/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
+/******/ 	
+/******/ })()
+;
+//# sourceMappingURL=index.js.map

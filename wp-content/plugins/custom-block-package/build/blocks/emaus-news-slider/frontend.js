@@ -1,1 +1,24 @@
-document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".emaus-news-slider").forEach(e=>{const t="true"===e.dataset.autoplay,a=parseInt(e.dataset.autoplaySpeed,10)||3e5;window.initGlide(e,{autoplay:!!t&&a,perView:1,focusAt:"center",peek:{before:0,after:0}})})});
+/******/ (() => { // webpackBootstrap
+/*!**************************************************!*\
+  !*** ./src/blocks/emaus-news-slider/frontend.js ***!
+  \**************************************************/
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.emaus-news-slider').forEach(wrapper => {
+    const glideEl = wrapper.querySelector('.glide');
+    if (!glideEl) return;
+    const autoplay = wrapper.dataset.autoplay === 'true';
+    const autoplaySpeed = parseInt(wrapper.dataset.autoplaySpeed, 10) || 300000;
+    window.initGlide(glideEl, {
+      autoplay: autoplay ? autoplaySpeed : false,
+      perView: 1,
+      focusAt: 'center',
+      peek: {
+        before: 0,
+        after: 0
+      }
+    });
+  });
+});
+/******/ })()
+;
+//# sourceMappingURL=frontend.js.map

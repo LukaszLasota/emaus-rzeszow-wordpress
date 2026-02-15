@@ -31,18 +31,8 @@ $autoplaySpeed = isset( $attributes['autoplaySpeed'] ) ? absint( $attributes['au
 // Ensure reasonable values
 $autoplaySpeed = max( min( $autoplaySpeed, 10000 ), 1000 );
 
-// Width attributes
-$sliderWidth = isset( $attributes['sliderWidth'] ) ? sanitize_text_field( $attributes['sliderWidth'] ) : '100';
-$mobileWidth = isset( $attributes['mobileWidth'] ) ? sanitize_text_field( $attributes['mobileWidth'] ) : '100';
-$sliderPadding = isset( $attributes['sliderPadding'] ) ? floatval( $attributes['sliderPadding'] ) : 0;
-
 // Link destination option
 $linkDestination = isset( $attributes['linkDestination'] ) ? sanitize_text_field( $attributes['linkDestination'] ) : 'post';
-
-// Validate width values
-$validWidths = ['100', '75', '50'];
-if (!in_array($sliderWidth, $validWidths)) $sliderWidth = '100';
-if (!in_array($mobileWidth, $validWidths)) $mobileWidth = '100';
 
 // Validate link options
 $validLinkOptions = ['post', 'news_page'];
@@ -91,29 +81,21 @@ if (!$news_page_url) {
 // Generate unique slider ID
 $slider_id = 'emaus-news-slider-' . wp_rand();
 
-// CSS classes for width
-$width_class = 'emaus-slider-width-' . $sliderWidth;
-$mobile_width_class = 'emaus-slider-mobile-width-' . $mobileWidth;
-
-// Inline styles for padding
-$padding_style = $sliderPadding > 0 ? 'style="padding: ' . esc_attr($sliderPadding) . 'rem;"' : '';
 ?>
 
 <div id="<?php echo esc_attr( $slider_id ); ?>"
-     class="emaus-news-slider glide <?php echo esc_attr( $width_class . ' ' . $mobile_width_class ); ?>"
+     class="emaus-news-slider"
      data-autoplay="<?php echo $autoplay ? 'true' : 'false'; ?>"
-     data-autoplay-speed="<?php echo esc_attr( $autoplaySpeed ); ?>"
-    <?php echo $padding_style; ?>>
+     data-autoplay-speed="<?php echo esc_attr( $autoplaySpeed ); ?>">
     <h2 class="emaus-news-heading"><?php echo esc_html( $headingText ); ?></h2>
     <!-- Slider content wrapper - positions arrows relative to content width -->
     <div class="slider-content-wrapper">
+      <div class="glide">
         <div class="glide__track" data-glide-el="track">
             <ul class="glide__slides">
                 <?php
                 while ( $news_query->have_posts() ) :
                     $news_query->the_post();
-
-                    $post_id = get_the_ID();
 
                     // Select appropriate URL based on linkDestination setting
                     $link_url = $linkDestination === 'post' ?
@@ -167,6 +149,7 @@ $padding_style = $sliderPadding > 0 ? 'style="padding: ' . esc_attr($sliderPaddi
                 <span class="screen-reader-text"><?php esc_html_e( 'Następny', 'custom-block-package' ); ?></span>
             </button>
         </div>
+      </div>
     </div>
 </div>
 
