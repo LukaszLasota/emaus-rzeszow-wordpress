@@ -3,16 +3,14 @@ import {
     InspectorControls,
     InnerBlocks,
     MediaUpload,
-    MediaUploadCheck,
-    ColorPalette
+    MediaUploadCheck
 } from "@wordpress/block-editor";
 import {
     PanelBody,
     RangeControl,
     SelectControl,
     Button,
-    TextControl,
-    ToggleControl
+    TextControl
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import "./index.scss";
@@ -25,9 +23,7 @@ const Edit = ({ attributes, setAttributes }) => {
         columnsDesktop,
         tagName,
         backgroundImage,
-        backgroundColor,
-        padding,
-        margin,
+        blockWidth,
         gridGap,
         justifyItems,
         justifyContent,
@@ -35,35 +31,33 @@ const Edit = ({ attributes, setAttributes }) => {
         layoutType,
         flexWrap,
         flexDirection,
-        alignItems,
-        toggleClass
+        alignItems
     } = attributes;
 
 
     const TagName = tagName;
 
     const blockProps = useBlockProps({
-        className: `cbp-block section-block ${layoutType === "grid" ? "is-grid" : layoutType === "flex" ? "is-flex" : ""} ${toggleClass ? 'width-settings' : ''}`,
+        className: `cbp-block section-block ${layoutType === "grid" ? "is-grid" : layoutType === "flex" ? "is-flex" : ""}`,
         style: {
-            background: backgroundColor || undefined,
             backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
-            padding: padding || undefined,
-            margin: margin || undefined,
+            width: blockWidth || undefined,
+            marginInline: blockWidth ? "auto" : undefined,
             ...(layoutType === "grid" && {
                 "--columns-mobile": `${columnsMobile}`,
                 "--columns-small-tablet": `${columnsSmallTablet}`,
                 "--columns-large-tablet": `${columnsLargeTablet}`,
                 "--columns-desktop": `${columnsDesktop}`,
                 "--grid-gap": `${gridGap}px`,
-                "--justify-items": justifyItems,
-                "--align-content": alignContent,
+                ...(justifyItems && { "--justify-items": justifyItems }),
+                ...(alignContent && { "--align-content": alignContent }),
             }),
             ...(layoutType === "flex" && {
                 "--display": "flex",
-                "--flex-wrap": flexWrap || "nowrap",
-                "--flex-direction": flexDirection || "row",
-                "--align-items": alignItems || "stretch",
-                "--justify-content": justifyContent || "flex-start",
+                ...(flexWrap && { "--flex-wrap": flexWrap }),
+                ...(flexDirection && { "--flex-direction": flexDirection }),
+                ...(alignItems && { "--align-items": alignItems }),
+                ...(justifyContent && { "--justify-content": justifyContent }),
             }),
         },
     });
@@ -128,6 +122,7 @@ const Edit = ({ attributes, setAttributes }) => {
                                 label={__("Justify Items", "custom-block-package")}
                                 value={attributes.justifyItems}
                                 options={[
+                                    { label: "—", value: "" },
                                     { label: __("Start", "custom-block-package"), value: "start" },
                                     { label: __("End", "custom-block-package"), value: "end" },
                                     { label: __("Center", "custom-block-package"), value: "center" },
@@ -139,6 +134,7 @@ const Edit = ({ attributes, setAttributes }) => {
                                 label={__("Align Content", "custom-block-package")}
                                 value={attributes.alignContent}
                                 options={[
+                                    { label: "—", value: "" },
                                     { label: __("Start", "custom-block-package"), value: "start" },
                                     { label: __("End", "custom-block-package"), value: "end" },
                                     { label: __("Center", "custom-block-package"), value: "center" },
@@ -158,6 +154,7 @@ const Edit = ({ attributes, setAttributes }) => {
                                 label={__("Flex Wrap", "custom-block-package")}
                                 value={attributes.flexWrap}
                                 options={[
+                                    { label: "—", value: "" },
                                     { label: __("No Wrap", "custom-block-package"), value: "nowrap" },
                                     { label: __("Wrap", "custom-block-package"), value: "wrap" },
                                     { label: __("Wrap Reverse", "custom-block-package"), value: "wrap-reverse" },
@@ -168,6 +165,7 @@ const Edit = ({ attributes, setAttributes }) => {
                                 label={__("Flex Direction", "custom-block-package")}
                                 value={attributes.flexDirection}
                                 options={[
+                                    { label: "—", value: "" },
                                     { label: __("Row", "custom-block-package"), value: "row" },
                                     { label: __("Row Reverse", "custom-block-package"), value: "row-reverse" },
                                     { label: __("Column", "custom-block-package"), value: "column" },
@@ -179,6 +177,7 @@ const Edit = ({ attributes, setAttributes }) => {
                                 label={__("Align Items", "custom-block-package")}
                                 value={attributes.alignItems}
                                 options={[
+                                    { label: "—", value: "" },
                                     { label: __("Stretch", "custom-block-package"), value: "stretch" },
                                     { label: __("Start", "custom-block-package"), value: "flex-start" },
                                     { label: __("End", "custom-block-package"), value: "flex-end" },
@@ -191,6 +190,7 @@ const Edit = ({ attributes, setAttributes }) => {
                                 label={__("Justify Content", "custom-block-package")}
                                 value={attributes.justifyContent}
                                 options={[
+                                    { label: "—", value: "" },
                                     { label: __("Start", "custom-block-package"), value: "start" },
                                     { label: __("End", "custom-block-package"), value: "end" },
                                     { label: __("Center", "custom-block-package"), value: "center" },
@@ -259,49 +259,12 @@ const Edit = ({ attributes, setAttributes }) => {
                     </MediaUploadCheck>
                 </PanelBody>
 
-                <PanelBody title={__("Kolor tła", "custom-block-package")} initialOpen={false}>
-                    <ColorPalette
-                        label={__("Kolor tła", "custom-block-package")}
-                        value={backgroundColor}
-                        onChange={(color) => {
-                            setAttributes({ backgroundColor: color });
-                            if (color) {
-                                setAttributes({ gradient: "" });
-                            }
-                        }}
-                        clearable
-                    />
-                    {backgroundColor && (
-                        <Button
-                            onClick={() => setAttributes({ backgroundColor: "" })}
-                            isLink
-                            isDestructive
-                        >
-                            {__("Usuń kolor tła", "custom-block-package")}
-                        </Button>
-                    )}
-                </PanelBody>
-
-                <PanelBody title={__("Odstępy", "custom-block-package")} initialOpen={false}>
+                <PanelBody title={__("Szerokość bloku", "custom-block-package")} initialOpen={false}>
                     <TextControl
-                        label={__("Dopełnienie (Padding)", "custom-block-package")}
-                        value={padding}
-                        onChange={(value) => setAttributes({ padding: value })}
-                        help={__("Wprowadź wartości odstępu, np. '10px 20px' lub '10px 15px 20px 25px'", "custom-block-package")}
-                    />
-                    <TextControl
-                        label={__("Margines", "custom-block-package")}
-                        value={margin}
-                        onChange={(value) => setAttributes({ margin: value })}
-                        help={__("Wprowadź wartości marginesu, np. '10px 0' lub '5px 10px 15px 20px'", "custom-block-package")}
-                    />
-                </PanelBody>
-
-                <PanelBody title={__("Ustawienia szerokosći bloku", "custom-block-package")}>
-                    <ToggleControl
-                        label={__("Przełącz szerokosć strony", "custom-block-package")}
-                        checked={toggleClass}
-                        onChange={(value) => setAttributes({ toggleClass: value })}
+                        label={__("Szerokość (%)", "custom-block-package")}
+                        value={blockWidth}
+                        onChange={(value) => setAttributes({ blockWidth: value })}
+                        help={__("Np. '80%' lub '100%'. Puste = pełna dostępna szerokość.", "custom-block-package")}
                     />
                 </PanelBody>
 

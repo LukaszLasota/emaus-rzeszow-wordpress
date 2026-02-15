@@ -1,5 +1,3 @@
-@use './width.scss';
-
 .section-block {
     display: var(--display, block);
 
@@ -30,5 +28,6 @@
         flex-direction: var(--flex-direction, row);
         align-items: var(--align-items, stretch);
         justify-content: var(--justify-content, center);
+        width: 100%;
     }
 }
