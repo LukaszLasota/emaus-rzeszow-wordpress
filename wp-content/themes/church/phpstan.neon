@@ -2,9 +2,24 @@ parameters:
     level: 8
     paths:
         - App/
+        - functions.php
+        - header.php
+        - footer.php
+        - index.php
+        - front-page.php
+        - archive.php
+        - page.php
+        - single.php
+        - template-parts/
+        - patterns/
     bootstrapFiles:
         - vendor/autoload.php
     scanDirectories:
         - ../../plugins
-    # PHPStan WordPress extension handles WordPress functions automatically
-    # No ignoreErrors needed - extension works correctly!
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - identifier: missingType.iterableValue
+        -
+            message: '#Function get_field not found#'
+            paths:
+                - single.php

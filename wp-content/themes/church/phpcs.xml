@@ -11,8 +11,18 @@
     <!-- Show colors -->
     <arg name="colors"/>
 
-    <!-- Check all files in App directory -->
+    <!-- Check all PHP files -->
     <file>./App</file>
+    <file>./functions.php</file>
+    <file>./header.php</file>
+    <file>./footer.php</file>
+    <file>./index.php</file>
+    <file>./front-page.php</file>
+    <file>./archive.php</file>
+    <file>./page.php</file>
+    <file>./single.php</file>
+    <file>./template-parts</file>
+    <file>./patterns</file>
 
     <!-- Exclude vendor and build directories -->
     <exclude-pattern>*/vendor/*</exclude-pattern>
