@@ -160,8 +160,9 @@ class GroupLinkSupport implements ActionHookInterface, FilterHookInterface {
 		$link->setAttribute( 'class', 'wp-block-group__link' );
 
 		// Move all children into the link.
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOMNode property.
 		while ( $container->firstChild ) {
-			$link->appendChild( $container->firstChild );
+			$link->appendChild( $container->firstChild ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		}
 
 		// Add link back to container.

@@ -52,6 +52,7 @@ class PatternAssets implements ActionHookInterface {
 
 		// Debug: log detected patterns.
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug-only logging.
 			error_log( 'PatternAssets detected patterns: ' . wp_json_encode( $patterns ) );
 		}
 

@@ -7,9 +7,9 @@
 get_header(); ?>
 
 <main id="primary" class="site-main page__content-container section-block">
-    <section>
-        <?php the_content(); ?>
-    </section>
+	<section>
+		<?php the_content(); ?>
+	</section>
 </main>
 
 <?php

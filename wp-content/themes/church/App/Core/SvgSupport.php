@@ -71,9 +71,9 @@ class SvgSupport implements ActionHookInterface, FilterHookInterface {
 	/**
 	 * Check and allow SVG file type during upload.
 	 *
-	 * @param array<string, mixed>|null $data     File data array.
-	 * @param string                    $file     Full path to the file.
-	 * @param string                    $filename The name of the file.
+	 * @param array<string, mixed>|null  $data     File data array.
+	 * @param string                     $file     Full path to the file.
+	 * @param string                     $filename The name of the file.
 	 * @param array<string, string>|null $mimes    Allowed MIME types.
 	 * @return array<string, mixed> Modified file data.
 	 */

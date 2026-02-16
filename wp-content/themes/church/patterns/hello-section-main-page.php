@@ -1,6 +1,6 @@
 <?php
 /**
- * Title: Sekcja witaj na stronę główną 
+ * Title: Sekcja witaj na stronę główną
  * Slug: church/hello-section-main-page
  * Categories: featured, columns
  * Description: Hello section with cross
