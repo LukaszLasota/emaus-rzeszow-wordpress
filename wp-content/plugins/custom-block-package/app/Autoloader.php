@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace CustomBlockPackage;
 
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 /**
@@ -21,48 +21,48 @@ if (!defined('ABSPATH')) {
  */
 class Autoloader {
 
-    /**
-     * Constructor
-     *
-     * Registers the autoload function
-     */
-    public function __construct() {
-        spl_autoload_register([$this, 'autoload']);
-    }
+	/**
+	 * Constructor
+	 *
+	 * Registers the autoload function
+	 */
+	public function __construct() {
+		spl_autoload_register( [ $this, 'autoload' ] );
+	}
 
-    /**
-     * Autoload classes
-     *
-     * Maps CustomBlockPackage namespace to app/ directory
-     *
-     * @param string $class_name Fully qualified class name
-     * @return void
-     */
-    public function autoload(string $class_name): void {
+	/**
+	 * Autoload classes
+	 *
+	 * Maps CustomBlockPackage namespace to app/ directory
+	 *
+	 * @param string $class_name Fully qualified class name.
+	 * @return void
+	 */
+	public function autoload( string $class_name ): void {
 
-        // Check if class belongs to our namespace
-        if (0 !== strpos($class_name, 'CustomBlockPackage\\')) {
-            return;
-        }
+		// Check if class belongs to our namespace.
+		if ( 0 !== strpos( $class_name, 'CustomBlockPackage\\' ) ) {
+			return;
+		}
 
-        // Remove base namespace
-        $class_path = str_replace('CustomBlockPackage\\', '', $class_name);
+		// Remove base namespace.
+		$class_path = str_replace( 'CustomBlockPackage\\', '', $class_name );
 
-        // Convert namespace separators to directory separators
-        $class_path = str_replace('\\', DIRECTORY_SEPARATOR, $class_path);
+		// Convert namespace separators to directory separators.
+		$class_path = str_replace( '\\', DIRECTORY_SEPARATOR, $class_path );
 
-        // Build full file path
-        $file_path = UP_PLUGIN_DIR . 'app' . DIRECTORY_SEPARATOR . $class_path . '.php';
+		// Build full file path.
+		$file_path = UP_PLUGIN_DIR . 'app' . DIRECTORY_SEPARATOR . $class_path . '.php';
 
-        // Load class file if exists
-        if (file_exists($file_path)) {
-            require_once $file_path;
-        } else {
-            wp_die(
-                esc_html("The file attempting to be loaded at $file_path does not exist.")
-            );
-        }
-    }
+		// Load class file if exists.
+		if ( file_exists( $file_path ) ) {
+			require_once $file_path;
+		} else {
+			wp_die(
+				esc_html( "The file attempting to be loaded at $file_path does not exist." )
+			);
+		}
+	}
 }
 
 new Autoloader();

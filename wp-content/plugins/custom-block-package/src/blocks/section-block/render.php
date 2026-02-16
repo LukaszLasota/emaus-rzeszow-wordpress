@@ -2,6 +2,8 @@
 /**
  * Section Block Server-Side Render
  *
+ * @package CustomBlockPackage
+ *
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered inner blocks content.
  * @var WP_Block $block      Block instance.
@@ -74,9 +76,11 @@ $wrapper_attributes = get_block_wrapper_attributes(
 	)
 );
 
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes is pre-escaped by get_block_wrapper_attributes(), $content is pre-rendered inner blocks.
 printf(
 	'<%1$s %2$s>%3$s</%1$s>',
 	esc_attr( $tag_name ),
 	$wrapper_attributes,
 	$content
 );
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

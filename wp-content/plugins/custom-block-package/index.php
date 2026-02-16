@@ -8,25 +8,26 @@
  * Author:            Łukasz Lasota
  * Author URI:        https://github.com/LukaszLasota
  * Text Domain:       custom-block-package
+ *
+ * @package CustomBlockPackage
  */
 
-if(!function_exists('add_action')) {
-  echo 'Wygląda na to, że trafiłeś tu przez przypadek. 😛';
-  exit;
+if ( ! function_exists( 'add_action' ) ) {
+	echo 'Wygląda na to, że trafiłeś tu przez przypadek. 😛';
+	exit;
 }
 
-// Setup
-define('UP_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('UP_PLUGIN_FILE', __FILE__);
-define('UP_PLUGIN_URL', plugin_dir_url( __FILE__ ));
+// Setup.
+define( 'UP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'UP_PLUGIN_FILE', __FILE__ );
+define( 'UP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-// Load autoloader
+// Load autoloader.
 require_once UP_PLUGIN_DIR . 'app/Autoloader.php';
 
-// Initialize plugin classes
+// Initialize plugin classes.
 use CustomBlockPackage\Blocks\RegisterBlocks;
 use CustomBlockPackage\Assets\AssetsManager;
 
 new RegisterBlocks();
 new AssetsManager();
-
