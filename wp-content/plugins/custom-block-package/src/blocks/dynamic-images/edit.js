@@ -7,7 +7,8 @@ import {
 } from '@wordpress/block-editor';
 import {
     PanelBody,
-    Button
+    Button,
+    TextControl
 } from '@wordpress/components';
 import { Fragment } from '@wordpress/element';
 import './index.scss';
@@ -19,7 +20,8 @@ const Edit = ({ attributes, setAttributes }) => {
         imgTabletID,
         imgTabletURL,
         imgMobileID,
-        imgMobileURL
+        imgMobileURL,
+        heading
     } = attributes;
 
     const blockProps = useBlockProps();
@@ -160,20 +162,49 @@ const Edit = ({ attributes, setAttributes }) => {
                         />
                     </MediaUploadCheck>
                 </PanelBody>
+                <PanelBody
+                    title={__("Nagłówek H1", "custom-block-package")}
+                    initialOpen={true}
+                >
+                    <TextControl
+                        label={__("Tekst nagłówka (ukryty wizualnie)", "custom-block-package")}
+                        value={heading || ""}
+                        onChange={(value) => setAttributes({ heading: value })}
+                        help={__("Nagłówek H1 widoczny tylko dla wyszukiwarek i czytników ekranu.", "custom-block-package")}
+                    />
+                </PanelBody>
             </InspectorControls>
 
             <div {...blockProps}>
 
-                {!imgDesktopURL && (
+                {heading && (
+                    <h1 className="visually-hidden">{heading}</h1>
+                )}
+
+                {!imgDesktopURL && !imgTabletURL && !imgMobileURL && (
                     <p>{__("Dodaj zdjęcia dla różnych rozdzielczości.", "custom-block-package")}</p>
                 )}
 
-                {imgDesktopURL && (
-                    <img
-                        src={imgDesktopURL}
-                        style={{ maxWidth: "100%", display: "block" }}
-                        alt=""
-                    />
+                {(imgDesktopURL || imgTabletURL || imgMobileURL) && (
+                    <picture>
+                        {imgMobileURL && (
+                            <source
+                                srcSet={imgMobileURL}
+                                media="(max-width: 480px)"
+                            />
+                        )}
+                        {imgTabletURL && (
+                            <source
+                                srcSet={imgTabletURL}
+                                media="(max-width: 768px)"
+                            />
+                        )}
+                        <img
+                            src={imgDesktopURL || imgTabletURL || imgMobileURL}
+                            style={{ maxWidth: "100%", display: "block", height: "auto" }}
+                            alt=""
+                        />
+                    </picture>
                 )}
             </div>
 

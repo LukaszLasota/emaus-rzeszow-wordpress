@@ -29,9 +29,13 @@
     "imgMobileURL": {
       "type": "string",
       "default": ""
+    },
+    "heading": {
+      "type": "string",
+      "default": ""
     }
   },
-  "description": "Blok z wyborem obrazów dla desktopu, tabletu i telefonu (bez alt).",
+  "description": "Blok z wyborem obrazów dla desktopu, tabletu i telefonu z ukrytym nagłówkiem H1.",
   "editorScript": "file:./index.js",
   "viewStyle": "file:./style-index.css",
   "editorStyle": "file:./index.css",

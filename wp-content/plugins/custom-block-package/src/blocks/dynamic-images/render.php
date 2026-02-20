@@ -1,87 +1,91 @@
 <?php
 /**
  * Dynamic Images Block Render Template
- * Dynamiczny blok – funkcja generująca element <picture> z rozbudowanym srcset.
+ *
+ * Generates a <picture> element with responsive sources for desktop, tablet, and mobile.
  *
  * @package CustomBlockPackage
  *
- * @var array $attributes Block attributes
+ * @var array $attributes Block attributes.
  */
 
-$imgDesktopID = isset( $attributes['imgDesktopID'] ) ? (int) $attributes['imgDesktopID'] : 0;
-$imgTabletID  = isset( $attributes['imgTabletID'] ) ? (int) $attributes['imgTabletID'] : 0;
-$imgMobileID  = isset( $attributes['imgMobileID'] ) ? (int) $attributes['imgMobileID'] : 0;
+$img_desktop_id = isset( $attributes['imgDesktopID'] ) ? (int) $attributes['imgDesktopID'] : 0;
+$img_tablet_id  = isset( $attributes['imgTabletID'] ) ? (int) $attributes['imgTabletID'] : 0;
+$img_mobile_id  = isset( $attributes['imgMobileID'] ) ? (int) $attributes['imgMobileID'] : 0;
 
-// ----- Dla Desktop -----
-$desktop_data   = $imgDesktopID ? wp_get_attachment_image_src( $imgDesktopID, 'full' ) : null;
-$desktop_srcset = $imgDesktopID ? wp_get_attachment_image_srcset( $imgDesktopID, 'full' ) : '';
-$desktop_sizes  = $imgDesktopID ? wp_get_attachment_image_sizes( $imgDesktopID, 'full' ) : '';
+// Fetch image data for each breakpoint.
+$desktop_data   = $img_desktop_id ? wp_get_attachment_image_src( $img_desktop_id, 'full' ) : null;
+$desktop_srcset = $img_desktop_id ? (string) wp_get_attachment_image_srcset( $img_desktop_id, 'full' ) : '';
+$desktop_sizes  = $img_desktop_id ? (string) wp_get_attachment_image_sizes( $img_desktop_id, 'full' ) : '';
 
-$desktop_alt = '';
-if ( $imgDesktopID ) {
-	$desktop_alt = get_post_meta( $imgDesktopID, '_wp_attachment_image_alt', true );
-	$desktop_alt = esc_attr( $desktop_alt );
-}
+$tablet_data   = $img_tablet_id ? wp_get_attachment_image_src( $img_tablet_id, 'full' ) : null;
+$tablet_srcset = $img_tablet_id ? (string) wp_get_attachment_image_srcset( $img_tablet_id, 'full' ) : '';
+$tablet_sizes  = $img_tablet_id ? (string) wp_get_attachment_image_sizes( $img_tablet_id, 'full' ) : '';
 
-// ----- Dla Tablet -----
-$tablet_data   = $imgTabletID ? wp_get_attachment_image_src( $imgTabletID, 'full' ) : null;
-$tablet_srcset = $imgTabletID ? wp_get_attachment_image_srcset( $imgTabletID, 'full' ) : '';
-$tablet_sizes  = $imgTabletID ? wp_get_attachment_image_sizes( $imgTabletID, 'full' ) : '';
-
-// ----- Dla Mobile -----
-$mobile_data   = $imgMobileID ? wp_get_attachment_image_src( $imgMobileID, 'full' ) : null;
-$mobile_srcset = $imgMobileID ? wp_get_attachment_image_srcset( $imgMobileID, 'full' ) : '';
-$mobile_sizes  = $imgMobileID ? wp_get_attachment_image_sizes( $imgMobileID, 'full' ) : '';
+$mobile_data   = $img_mobile_id ? wp_get_attachment_image_src( $img_mobile_id, 'full' ) : null;
+$mobile_srcset = $img_mobile_id ? (string) wp_get_attachment_image_srcset( $img_mobile_id, 'full' ) : '';
+$mobile_sizes  = $img_mobile_id ? (string) wp_get_attachment_image_sizes( $img_mobile_id, 'full' ) : '';
 
 if ( ! $desktop_data && ! $tablet_data && ! $mobile_data ) {
 	return;
 }
+
+// Get alt text from first available image.
+$alt_image_id = $img_desktop_id ? $img_desktop_id : ( $img_tablet_id ? $img_tablet_id : $img_mobile_id );
+$alt_text     = $alt_image_id ? (string) get_post_meta( $alt_image_id, '_wp_attachment_image_alt', true ) : '';
+
+// Determine fallback image for <img> tag (desktop > tablet > mobile).
+$fallback_data   = $desktop_data ? $desktop_data : ( $tablet_data ? $tablet_data : $mobile_data );
+$fallback_srcset = $desktop_srcset ? $desktop_srcset : ( $tablet_srcset ? $tablet_srcset : $mobile_srcset );
+$fallback_sizes  = $desktop_sizes ? $desktop_sizes : ( $tablet_sizes ? $tablet_sizes : $mobile_sizes );
+
+// Heading for SEO and accessibility (visually hidden).
+$heading = isset( $attributes['heading'] ) ? trim( (string) $attributes['heading'] ) : '';
 ?>
 
-<div class="wp-block-custom-block-package-dynamic-images">
+<div <?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Returns pre-escaped HTML. ?>>
+	<?php if ( $heading ) : ?>
+		<h1 class="visually-hidden"><?php echo esc_html( $heading ); ?></h1>
+	<?php endif; ?>
 	<picture>
 		<?php if ( $mobile_data ) : ?>
 			<source
-				srcset="<?php echo esc_attr( $mobile_srcset ); ?>"
-				sizes="<?php echo esc_attr( $mobile_sizes ); ?>"
+				srcset="<?php echo esc_attr( $mobile_srcset ? $mobile_srcset : $mobile_data[0] ); ?>"
+				<?php if ( $mobile_sizes ) : ?>
+					sizes="<?php echo esc_attr( $mobile_sizes ); ?>"
+				<?php endif; ?>
 				media="(max-width: 480px)"
+				width="<?php echo intval( $mobile_data[1] ); ?>"
+				height="<?php echo intval( $mobile_data[2] ); ?>"
 			/>
 		<?php endif; ?>
 
 		<?php if ( $tablet_data ) : ?>
 			<source
-				srcset="<?php echo esc_attr( $tablet_srcset ); ?>"
-				sizes="<?php echo esc_attr( $tablet_sizes ); ?>"
+				srcset="<?php echo esc_attr( $tablet_srcset ? $tablet_srcset : $tablet_data[0] ); ?>"
+				<?php if ( $tablet_sizes ) : ?>
+					sizes="<?php echo esc_attr( $tablet_sizes ); ?>"
+				<?php endif; ?>
 				media="(max-width: 768px)"
+				width="<?php echo intval( $tablet_data[1] ); ?>"
+				height="<?php echo intval( $tablet_data[2] ); ?>"
 			/>
 		<?php endif; ?>
 
 		<img
-			src="
-			<?php
-			if ( $desktop_data ) {
-				echo esc_url( $desktop_data[0] );
-			} elseif ( $tablet_data ) {
-				echo esc_url( $tablet_data[0] );
-			} elseif ( $mobile_data ) {
-				echo esc_url( $mobile_data[0] );
-			}
-			?>
-			"
-			alt="<?php echo $desktop_alt; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped with esc_attr() on line 23. ?>"
-
-			<?php
-			if ( $desktop_data ) {
-				echo 'width="' . intval( $desktop_data[1] ) . '" height="' . intval( $desktop_data[2] ) . '"';
-			}
-
-			if ( $desktop_srcset ) {
-				echo ' srcset="' . esc_attr( $desktop_srcset ) . '"';
-			}
-			if ( $desktop_sizes ) {
-				echo ' sizes="' . esc_attr( $desktop_sizes ) . '"';
-			}
-			?>
+			src="<?php echo esc_url( $fallback_data[0] ); ?>"
+			alt="<?php echo esc_attr( $alt_text ); ?>"
+			width="<?php echo intval( $fallback_data[1] ); ?>"
+			height="<?php echo intval( $fallback_data[2] ); ?>"
+			loading="eager"
+			fetchpriority="high"
+			decoding="async"
+			<?php if ( $fallback_srcset ) : ?>
+				srcset="<?php echo esc_attr( $fallback_srcset ); ?>"
+			<?php endif; ?>
+			<?php if ( $fallback_sizes ) : ?>
+				sizes="<?php echo esc_attr( $fallback_sizes ); ?>"
+			<?php endif; ?>
 		/>
 	</picture>
 </div>
