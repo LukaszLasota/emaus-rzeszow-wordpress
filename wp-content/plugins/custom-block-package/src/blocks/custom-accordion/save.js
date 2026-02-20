@@ -1,16 +1,7 @@
-import { useBlockProps, InnerBlocks } from '@wordpress/block-editor';
-import './style.scss';
+import { InnerBlocks } from '@wordpress/block-editor';
 
 const Save = () => {
-    const blockProps = useBlockProps.save({
-        className: 'cbp-block',
-    });
-
-    return (
-        <div {...blockProps}>
-            <InnerBlocks.Content />
-        </div>
-    );
+    return <InnerBlocks.Content />;
 };
 
 export default Save;
