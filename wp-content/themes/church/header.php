@@ -11,7 +11,8 @@
 <header class="site-header">
 	<div class="site-header__container">
 		<nav class="site-nav" role="navigation" aria-label="<?php esc_attr_e( 'Primary Navigation', 'church' ); ?>">
-			<h1 class="site-logo" title="<?php bloginfo( 'name' ); ?>">
+			<?php $logo_tag = is_front_page() ? 'h1' : 'p'; ?>
+			<<?php echo $logo_tag; ?> class="site-logo" title="<?php bloginfo( 'name' ); ?>">
 				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="site-logo__link">
 					<?php
 					$logo_id     = get_option( 'my_custom_logo_setting_id' );
@@ -37,7 +38,7 @@
 					?>
 					>
 				</a>
-			</h1>
+			</<?php echo $logo_tag; ?>>
 
 			<button class="hamburger" aria-controls="primary-menu" aria-expanded="false">
 				<span class="hamburger__sr-only"><?php esc_html_e( 'Open/close menu', 'church' ); ?></span>

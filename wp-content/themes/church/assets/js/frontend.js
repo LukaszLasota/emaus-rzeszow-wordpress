@@ -253,4 +253,4 @@ new _js_menu_menu__WEBPACK_IMPORTED_MODULE_1__.HamburgerMenu();
 
 /******/ })()
 ;
-//# sourceMappingURL=frontend.js.map?7ab4664df4e66a5de7c2
+//# sourceMappingURL=frontend.js.map?ff5bbdc063e2ecf6b034

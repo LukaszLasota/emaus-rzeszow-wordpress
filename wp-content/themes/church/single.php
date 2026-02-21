@@ -17,6 +17,8 @@ if ( 'Tak' === $show_header ) :
 		<header class="single-post__header">
 			<h1 class="single-post__title"><?php single_post_title(); ?></h1>
 		</header>
+	<?php else : ?>
+		<h1 class="visually-hidden"><?php single_post_title(); ?></h1>
 	<?php endif; ?>
 
 	<div class="single-post__content-container section-block">
