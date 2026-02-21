@@ -45,6 +45,10 @@ if ( ! in_array( $linkDestination, $validLinkOptions, true ) ) {
 // Heading text.
 $headingText = isset( $attributes['headingText'] ) ? sanitize_text_field( $attributes['headingText'] ) : __( 'Aktualności', 'custom-block-package' );
 
+// Slides visible at once.
+$perView = isset( $attributes['perView'] ) ? absint( $attributes['perView'] ) : 1;
+$perView = max( 1, min( 3, $perView ) );
+
 // WP_Query arguments - optimized.
 $args = array(
 	'post_type'              => 'post',
@@ -90,7 +94,8 @@ $slider_id = 'emaus-news-slider-' . wp_rand();
 <div id="<?php echo esc_attr( $slider_id ); ?>"
 	class="emaus-news-slider"
 	data-autoplay="<?php echo $autoplay ? 'true' : 'false'; ?>"
-	data-autoplay-speed="<?php echo esc_attr( (string) $autoplaySpeed ); ?>">
+	data-autoplay-speed="<?php echo esc_attr( (string) $autoplaySpeed ); ?>"
+	data-per-view="<?php echo esc_attr( (string) $perView ); ?>">
 	<h2 class="emaus-news-heading"><?php echo esc_html( $headingText ); ?></h2>
 	<!-- Slider content wrapper - positions arrows relative to content width -->
 	<div class="slider-content-wrapper">
@@ -98,8 +103,10 @@ $slider_id = 'emaus-news-slider-' . wp_rand();
 		<div class="glide__track" data-glide-el="track">
 			<ul class="glide__slides">
 				<?php
+				$slide_count = 0;
 				while ( $news_query->have_posts() ) :
 					$news_query->the_post();
+					++$slide_count;
 
 					// Select appropriate URL based on linkDestination setting.
 					$link_url = 'post' === $linkDestination ?
@@ -122,7 +129,7 @@ $slider_id = 'emaus-news-slider-' . wp_rand();
 									'large',
 									array(
 										'class'   => 'news-thumbnail',
-										'alt'     => esc_attr( $post_title ),
+										'alt'     => '',
 										'loading' => 'lazy',
 									)
 								);
@@ -152,6 +159,32 @@ $slider_id = 'emaus-news-slider-' . wp_rand();
 			<button class="glide__arrow glide__arrow--right" data-glide-dir=">" aria-label="<?php esc_attr_e( 'Następny slajd', 'custom-block-package' ); ?>">
 				<span class="screen-reader-text"><?php esc_html_e( 'Następny', 'custom-block-package' ); ?></span>
 			</button>
+		</div>
+
+		<!-- Bullet navigation + optional pause button -->
+		<div class="slider-nav">
+			<div class="glide__bullets" data-glide-el="controls[nav]">
+				<?php for ( $i = 0; $i < $slide_count; $i++ ) : ?>
+					<button
+						class="glide__bullet"
+						data-glide-dir="=<?php echo esc_attr( (string) $i ); ?>"
+						aria-label="
+						<?php
+						// Translators: %d is the slide number.
+						echo esc_attr( sprintf( __( 'Slajd %d', 'custom-block-package' ), $i + 1 ) );
+						?>
+					"
+					></button>
+				<?php endfor; ?>
+			</div>
+			<?php if ( $autoplay ) : ?>
+				<button
+					class="emaus-news-slider__pause"
+					aria-label="<?php esc_attr_e( 'Zatrzymaj automatyczne przesuwanie', 'custom-block-package' ); ?>"
+					data-label-pause="<?php esc_attr_e( 'Zatrzymaj automatyczne przesuwanie', 'custom-block-package' ); ?>"
+					data-label-play="<?php esc_attr_e( 'Wznów automatyczne przesuwanie', 'custom-block-package' ); ?>"
+				></button>
+			<?php endif; ?>
 		</div>
 		</div>
 	</div>

@@ -34,6 +34,12 @@
         transition: all 0.8s;
         z-index: 0; // Create stacking context
 
+        &:focus-visible {
+            outline: 3px solid var(--wp--preset--color--site-color, #000);
+            outline-offset: -3px;
+            z-index: 10;
+        }
+
         &::before {
             content: "";
             position: absolute;

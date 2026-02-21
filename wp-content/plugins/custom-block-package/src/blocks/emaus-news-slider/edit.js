@@ -2,7 +2,7 @@ import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, RangeControl, ToggleControl, SelectControl, TextControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useRef, useEffect } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { initGlide } from '../../js/glide-init.js';
 
 import './index.scss';
@@ -14,7 +14,8 @@ export default function Edit({ attributes, setAttributes }) {
     autoplay,
     autoplaySpeed,
     linkDestination,
-    headingText
+    headingText,
+    perView
   } = attributes;
 
   const sliderRef = useRef(null);
@@ -75,8 +76,8 @@ export default function Edit({ attributes, setAttributes }) {
       type: 'carousel',
       autoplay: autoplay ? autoplaySpeed : false,
       hoverpause: true,
-      perView: 1,
-      gap: 0
+      perView: perView || 1,
+      gap: perView > 1 ? 20 : 0
     });
 
     // Cleanup on unmount
@@ -86,7 +87,7 @@ export default function Edit({ attributes, setAttributes }) {
         glideInstanceRef.current = null;
       }
     };
-  }, [posts?.length, autoplay, autoplaySpeed]);
+  }, [posts?.length, autoplay, autoplaySpeed, perView]);
 
   /**
    * ResizeObserver to update Glide on container size changes
@@ -156,6 +157,15 @@ export default function Edit({ attributes, setAttributes }) {
             onChange={(value) => setAttributes({ numberOfPosts: value })}
             min={1}
             max={10}
+            __nextHasNoMarginBottom={true}
+          />
+
+          <RangeControl
+            label={__('Slajdy widoczne jednocześnie', 'custom-block-package')}
+            value={perView}
+            onChange={(value) => setAttributes({ perView: value })}
+            min={1}
+            max={3}
             __nextHasNoMarginBottom={true}
           />
 
@@ -258,6 +268,20 @@ export default function Edit({ attributes, setAttributes }) {
                   >
                     <span className="screen-reader-text">{__('Następny', 'custom-block-package')}</span>
                   </button>
+                </div>
+              </div>
+
+              {/* Bullet navigation */}
+              <div className="slider-nav">
+                <div className="glide__bullets" data-glide-el="controls[nav]">
+                  {posts.map((_, i) => (
+                    <button
+                      key={i}
+                      className={`glide__bullet${i === 0 ? ' glide__bullet--active' : ''}`}
+                      data-glide-dir={`=${i}`}
+                      aria-label={sprintf(__('Slajd %d', 'custom-block-package'), i + 1)}
+                    />
+                  ))}
                 </div>
               </div>
             </div>

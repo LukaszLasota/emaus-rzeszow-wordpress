@@ -29,6 +29,10 @@
     "headingText": {
       "type": "string",
       "default": "Aktualności"
+    },
+    "perView": {
+      "type": "number",
+      "default": 1
     }
   },
   "supports": {

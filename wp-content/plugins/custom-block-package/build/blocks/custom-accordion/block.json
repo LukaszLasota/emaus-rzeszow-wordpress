@@ -14,12 +14,6 @@
       "blockGap": true
     }
   },
-  "attributes": {
-    "accordions": {
-      "type": "array",
-      "default": []
-    }
-  },
   "editorScript": "file:./index.js",
   "viewStyle": "file:./style-index.css",
   "viewScript": "file:./frontend.js",

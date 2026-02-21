@@ -269,8 +269,12 @@ export default function Edit({ attributes, setAttributes }) {
             </div>
           </div>
           <div className="glide__arrows" data-glide-el="controls">
-            <button className="glide__arrow glide__arrow--left" data-glide-dir="<">←</button>
-            <button className="glide__arrow glide__arrow--right" data-glide-dir=">">→</button>
+            <button className="glide__arrow glide__arrow--left" data-glide-dir="<" aria-label={__('Poprzedni slajd', 'custom-block-package')}>
+              <span className="screen-reader-text">{__('Poprzedni', 'custom-block-package')}</span>
+            </button>
+            <button className="glide__arrow glide__arrow--right" data-glide-dir=">" aria-label={__('Następny slajd', 'custom-block-package')}>
+              <span className="screen-reader-text">{__('Następny', 'custom-block-package')}</span>
+            </button>
           </div>
 
           <div className="glide__bullets" data-glide-el="controls[nav]">

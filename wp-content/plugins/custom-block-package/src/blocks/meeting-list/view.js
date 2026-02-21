@@ -1,11 +1,32 @@
 document.addEventListener("DOMContentLoaded", function () {
     const flipCards = document.querySelectorAll(".flipping-cards__card");
 
-    // Flip card on click
+    function toggleCard(card) {
+        const innerCard = card.querySelector(".flipping-cards__card-inner");
+        const front = card.querySelector(".flipping-cards__card-front");
+        const back = card.querySelector(".flipping-cards__card-back");
+
+        const isFlipped = innerCard.classList.toggle(
+            "flipping-cards__card-inner--flipped"
+        );
+
+        card.setAttribute("aria-expanded", isFlipped ? "true" : "false");
+
+        // Hide the non-visible side from assistive technologies.
+        if (front) front.setAttribute("aria-hidden", isFlipped ? "true" : "false");
+        if (back) back.setAttribute("aria-hidden", isFlipped ? "false" : "true");
+    }
+
     flipCards.forEach((card) => {
-        card.addEventListener("click", () => {
-            const innerCard = card.querySelector(".flipping-cards__card-inner");
-            innerCard.classList.toggle("flipping-cards__card-inner--flipped");
+        // Click support
+        card.addEventListener("click", () => toggleCard(card));
+
+        // Keyboard support (Enter and Space)
+        card.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                toggleCard(card);
+            }
         });
     });
 

@@ -30,17 +30,18 @@ if ( ! $desktop_data && ! $tablet_data && ! $mobile_data ) {
 	return;
 }
 
-// Get alt text from first available image.
+// Heading for SEO and accessibility (visually hidden).
+$heading = isset( $attributes['heading'] ) ? trim( (string) $attributes['heading'] ) : '';
+
+// If heading is set it acts as the text alternative for the image (decorative pattern).
+// Otherwise use the alt text from the WordPress media library.
 $alt_image_id = $img_desktop_id ? $img_desktop_id : ( $img_tablet_id ? $img_tablet_id : $img_mobile_id );
-$alt_text     = $alt_image_id ? (string) get_post_meta( $alt_image_id, '_wp_attachment_image_alt', true ) : '';
+$alt_text     = $heading ? '' : ( $alt_image_id ? (string) get_post_meta( $alt_image_id, '_wp_attachment_image_alt', true ) : '' );
 
 // Determine fallback image for <img> tag (desktop > tablet > mobile).
 $fallback_data   = $desktop_data ? $desktop_data : ( $tablet_data ? $tablet_data : $mobile_data );
 $fallback_srcset = $desktop_srcset ? $desktop_srcset : ( $tablet_srcset ? $tablet_srcset : $mobile_srcset );
 $fallback_sizes  = $desktop_sizes ? $desktop_sizes : ( $tablet_sizes ? $tablet_sizes : $mobile_sizes );
-
-// Heading for SEO and accessibility (visually hidden).
-$heading = isset( $attributes['heading'] ) ? trim( (string) $attributes['heading'] ) : '';
 ?>
 
 <div <?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Returns pre-escaped HTML. ?>>

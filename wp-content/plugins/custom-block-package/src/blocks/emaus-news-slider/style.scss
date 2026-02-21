@@ -68,7 +68,91 @@ $shadow-medium: rgba(0, 0, 0, 0.15);
     }
   }
 
-    
+  .slider-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .glide__bullets {
+    display: flex;
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .glide__bullet {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: transparent;
+    border: 2px solid var(--wp--preset--color--site-color, #333);
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    &--active,
+    &:hover {
+      background: var(--wp--preset--color--site-color, #333);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--wp--preset--color--site-color, #000);
+      outline-offset: 2px;
+    }
+  }
+
+  &__pause {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--wp--preset--color--site-color, #333);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    position: relative;
+
+    // Pause icon: two vertical bars
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2px;
+      height: 7px;
+      background: white;
+      border-radius: 1px;
+    }
+
+    &::before { left: 4px; }
+    &::after  { right: 4px; }
+
+    // Play icon when paused
+    &.is-paused {
+      &::before {
+        width: 0;
+        height: 0;
+        background: transparent;
+        border-style: solid;
+        border-width: 4px 0 4px 7px;
+        border-color: transparent transparent transparent white;
+        border-radius: 0;
+        left: 5px;
+      }
+
+      &::after { display: none; }
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--wp--preset--color--site-color, #000);
+      outline-offset: 2px;
+    }
+  }
+
   // Slider content wrapper - contains track and arrows, controls width
   .slider-content-wrapper {
     position: relative;

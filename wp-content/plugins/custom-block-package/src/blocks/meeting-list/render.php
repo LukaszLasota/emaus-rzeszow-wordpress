@@ -51,7 +51,7 @@ $meetings = get_posts(
 				$place         = get_field( 'place', $meeting->ID );
 				$content       = apply_filters( 'the_content', $meeting->post_content );
 				?>
-				<div class="flipping-cards__card">
+				<div class="flipping-cards__card" tabindex="0" role="button" aria-expanded="false">
 					<div class="flipping-cards__card-inner">
 						<div class="flipping-cards__card-front">
 							<h3><?php echo esc_html( $meeting_title ); ?></h3>
@@ -69,7 +69,7 @@ $meetings = get_posts(
 							<?php endif; ?>
 						</div>
 
-						<div class="flipping-cards__card-back">
+						<div class="flipping-cards__card-back" aria-hidden="true">
 							<div><?php echo wp_kses_post( $content ); ?></div>
 						</div>
 					</div>

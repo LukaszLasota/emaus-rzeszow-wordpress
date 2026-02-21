@@ -55,10 +55,13 @@ $link_rel    = ! empty( $post_url['opensInNewTab'] ) ? 'noopener noreferrer' : '
 					?>
 				<?php endif; ?>
 				<?php if ( $text ) : ?>
-					<h2 class="about-one__caption"><?php echo wp_kses_post( $text ); ?></h2>
+					<figcaption class="about-one__caption"><?php echo wp_kses_post( $text ); ?></figcaption>
 				<?php endif; ?>
 			</figure>
 			<div class="about-one__overlay"></div>
+			<?php if ( $link_target ) : ?>
+				<span class="screen-reader-text"><?php esc_html_e( '(otwiera w nowej karcie)', 'custom-block-package' ); ?></span>
+			<?php endif; ?>
 		</a>
 	<?php else : ?>
 		<figure>
@@ -75,7 +78,7 @@ $link_rel    = ! empty( $post_url['opensInNewTab'] ) ? 'noopener noreferrer' : '
 				?>
 			<?php endif; ?>
 			<?php if ( $text ) : ?>
-				<h2 class="about-one__caption"><?php echo wp_kses_post( $text ); ?></h2>
+				<figcaption class="about-one__caption"><?php echo wp_kses_post( $text ); ?></figcaption>
 			<?php endif; ?>
 			<div class="about-one__overlay"></div>
 		</figure>

@@ -128,15 +128,23 @@ $wrapper_attributes = get_block_wrapper_attributes(
 			<button class="glide__arrow glide__arrow--right" data-glide-dir="&gt;" aria-label="<?php esc_attr_e( 'Następny slajd', 'custom-block-package' ); ?>"></button>
 		</div>
 
-		<div class="glide__bullets" data-glide-el="controls[nav]">
-			<?php for ( $i = 0; $i < $valid_slides_count; $i++ ) : ?>
-				<button class="glide__bullet" data-glide-dir="=<?php echo esc_attr( (string) $i ); ?>" aria-label="
-				<?php
-				// Translators: %d is the slide number.
-				echo esc_attr( sprintf( __( 'Przejdź do slajdu %d', 'custom-block-package' ), $i + 1 ) );
-				?>
-			"></button>
-			<?php endfor; ?>
+		<div class="slider-nav">
+			<div class="glide__bullets" data-glide-el="controls[nav]">
+				<?php for ( $i = 0; $i < $valid_slides_count; $i++ ) : ?>
+					<button class="glide__bullet" data-glide-dir="=<?php echo esc_attr( (string) $i ); ?>" aria-label="
+					<?php
+					// Translators: %d is the slide number.
+					echo esc_attr( sprintf( __( 'Przejdź do slajdu %d', 'custom-block-package' ), $i + 1 ) );
+					?>
+				"></button>
+				<?php endfor; ?>
+			</div>
+			<button
+				class="responsive-slider__pause"
+				aria-label="<?php esc_attr_e( 'Zatrzymaj automatyczne przesuwanie', 'custom-block-package' ); ?>"
+				data-label-pause="<?php esc_attr_e( 'Zatrzymaj automatyczne przesuwanie', 'custom-block-package' ); ?>"
+				data-label-play="<?php esc_attr_e( 'Wznów automatyczne przesuwanie', 'custom-block-package' ); ?>"
+			></button>
 		</div>
 	<?php endif; ?> 
 </div>
