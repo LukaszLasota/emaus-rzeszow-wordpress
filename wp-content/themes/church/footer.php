@@ -1,10 +1,16 @@
+<?php if ( ! defined( 'ABSPATH' ) ) {
+	exit; } ?>
 <footer class="footer">
 	<div class="footer__container container">
 
 		<div class="footer__menu footer__menu--1">
-			<?php if ( is_active_sidebar( 'footer-header-1' ) ) : ?>
+			<?php
+			if ( is_active_sidebar( 'footer-header-1' ) ) :
+				?>
 				<?php dynamic_sidebar( 'footer-header-1' ); ?>
-			<?php else : ?>
+				<?php
+			else :
+				?>
 				<?php
 				wp_nav_menu(
 					array(
@@ -17,9 +23,13 @@
 		</div>
 
 		<div class="footer__menu footer__menu--2">
-			<?php if ( is_active_sidebar( 'footer-header-2' ) ) : ?>
+			<?php
+			if ( is_active_sidebar( 'footer-header-2' ) ) :
+				?>
 				<?php dynamic_sidebar( 'footer-header-2' ); ?>
-			<?php else : ?>
+				<?php
+			else :
+				?>
 				<?php
 				wp_nav_menu(
 					array(
@@ -32,9 +42,13 @@
 		</div>
 
 		<div class="footer__contact">
-			<?php if ( is_active_sidebar( 'footer-header-3' ) ) : ?>
+			<?php
+			if ( is_active_sidebar( 'footer-header-3' ) ) :
+				?>
 				<?php dynamic_sidebar( 'footer-header-3' ); ?>
-			<?php else : ?>
+				<?php
+			else :
+				?>
 				<?php
 				wp_nav_menu(
 					array(

@@ -4,6 +4,10 @@
  * The template for displaying blog posts
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 get_header();
 ?>
 <main>

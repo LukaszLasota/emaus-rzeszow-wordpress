@@ -10,6 +10,10 @@
 
 namespace Church\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Church\Interfaces\ActionHookInterface;
 
 /**

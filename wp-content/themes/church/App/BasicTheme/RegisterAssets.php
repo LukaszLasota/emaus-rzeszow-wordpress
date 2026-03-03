@@ -9,6 +9,10 @@
 
 namespace Church\BasicTheme;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Church\Interfaces\ActionHookInterface;
 
 /**

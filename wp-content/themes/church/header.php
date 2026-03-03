@@ -1,3 +1,5 @@
+<?php if ( ! defined( 'ABSPATH' ) ) {
+	exit; } ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
@@ -12,7 +14,7 @@
 	<div class="site-header__container">
 		<nav class="site-nav" role="navigation" aria-label="<?php esc_attr_e( 'Primary Navigation', 'church' ); ?>">
 			<?php $logo_tag = is_front_page() ? 'h1' : 'p'; ?>
-			<<?php echo $logo_tag; ?> class="site-logo" title="<?php bloginfo( 'name' ); ?>">
+			<<?php echo tag_escape( $logo_tag ); ?> class="site-logo" title="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">
 				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="site-logo__link">
 					<?php
 					$logo_id     = get_option( 'my_custom_logo_setting_id' );
@@ -28,17 +30,17 @@
 							$logo_height = $logo_data[2];
 						}
 					} else {
-						$logo_url = get_option( 'my_custom_logo_setting' );
+											$logo_url = get_option( 'my_custom_logo_setting' );
 					}
 					?>
-					<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php bloginfo( 'name' ); ?>" class="site-logo__image" 
+					<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" class="site-logo__image"
 					<?php
 					if ( $logo_width && $logo_height ) {
 						echo 'width="' . esc_attr( (string) $logo_width ) . '" height="' . esc_attr( (string) $logo_height ) . '"';}
 					?>
 					>
 				</a>
-			</<?php echo $logo_tag; ?>>
+			</<?php echo tag_escape( $logo_tag ); ?>>
 
 			<button class="hamburger" aria-controls="primary-menu" aria-expanded="false">
 				<span class="hamburger__sr-only"><?php esc_html_e( 'Open/close menu', 'church' ); ?></span>

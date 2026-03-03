@@ -11,6 +11,10 @@
 
 namespace Church\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Church\Interfaces\ActionHookInterface;
 use Church\Interfaces\FilterHookInterface;
 
@@ -115,7 +119,6 @@ class GroupLinkSupport implements ActionHookInterface, FilterHookInterface {
 				withLinkControl
 			);
 
-			console.log('GroupLinkSupport: Link control registered successfully');
 		})(window.wp);
 		";
 

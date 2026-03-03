@@ -55,6 +55,64 @@
     font-weight: normal;
   }
 
+  @mixin content-typography {
+    h1, h2, h3 {
+      padding: 50px 0 0;
+      @include gradient;
+      font-size: 2rem;
+      letter-spacing: 2px;
+      width: 100%;
+
+      @media (max-width: 800px) {
+        font-size: 1.6rem;
+        padding: 50px 0;
+      }
+    }
+
+    h3 {
+      font-size: 1.6rem;
+      padding: 25px 0;
+      margin: 5px 0 15px;
+    }
+
+    p, a, p a {
+      font-size: 1.2rem;
+      padding: 2px 0;
+      margin-top: 0;
+      margin-bottom: 0.3rem;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #212529;
+
+      @media (max-width: 500px) {
+        text-align: left;
+      }
+    }
+
+    p {
+      width: 100%;
+      text-align: justify;
+    }
+
+    a {
+      color: #007bff;
+    }
+
+    ul {
+      font-size: 1.2rem;
+      text-decoration: none;
+      padding-left: 0;
+      padding-bottom: 40px;
+      width: 100%;
+
+      li {
+        padding: 5px;
+        margin-left: 20px;
+        list-style-type: none;
+      }
+    }
+  }
+
   @mixin gradient-text(
     $font-size: 2rem,
     $line-height: 1.4,

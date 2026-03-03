@@ -11,6 +11,10 @@
 
 namespace Church\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Church\Interfaces\ActionHookInterface;
 use Church\Interfaces\FilterHookInterface;
 
@@ -27,6 +31,7 @@ class SvgSupport implements ActionHookInterface, FilterHookInterface {
 	public function __construct() {
 		$this->register_add_action();
 		$this->register_add_filter();
+		add_filter( 'wp_handle_upload_prefilter', array( $this, 'sanitize_svg_upload' ) );
 	}
 
 	/**
@@ -90,6 +95,37 @@ class SvgSupport implements ActionHookInterface, FilterHookInterface {
 			'type'            => $filetype['type'],
 			'proper_filename' => isset( $data['proper_filename'] ) ? $data['proper_filename'] : false,
 		);
+	}
+
+	/**
+	 * Sanitize SVG file uploads by stripping dangerous content.
+	 *
+	 * Removes script tags, event handler attributes, and javascript: URIs
+	 * from SVG files to prevent XSS attacks.
+	 *
+	 * @param array<string, mixed> $file File data array from upload handler.
+	 * @return array<string, mixed> Sanitized file data.
+	 */
+	public function sanitize_svg_upload( array $file ): array {
+		if ( 'image/svg+xml' !== $file['type'] && ! str_ends_with( $file['name'], '.svg' ) ) {
+			return $file;
+		}
+
+		$content = file_get_contents( $file['tmp_name'] );
+		if ( false === $content ) {
+			return $file;
+		}
+
+		// Strip script tags and content.
+		$content = (string) preg_replace( '/<script[\s\S]*?<\/script>/i', '', $content );
+		// Strip event handler attributes.
+		$content = (string) preg_replace( '/\s+on\w+\s*=\s*["\'][^"\']*["\']/i', '', $content );
+		// Strip javascript: URIs.
+		$content = (string) preg_replace( '/javascript\s*:/i', '', $content );
+
+		file_put_contents( $file['tmp_name'], $content );
+
+		return $file;
 	}
 
 	/**

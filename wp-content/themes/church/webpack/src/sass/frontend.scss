@@ -2,12 +2,12 @@
 
 @import 'custom-properties';
 
-@import 'base/normalize.scss';
-@import 'base/typography';
-
 @import 'abstracts/variables';
 @import 'abstracts/functions';
 @import 'abstracts/mixins';
+
+@import 'base/normalize.scss';
+@import 'base/typography';
 
 @import 'apps/main.scss';
 @import 'apps/menu/main-menu.scss';

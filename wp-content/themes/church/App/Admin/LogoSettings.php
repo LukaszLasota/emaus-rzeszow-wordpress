@@ -9,6 +9,10 @@
 
 namespace Church\Admin;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Church\Interfaces\ActionHookInterface;
 
 /**
