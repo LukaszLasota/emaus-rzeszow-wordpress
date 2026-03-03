@@ -58,9 +58,10 @@ class Autoloader {
 		if ( file_exists( $file_path ) ) {
 			require_once $file_path;
 		} else {
-			wp_die(
-				esc_html( "The file attempting to be loaded at $file_path does not exist." )
-			);
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				wp_die( esc_html( "Autoloader: file not found at {$file_path}" ) );
+			}
+			return;
 		}
 	}
 }

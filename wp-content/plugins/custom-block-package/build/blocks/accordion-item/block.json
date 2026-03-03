@@ -11,11 +11,47 @@
       "default": ""
     }
   },
+  "supports": {
+    "html": false,
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true,
+      "gradients": true
+    },
+    "typography": {
+      "fontSize": true,
+      "fontFamily": true,
+      "fontWeight": true,
+      "fontStyle": true,
+      "textTransform": true,
+      "letterSpacing": true,
+      "lineHeight": true,
+      "textDecoration": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true,
+      "blockGap": true
+    },
+    "border": {
+      "color": true,
+      "radius": true,
+      "style": true,
+      "width": true
+    },
+    "align": true,
+    "customClassName": true,
+    "anchor": true,
+    "dimensions": {
+      "minHeight": true
+    }
+  },
   "parent": [
     "custom-block-package/custom-accordion"
   ],
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
-  "viewStyle": "file:./style-index.css",
+  "style": "file:./style-index.css",
   "render": "file:./render.php"
 }

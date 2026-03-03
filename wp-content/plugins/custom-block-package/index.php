@@ -31,3 +31,30 @@ use CustomBlockPackage\Assets\AssetsManager;
 
 new RegisterBlocks();
 new AssetsManager();
+
+/**
+ * Invalidate the news slider block's transient cache when any standard post is saved.
+ */
+function cbp_flush_news_cache(): void {
+	global $wpdb;
+	$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		"DELETE FROM {$wpdb->options}
+		 WHERE option_name LIKE '_transient_emaus_news_slider_%'
+		    OR option_name LIKE '_transient_timeout_emaus_news_slider_%'"
+	);
+}
+
+/**
+ * Invalidate the meeting list block's transient cache when a meeting post is saved.
+ */
+function cbp_flush_meetings_cache(): void {
+	global $wpdb;
+	$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		"DELETE FROM {$wpdb->options}
+		 WHERE option_name LIKE '_transient_meeting_list_%'
+		    OR option_name LIKE '_transient_timeout_meeting_list_%'"
+	);
+}
+
+add_action( 'save_post_post', 'cbp_flush_news_cache' );
+add_action( 'save_post_meetings', 'cbp_flush_meetings_cache' );

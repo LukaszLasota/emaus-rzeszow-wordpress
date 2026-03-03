@@ -7,6 +7,9 @@
  * @var array $attributes Block attributes
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
+
 $latitude        = isset( $attributes['latitude'] ) ? (float) $attributes['latitude'] : 50.031562;
 $longitude       = isset( $attributes['longitude'] ) ? (float) $attributes['longitude'] : 21.997937;
 $zoom            = isset( $attributes['zoom'] ) ? (int) $attributes['zoom'] : 16;

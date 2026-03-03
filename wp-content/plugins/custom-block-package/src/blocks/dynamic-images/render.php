@@ -9,6 +9,9 @@
  * @var array $attributes Block attributes.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
+
 $img_desktop_id = isset( $attributes['imgDesktopID'] ) ? (int) $attributes['imgDesktopID'] : 0;
 $img_tablet_id  = isset( $attributes['imgTabletID'] ) ? (int) $attributes['imgTabletID'] : 0;
 $img_mobile_id  = isset( $attributes['imgMobileID'] ) ? (int) $attributes['imgMobileID'] : 0;

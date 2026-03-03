@@ -9,6 +9,9 @@
  * @var WP_Block $block Block instance
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
+
 $desktop_images = $attributes['desktopImages'] ?? [];
 $mobile_images  = $attributes['mobileImages'] ?? [];
 

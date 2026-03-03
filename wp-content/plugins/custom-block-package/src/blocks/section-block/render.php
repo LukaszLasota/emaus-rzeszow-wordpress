@@ -9,8 +9,12 @@
  * @var WP_Block $block      Block instance.
  */
 
-$tag_name    = $attributes['tagName'] ?? 'div';
-$layout_type = $attributes['layoutType'] ?? 'none';
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
+
+$allowed_tags = [ 'div', 'section', 'article', 'main', 'header', 'footer', 'aside' ];
+$tag_name     = in_array( $attributes['tagName'] ?? 'div', $allowed_tags, true ) ? $attributes['tagName'] : 'div';
+$layout_type  = $attributes['layoutType'] ?? 'none';
 
 // Build CSS classes.
 $classes = array( 'cbp-block', 'section-block' );
@@ -29,9 +33,19 @@ if ( ! empty( $attributes['backgroundImage'] ) ) {
 }
 
 if ( ! empty( $attributes['blockWidth'] ) ) {
-	$styles[] = 'width:' . esc_attr( $attributes['blockWidth'] );
-	$styles[] = 'margin-inline:auto';
+	if ( preg_match( '/^\d+(%|px|em|rem|vw|ch)$/', $attributes['blockWidth'] ) ) {
+		$styles[] = 'width:' . $attributes['blockWidth'];
+		$styles[] = 'margin-inline:auto';
+	}
 }
+
+// Allowed CSS values for validation.
+$allowed_justify_items   = [ '', 'start', 'end', 'center', 'stretch', 'baseline' ];
+$allowed_align_content   = [ '', 'start', 'end', 'center', 'stretch', 'space-between', 'space-around', 'space-evenly' ];
+$allowed_flex_wrap       = [ '', 'nowrap', 'wrap', 'wrap-reverse' ];
+$allowed_flex_direction  = [ '', 'row', 'row-reverse', 'column', 'column-reverse' ];
+$allowed_align_items     = [ '', 'start', 'end', 'center', 'stretch', 'baseline' ];
+$allowed_justify_content = [ '', 'start', 'end', 'center', 'space-between', 'space-around', 'space-evenly' ];
 
 // Grid CSS custom properties.
 if ( 'grid' === $layout_type ) {
@@ -42,10 +56,10 @@ if ( 'grid' === $layout_type ) {
 	$styles[] = '--grid-gap:' . ( $attributes['gridGap'] ?? 10 ) . 'px';
 
 	if ( ! empty( $attributes['justifyItems'] ) ) {
-		$styles[] = '--justify-items:' . $attributes['justifyItems'];
+		$styles[] = '--justify-items:' . ( in_array( $attributes['justifyItems'], $allowed_justify_items, true ) ? $attributes['justifyItems'] : '' );
 	}
 	if ( ! empty( $attributes['alignContent'] ) ) {
-		$styles[] = '--align-content:' . $attributes['alignContent'];
+		$styles[] = '--align-content:' . ( in_array( $attributes['alignContent'], $allowed_align_content, true ) ? $attributes['alignContent'] : '' );
 	}
 }
 
@@ -54,16 +68,16 @@ if ( 'flex' === $layout_type ) {
 	$styles[] = '--display:flex';
 
 	if ( ! empty( $attributes['flexWrap'] ) ) {
-		$styles[] = '--flex-wrap:' . $attributes['flexWrap'];
+		$styles[] = '--flex-wrap:' . ( in_array( $attributes['flexWrap'], $allowed_flex_wrap, true ) ? $attributes['flexWrap'] : '' );
 	}
 	if ( ! empty( $attributes['flexDirection'] ) ) {
-		$styles[] = '--flex-direction:' . $attributes['flexDirection'];
+		$styles[] = '--flex-direction:' . ( in_array( $attributes['flexDirection'], $allowed_flex_direction, true ) ? $attributes['flexDirection'] : '' );
 	}
 	if ( ! empty( $attributes['alignItems'] ) ) {
-		$styles[] = '--align-items:' . $attributes['alignItems'];
+		$styles[] = '--align-items:' . ( in_array( $attributes['alignItems'], $allowed_align_items, true ) ? $attributes['alignItems'] : '' );
 	}
 	if ( ! empty( $attributes['justifyContent'] ) ) {
-		$styles[] = '--justify-content:' . $attributes['justifyContent'];
+		$styles[] = '--justify-content:' . ( in_array( $attributes['justifyContent'], $allowed_justify_content, true ) ? $attributes['justifyContent'] : '' );
 	}
 }
 

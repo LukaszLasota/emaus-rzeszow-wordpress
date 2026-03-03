@@ -12,6 +12,9 @@ declare(strict_types=1);
 
 namespace CustomBlockPackage\Assets;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
+
 /**
  * Class AssetsManager
  *

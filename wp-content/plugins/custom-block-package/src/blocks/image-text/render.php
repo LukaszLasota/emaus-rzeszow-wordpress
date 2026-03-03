@@ -9,6 +9,9 @@
  * @var WP_Block $block Instancja bloku
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
+
 $text     = $attributes['text'] ?? '';
 $img_id   = $attributes['imgID'] ?? 0;
 $post_url = $attributes['postURL'] ?? [

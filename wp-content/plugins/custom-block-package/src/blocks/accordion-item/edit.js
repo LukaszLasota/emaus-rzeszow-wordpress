@@ -28,15 +28,16 @@ const Edit = ({ attributes, setAttributes }) => {
                 </PanelBody>
             </InspectorControls>
 
-            <div className="accordion__title">
+            <h3 className="accordion__title-text">
                 <RichText
-                    tagName="h3"
+                    tagName="button"
                     value={title}
                     onChange={(value) => setAttributes({ title: value })}
                     placeholder={__('Tytuł akordeonu', 'custom-block-package')}
-                    className="accordion__title-text"
+                    className="accordion__title"
+                    aria-expanded="false"
                 />
-            </div>
+            </h3>
             <div className="accordion__content">
                 <div className="accordion__content--box">
                     <InnerBlocks templateLock={false} />
