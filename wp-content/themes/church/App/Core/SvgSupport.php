@@ -98,10 +98,11 @@ class SvgSupport implements ActionHookInterface, FilterHookInterface {
 	}
 
 	/**
-	 * Sanitize SVG file uploads by stripping dangerous content.
+	 * Sanitize SVG file uploads using DOM-based parsing.
 	 *
-	 * Removes script tags, event handler attributes, and javascript: URIs
-	 * from SVG files to prevent XSS attacks.
+	 * Uses enshrined/svg-sanitize library for proper SVG sanitization
+	 * that handles script tags, event handlers, javascript: URIs,
+	 * foreignObject, xlink:href, data URIs, and entity encoding bypasses.
 	 *
 	 * @param array<string, mixed> $file File data array from upload handler.
 	 * @return array<string, mixed> Sanitized file data.
@@ -111,19 +112,20 @@ class SvgSupport implements ActionHookInterface, FilterHookInterface {
 			return $file;
 		}
 
-		$content = file_get_contents( $file['tmp_name'] );
+		$content = file_get_contents( $file['tmp_name'] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		if ( false === $content ) {
 			return $file;
 		}
 
-		// Strip script tags and content.
-		$content = (string) preg_replace( '/<script[\s\S]*?<\/script>/i', '', $content );
-		// Strip event handler attributes.
-		$content = (string) preg_replace( '/\s+on\w+\s*=\s*["\'][^"\']*["\']/i', '', $content );
-		// Strip javascript: URIs.
-		$content = (string) preg_replace( '/javascript\s*:/i', '', $content );
+		$sanitizer = new \enshrined\svgSanitize\Sanitizer();
+		$clean_svg = $sanitizer->sanitize( $content );
 
-		file_put_contents( $file['tmp_name'], $content );
+		if ( false === $clean_svg ) {
+			$file['error'] = __( 'This SVG file could not be sanitized and was rejected.', 'church' );
+			return $file;
+		}
+
+		file_put_contents( $file['tmp_name'], $clean_svg ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 
 		return $file;
 	}

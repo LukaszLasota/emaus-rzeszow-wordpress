@@ -22,5 +22,8 @@
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "phpstan/extension-installer": true
         }
+    },
+    "require": {
+        "enshrined/svg-sanitize": "^0.22.0"
     }
 }

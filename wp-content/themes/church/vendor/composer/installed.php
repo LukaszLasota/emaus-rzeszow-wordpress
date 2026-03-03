@@ -3,7 +3,7 @@
         'name' => '__root__',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '1bb6a3cf476bd3c68400ae28dfe90f92b7de3def',
+        'reference' => 'cfb7a3f98207b9c31a0d2272816b90236a8164ea',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         '__root__' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '1bb6a3cf476bd3c68400ae28dfe90f92b7de3def',
+            'reference' => 'cfb7a3f98207b9c31a0d2272816b90236a8164ea',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -27,6 +27,15 @@
             'install_path' => __DIR__ . '/../dealerdirect/phpcodesniffer-composer-installer',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'enshrined/svg-sanitize' => array(
+            'pretty_version' => '0.22.0',
+            'version' => '0.22.0.0',
+            'reference' => '0afa95ea74be155a7bcd6c6fb60c276c39984500',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../enshrined/svg-sanitize',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'php-stubs/wordpress-stubs' => array(
             'pretty_version' => 'v6.9.0',

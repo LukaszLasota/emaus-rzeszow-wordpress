@@ -173,6 +173,6 @@ class GroupLinkSupport implements ActionHookInterface, FilterHookInterface {
 
 		$result = $dom->saveHTML();
 
-		return false !== $result ? $result : $block_content;
+		return false !== $result ? wp_kses_post( $result ) : $block_content;
 	}
 }
