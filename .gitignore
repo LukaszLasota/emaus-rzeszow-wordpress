@@ -41,6 +41,9 @@ wp-content/uploads/
 node_modules/
 bower_components/
 
+# ignore plugin vendor directories (dev dependencies only)
+wp-content/plugins/*/vendor/
+
 # ignore OS generated files
 .DS_Store
 ehthumbs.db
