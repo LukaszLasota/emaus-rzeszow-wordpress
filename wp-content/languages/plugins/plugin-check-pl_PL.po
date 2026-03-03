@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Plugin Check (PCP) - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-12-19 13:52:18+0000\n"
+"PO-Revision-Date: 2026-02-10 12:32:13+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,159 @@ msgstr ""
 "X-Generator: GlotPress/4.0.3\n"
 "Language: pl\n"
 "Project-Id-Version: Plugins - Plugin Check (PCP) - Stable (latest release)\n"
+
+#: templates/admin-page.php:64
+msgid "Types"
+msgstr "Rodzaje"
+
+#: includes/Utilities/Results_Exporter.php:273
+msgid "Docs"
+msgstr "Dokumenty"
+
+#: includes/Utilities/Results_Exporter.php:253
+msgid "Unknown plugin"
+msgstr "Nieznana wtyczka"
+
+#: includes/Utilities/Results_Exporter.php:115
+msgid "Unsupported export format."
+msgstr "Nieobsługiwany format eksportu."
+
+#: includes/Traits/AI_Connect.php:298
+msgid "AI client library is not available."
+msgstr "Brak dostępu do biblioteki klienta AI."
+
+#. translators: %s: Error message
+#: includes/Traits/AI_Connect.php:271
+msgid "Connection error: %s"
+msgstr "Błąd połączenia: %s"
+
+#: includes/Traits/AI_Connect.php:256
+msgid "Authentication failed. Please check your API key."
+msgstr "Nie udało się uwierzytelnić. Sprawdź swój klucz API."
+
+#: includes/Traits/AI_Connect.php:247 includes/Traits/AI_Connect.php:263
+msgid "The selected model is not available. Please check your model selection."
+msgstr "Wybrany model nie jest dostępny. Sprawdź wybór."
+
+#: includes/Traits/AI_Connect.php:216
+msgid "Provider, API key, and model are required to test the connection."
+msgstr "Do przetestowania połączenia potrzebny jest dostawca, klucz API i model."
+
+#: includes/Traits/AI_Connect.php:209
+msgid "AI client library is not available. Please ensure wp-ai-client is installed."
+msgstr "Biblioteka klienta AI nie jest dostępna. Upewnij się, że wp-ai-client został zainstalowany."
+
+#: includes/Traits/AI_Check_Names.php:606
+msgid "🌐 Language:"
+msgstr "🌐 Język:"
+
+#: includes/Traits/AI_Check_Names.php:590
+msgid "💡 Suggestions:"
+msgstr "💡 Podpowiedzi:"
+
+#: includes/Traits/AI_Check_Names.php:586
+msgid "Category:"
+msgstr "Kategoria:"
+
+#: includes/Traits/AI_Check_Names.php:583
+msgid "Description:"
+msgstr "Opis:"
+
+#: includes/Traits/AI_Check_Names.php:580
+msgid "Slug:"
+msgstr "Uproszczona nazwa:"
+
+#: includes/Traits/AI_Check_Names.php:577
+msgid "Display Name:"
+msgstr "Wyświetlana nazwa:"
+
+#: includes/Traits/AI_Check_Names.php:560
+msgid "™️ Trademarks Detected:"
+msgstr "™️ Wykryte znaki towarowe:"
+
+#: includes/Traits/AI_Check_Names.php:544
+msgid "📄 Description:"
+msgstr "📄 Opis:"
+
+#: includes/Traits/AI_Check_Names.php:529
+msgid "©️ Owner/Trademark:"
+msgstr "©️ Właściciel/znak towarowy:"
+
+#: includes/Traits/AI_Check_Names.php:514
+msgid "📝 Naming:"
+msgstr "📝 Nazewnictwo:"
+
+#: includes/Traits/AI_Check_Names.php:499
+msgid "🚫 Disallowed:"
+msgstr "🚫 Niedozwolone:"
+
+#: includes/Traits/AI_Check_Names.php:449
+msgid "Description"
+msgstr "Opis"
+
+#: includes/Traits/AI_Check_Names.php:446
+msgid "Owner/Trademark"
+msgstr "Właściciel/znak towarowy"
+
+#: includes/Traits/AI_Check_Names.php:443
+msgid "Naming"
+msgstr "Nazewnictwo"
+
+#: includes/Traits/AI_Check_Names.php:428
+msgid "No Issues Detected"
+msgstr "Nie wykryto żadnych problemów"
+
+#: includes/Traits/AI_Check_Names.php:425
+msgid "Generally Allowable"
+msgstr "Ogólnie dopuszczalne"
+
+#: includes/Traits/AI_Check_Names.php:417
+msgid "Issues Found"
+msgstr "Wykryte problemy"
+
+#: includes/Traits/AI_Check_Names.php:413
+msgid "Disallowed"
+msgstr "Niedozwolone"
+
+#: includes/Admin/Settings_Page.php:212
+msgid "Model"
+msgstr "Model"
+
+#: includes/Admin/Settings_Page.php:201
+msgid "API Key / Credentials"
+msgstr "Klucz API / dane dostępowe"
+
+#: includes/Admin/Settings_Page.php:190
+msgid "Provider"
+msgstr "Dostawca"
+
+#: includes/Admin/Settings_Page.php:183
+msgid "AI Integration"
+msgstr "Integracja AI"
+
+#: includes/Admin/Settings_Page.php:116
+msgid "Provider is required"
+msgstr "Wymagany dostawca"
+
+#: includes/Admin/Settings_Page.php:109
+msgid "Insufficient permissions"
+msgstr "Brak uprawnień"
+
+#: includes/Admin/Settings_Page.php:95
+msgid "Error loading models"
+msgstr "Błąd wczytywania modeli"
+
+#: includes/Admin/Settings_Page.php:94
+msgid "No models available. Please check your API key."
+msgstr "Brak dostępnych modeli. Sprawdź swój klucz API."
+
+#: includes/Admin/Settings_Page.php:93 includes/Admin/Settings_Page.php:329
+msgid "-- Select Model --"
+msgstr "-- Wybierz model --"
+
+#: includes/Admin/Settings_Page.php:92
+msgid "Loading models..."
+msgstr "Ładowanie modeli…"
 
 #: includes/Checker/Checks/Security/Safe_Redirect_Check.php:79
 #: includes/Checker/Checks/Security/Safe_Redirect_Check.php:98
