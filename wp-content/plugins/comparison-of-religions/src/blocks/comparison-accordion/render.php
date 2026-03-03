@@ -83,6 +83,8 @@ $query_args = [
 	'meta_key'       => 'sort_order',
 	'orderby'        => 'meta_value_num',
 	'order'          => 'ASC',
+	'no_found_rows'  => true,
+	'cache_results'  => false,
 ];
 if ( ! empty( $selected_categories ) ) {
 	$query_args['tax_query'] = [
