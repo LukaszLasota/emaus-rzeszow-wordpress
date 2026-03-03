@@ -68,12 +68,16 @@ class AssetsManager {
 	 * @return void
 	 */
 	private function register_leaflet_assets(): void {
-		wp_register_style(
-			'my-block-leaflet-style',
-			'https://unpkg.com/leaflet@' . self::LEAFLET_VERSION . '/dist/leaflet.css',
-			array(),
-			self::LEAFLET_VERSION
-		);
+		$leaflet_css_path = UP_PLUGIN_DIR . 'build/leaflet/leaflet.css';
+
+		if ( file_exists( $leaflet_css_path ) ) {
+			wp_register_style(
+				'my-block-leaflet-style',
+				UP_PLUGIN_URL . 'build/leaflet/leaflet.css',
+				array(),
+				self::LEAFLET_VERSION
+			);
+		}
 	}
 
 	/**

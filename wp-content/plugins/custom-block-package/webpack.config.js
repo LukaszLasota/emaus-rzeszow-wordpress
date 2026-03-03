@@ -61,6 +61,10 @@ module.exports = {
           from: path.resolve(__dirname, 'src/blocks/map-block/images'),
           to: path.resolve(__dirname, 'build/blocks/map-block/images'),
         },
+        {
+          from: path.resolve(__dirname, 'node_modules/leaflet/dist/leaflet.css'),
+          to: path.resolve(__dirname, 'build/leaflet/leaflet.css'),
+        },
       ],
     }),
   ],
