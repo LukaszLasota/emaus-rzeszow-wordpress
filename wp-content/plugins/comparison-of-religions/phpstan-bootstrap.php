@@ -8,6 +8,10 @@
  * @package ComparisonOfReligions
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 define( 'COR_PLUGIN_DIR', __DIR__ . '/' );
 define( 'COR_PLUGIN_FILE', __DIR__ . '/index.php' );
 define( 'COR_PLUGIN_URL', '/wp-content/plugins/comparison-of-religions/' );

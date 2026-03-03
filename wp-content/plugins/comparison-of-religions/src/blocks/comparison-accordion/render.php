@@ -29,6 +29,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Block render templates are included in file scope by WordPress core.
+// Variables here are NOT truly global — they are local to this template inclusion.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 use ComparisonOfReligions\PostTypes\ComparisonTopic;
 use ComparisonOfReligions\Taxonomies\ComparisonCategory;
 

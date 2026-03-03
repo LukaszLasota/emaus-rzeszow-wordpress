@@ -18,6 +18,9 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
+// Uninstall scripts run in global scope — prefix variables per WordPress coding standards.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 // Delete all comparison_topic posts permanently (force_delete = true).
 $comparison_posts = get_posts(
 	[

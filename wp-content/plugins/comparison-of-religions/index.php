@@ -96,7 +96,7 @@ function cor_import_page(): void {
 
 	// Handle JSON export — streams a .json file download to the browser.
 	if ( isset( $_POST['cor_export_json'] ) && check_admin_referer( 'cor_import_nonce' ) ) {
-		$data = export_comparison_data();
+		$data = cor_export_comparison_data();
 		$json = wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
 
 		header( 'Content-Type: application/json; charset=utf-8' );
@@ -109,7 +109,7 @@ function cor_import_page(): void {
 	// Handle built-in hardcoded data import (seeds the database with default comparison data).
 	if ( isset( $_POST['cor_run_import'] ) && check_admin_referer( 'cor_import_nonce' ) ) {
 		echo '<div class="wrap"><h1>' . esc_html__( 'Import danych', 'comparison-of-religions' ) . '</h1><pre>';
-		run_import();
+		cor_run_import();
 		echo '</pre><p><strong>' . esc_html__( 'Import zakończony.', 'comparison-of-religions' ) . '</strong></p></div>';
 		return;
 	}
@@ -129,7 +129,7 @@ function cor_import_page(): void {
 			if ( null === $data || ! is_array( $data ) ) {
 				echo esc_html__( 'ERROR: Nieprawidłowy format JSON.', 'comparison-of-religions' ) . "\n";
 			} else {
-				run_json_import( $data );
+				cor_run_json_import( $data );
 			}
 		}
 
