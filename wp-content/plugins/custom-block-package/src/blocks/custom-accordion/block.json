@@ -6,6 +6,11 @@
     "category": "custom-blocks-from-scratch",
     "icon": "menu",
     "description": "Lista akordeonów, każdy element można rozwijać.",
+    "attributes": {
+        "anchor": {
+            "type": "string"
+        }
+    },
     "supports": {
         "html": false,
         "color": {

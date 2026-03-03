@@ -10,6 +10,9 @@
     "version": "1",
     "textdomain": "pdf-block", 
     "attributes": {
+		"anchor": {
+			"type": "string"
+		},
 		"pdfUrl": {
 			"type": "string"
 		},
@@ -31,6 +34,9 @@
 		"viewerWidth": {
 			"type": "number"
 		}
+	},
+	"supports": {
+		"anchor": true
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",

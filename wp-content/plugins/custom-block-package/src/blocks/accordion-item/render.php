@@ -17,7 +17,13 @@ $accordion_title = isset( $attributes['title'] ) ? $attributes['title'] : '';
 $content_id      = wp_unique_id( 'accordion-content-' );
 ?>
 
-<div <?php echo get_block_wrapper_attributes( array( 'class' => 'cbp-block accordion__item' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Returns pre-escaped HTML. ?>>
+<?php
+$wrapper_extra = array( 'class' => 'cbp-block accordion__item' );
+if ( ! empty( $attributes['anchor'] ) ) {
+	$wrapper_extra['id'] = $attributes['anchor'];
+}
+?>
+<div <?php echo get_block_wrapper_attributes( $wrapper_extra ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Returns pre-escaped HTML. ?>>
 	<h3 class="accordion__title-text">
 		<button
 			class="accordion__title"

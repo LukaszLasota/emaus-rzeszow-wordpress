@@ -21,6 +21,9 @@
     "anchor": true
   },
   "attributes": {
+    "anchor": {
+      "type": "string"
+    },
     "latitude": {
       "type": "number",
       "default": 50.031562

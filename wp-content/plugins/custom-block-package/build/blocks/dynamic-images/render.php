@@ -48,7 +48,13 @@ $fallback_srcset = $desktop_srcset ? $desktop_srcset : ( $tablet_srcset ? $table
 $fallback_sizes  = $desktop_sizes ? $desktop_sizes : ( $tablet_sizes ? $tablet_sizes : $mobile_sizes );
 ?>
 
-<div <?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Returns pre-escaped HTML. ?>>
+<?php
+$wrapper_extra = array();
+if ( ! empty( $attributes['anchor'] ) ) {
+	$wrapper_extra['id'] = $attributes['anchor'];
+}
+?>
+<div <?php echo get_block_wrapper_attributes( $wrapper_extra ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Returns pre-escaped HTML. ?>>
 	<?php if ( $heading ) : ?>
 		<h1 class="visually-hidden"><?php echo esc_html( $heading ); ?></h1>
 	<?php endif; ?>

@@ -4,6 +4,9 @@
   "title": "Responsywny slider",
   "category": "custom-blocks-from-scratch",
   "attributes": {
+    "anchor": {
+      "type": "string"
+    },
     "desktopImages": {
       "type": "array",
       "default": []
@@ -16,6 +19,9 @@
       "type": "number",
       "default": 767
     }
+  },
+  "supports": {
+    "anchor": true
   },
   "editorScript": [
     "file:./index.js"

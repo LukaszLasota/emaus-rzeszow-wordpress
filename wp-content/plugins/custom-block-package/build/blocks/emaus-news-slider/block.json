@@ -6,6 +6,9 @@
   "icon": "slides",
   "description": "Wyświetla najnowsze aktualności jako slider",
   "attributes": {
+    "anchor": {
+      "type": "string"
+    },
     "numberOfPosts": {
       "type": "number",
       "default": 3
@@ -36,7 +39,8 @@
     }
   },
   "supports": {
-    "html": false
+    "html": false,
+    "anchor": true
   },
   "textdomain": "custom-block-package",
   "editorScript": "file:./index.js",

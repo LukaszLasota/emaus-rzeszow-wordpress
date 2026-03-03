@@ -6,6 +6,9 @@
   "category": "custom-blocks-from-scratch",
   "icon": "format-image",
   "attributes": {
+    "anchor": {
+      "type": "string"
+    },
     "imgDesktopID": {
       "type": "number",
       "default": 0
@@ -36,6 +39,9 @@
     }
   },
   "description": "Blok z wyborem obrazów dla desktopu, tabletu i telefonu z ukrytym nagłówkiem H1.",
+  "supports": {
+    "anchor": true
+  },
   "editorScript": "file:./index.js",
   "viewStyle": "file:./style-index.css",
   "editorStyle": "file:./index.css",

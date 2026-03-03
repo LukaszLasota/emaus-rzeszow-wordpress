@@ -10,6 +10,9 @@
     "version": "1",
     "textdomain": "custom-block-package",
     "attributes": {
+        "anchor": {
+            "type": "string"
+        },
         "numberposts": {
             "type": "number",
             "default": -1
@@ -39,6 +42,7 @@
       "padding": true, 
       "blockGap": true
     },
+      "anchor": true,
       "customClassName": true
   },
     "editorScript": "file:./index.js",

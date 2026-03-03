@@ -248,9 +248,24 @@ __webpack_require__.r(__webpack_exports__);
 
 
 new _js_menu_menu__WEBPACK_IMPORTED_MODULE_1__.HamburgerMenu();
+if (window.location.hash) {
+    history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+}
+window.addEventListener('load', () => {
+    const { hash } = window.location;
+    if (!hash)
+        return;
+    const target = document.querySelector(hash);
+    if (!target)
+        return;
+    setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+});
 
 })();
 
 /******/ })()
 ;
-//# sourceMappingURL=frontend.js.map?03f7a3e5a51157f8744e
+//# sourceMappingURL=frontend.js.map?7106ca7095bad5433a08

@@ -24,13 +24,15 @@ $map_id = 'map-' . wp_unique_id();
 $icon_url   = plugins_url( 'build/blocks/map-block/images/marker-icon.png', UP_PLUGIN_FILE );
 $shadow_url = plugins_url( 'build/blocks/map-block/images/marker-shadow.png', UP_PLUGIN_FILE );
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class'      => 'map-block-wrapper',
-		'role'       => 'region',
-		'aria-label' => __( 'Mapa lokalizacji', 'custom-block-package' ),
-	)
+$wrapper_extra = array(
+	'class'      => 'map-block-wrapper',
+	'role'       => 'region',
+	'aria-label' => __( 'Mapa lokalizacji', 'custom-block-package' ),
 );
+if ( ! empty( $attributes['anchor'] ) ) {
+	$wrapper_extra['id'] = $attributes['anchor'];
+}
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped by get_block_wrapper_attributes(). ?>>

@@ -50,11 +50,13 @@ for ( $i = 0; $i < $max_slides; $i++ ) {
 
 $valid_slides_count = count( $valid_slides );
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	[
-		'class' => 'glide wp-block-custom-block-package-responsive-image-slider',
-	]
-);
+$wrapper_extra = [
+	'class' => 'glide wp-block-custom-block-package-responsive-image-slider',
+];
+if ( ! empty( $attributes['anchor'] ) ) {
+	$wrapper_extra['id'] = $attributes['anchor'];
+}
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 ?>
 
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>

@@ -7,6 +7,9 @@
   "description": "Blok dla sekcji",
   "textdomain": "custom-block-package",
   "attributes": {
+    "anchor": {
+      "type": "string"
+    },
     "tagName": {
       "type": "string",
       "default": "div"

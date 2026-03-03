@@ -6,6 +6,9 @@
     "category": "custom-blocks-from-scratch",
     "icon": "editor-insertmore",
     "attributes": {
+        "anchor": {
+            "type": "string"
+        },
         "title": {
             "type": "string",
             "default": ""

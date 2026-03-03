@@ -11,20 +11,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Generate unique cache key based on attributes.
-$cache_key    = 'emaus_news_slider_' . md5( wp_json_encode( $attributes ) );
-$cache_expire = 30 * MINUTE_IN_SECONDS;
-
-// Try to get from transient cache.
-$cached_output = get_transient( $cache_key );
-if ( false !== $cached_output ) {
-	echo $cached_output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	return;
-}
-
-// Start output buffering.
-ob_start();
-
 // Sanitize and validate attributes.
 $numberOfPosts = isset( $attributes['numberOfPosts'] ) ? absint( $attributes['numberOfPosts'] ) : 3;
 // Limit max posts for performance.
@@ -72,7 +58,11 @@ $news_query = new WP_Query( $args );
 
 // Check if posts found.
 if ( ! $news_query->have_posts() ) {
-	echo '<p>' . esc_html__( 'Brak aktualności do wyświetlenia.', 'custom-block-package' ) . '</p>';
+	?>
+	<div <?php echo get_block_wrapper_attributes( array( 'class' => 'emaus-news-slider' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+		<p><?php esc_html_e( 'Brak aktualności do wyświetlenia.', 'custom-block-package' ); ?></p>
+	</div>
+	<?php
 	return;
 }
 
@@ -89,18 +79,15 @@ if ( ! $news_page_url ) {
 	}
 }
 
-// Generate unique slider ID.
-$slider_id = 'emaus-news-slider-' . wp_rand();
+// Cache inner content only; wrapper is rendered fresh for anchor support.
+$cache_key    = 'news_slider_v2_' . md5( wp_json_encode( $attributes ) );
+$cache_expire = 30 * MINUTE_IN_SECONDS;
 
-?>
-
-<div id="<?php echo esc_attr( $slider_id ); ?>"
-	class="emaus-news-slider"
-	data-autoplay="<?php echo $autoplay ? 'true' : 'false'; ?>"
-	data-autoplay-speed="<?php echo esc_attr( (string) $autoplaySpeed ); ?>"
-	data-per-view="<?php echo esc_attr( (string) $perView ); ?>">
+$cached_output = get_transient( $cache_key );
+if ( false === $cached_output ) {
+	ob_start();
+	?>
 	<h2 class="emaus-news-heading"><?php echo esc_html( $headingText ); ?></h2>
-	<!-- Slider content wrapper - positions arrows relative to content width -->
 	<div class="slider-content-wrapper">
 		<div class="glide">
 		<div class="glide__track" data-glide-el="track">
@@ -111,14 +98,11 @@ $slider_id = 'emaus-news-slider-' . wp_rand();
 					$news_query->the_post();
 					++$slide_count;
 
-					// Select appropriate URL based on linkDestination setting.
 					$link_url = 'post' === $linkDestination ?
 						esc_url( get_permalink() ) :
 						esc_url( $news_page_url );
 
-					$post_title = get_the_title();
-
-					// Get content with filtering for security.
+					$post_title       = get_the_title();
 					$raw_content      = get_the_content();
 					$filtered_content = wp_strip_all_tags( $raw_content );
 					$post_content     = wp_trim_words( $filtered_content, 20, '...' );
@@ -154,7 +138,6 @@ $slider_id = 'emaus-news-slider-' . wp_rand();
 			</ul>
 		</div>
 
-		<!-- Navigation arrows -->
 		<div class="glide__arrows" data-glide-el="controls">
 			<button class="glide__arrow glide__arrow--left" data-glide-dir="<" aria-label="<?php esc_attr_e( 'Poprzedni slajd', 'custom-block-package' ); ?>">
 				<span class="screen-reader-text"><?php esc_html_e( 'Poprzedni', 'custom-block-package' ); ?></span>
@@ -164,7 +147,6 @@ $slider_id = 'emaus-news-slider-' . wp_rand();
 			</button>
 		</div>
 
-		<!-- Bullet navigation + optional pause button -->
 		<div class="slider-nav">
 			<div class="glide__bullets" data-glide-el="controls[nav]">
 				<?php for ( $i = 0; $i < $slide_count; $i++ ) : ?>
@@ -191,10 +173,23 @@ $slider_id = 'emaus-news-slider-' . wp_rand();
 		</div>
 		</div>
 	</div>
-</div>
+	<?php
+	$cached_output = ob_get_clean();
+	set_transient( $cache_key, $cached_output, $cache_expire );
+}
 
-<?php
-// Get buffered HTML and save to transient cache.
-$output = ob_get_clean();
-set_transient( $cache_key, $output, $cache_expire );
-echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+// Wrapper rendered outside cache so anchor id is always present.
+$wrapper_extra = array(
+	'class'               => 'emaus-news-slider',
+	'data-autoplay'       => $autoplay ? 'true' : 'false',
+	'data-autoplay-speed' => (string) $autoplaySpeed,
+	'data-per-view'       => (string) $perView,
+);
+if ( ! empty( $attributes['anchor'] ) ) {
+	$wrapper_extra['id'] = $attributes['anchor'];
+}
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
+?>
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped by get_block_wrapper_attributes(). ?>>
+	<?php echo $cached_output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+</div>

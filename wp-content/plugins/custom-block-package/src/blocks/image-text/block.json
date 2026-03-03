@@ -10,6 +10,9 @@
     "version": "1",
     "textdomain": "custom-block-package",
     "attributes": {
+        "anchor": {
+            "type": "string"
+        },
         "text": {
             "type": "string",
             "default": ""
@@ -29,6 +32,9 @@
                 "opensInNewTab": false
             }
         }
+    },
+    "supports": {
+        "anchor": true
     },
     "editorScript": "file:./index.js",
     "viewStyle": "file:./style-index.css",

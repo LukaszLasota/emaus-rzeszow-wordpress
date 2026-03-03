@@ -11,45 +11,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Generate unique cache key based on attributes.
-$cache_key    = 'meeting_list_' . md5( wp_json_encode( $attributes ) );
-$cache_expire = 30 * MINUTE_IN_SECONDS;
-
-// Try to get from transient cache.
-$cached_output = get_transient( $cache_key );
-if ( false !== $cached_output ) {
-	echo $cached_output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	return;
-}
-
-// Start output buffering.
-ob_start();
-
 $meeting_post_type = 'meetings';
 $numberposts       = isset( $attributes['numberposts'] ) ? (int) $attributes['numberposts'] : -1;
 $block_title       = isset( $attributes['blockTitle'] ) ? $attributes['blockTitle'] : __( 'Nasze spotkania', 'custom-block-package' );
 
-$meetings = get_posts(
-	array(
-		'post_type'             => $meeting_post_type,
-		'numberposts'           => $numberposts,
-		'meta_key'              => 'priority',
-		'orderby'               => 'meta_value_num',
-		'order'                 => 'ASC',
-		'update_post_term_cache' => false,
-		'cache_results'         => false,
-	)
-);
+// Cache inner content only; wrapper is rendered fresh for anchor support.
+$cache_key    = 'meeting_v2_' . md5( wp_json_encode( $attributes ) );
+$cache_expire = 30 * MINUTE_IN_SECONDS;
 
-?>
-<div <?php echo get_block_wrapper_attributes( array( 'class' => 'meetings' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+$cached_output = get_transient( $cache_key );
+if ( false === $cached_output ) {
+	ob_start();
+	?>
 	<?php if ( ! empty( $block_title ) ) : ?>
 		<h2><?php echo esc_html( $block_title ); ?></h2>
 	<?php endif; ?>
 
 	<div class="flipping-cards">
-		<?php if ( ! empty( $meetings ) ) : ?>
-			<?php
+		<?php
+		$meetings = get_posts(
+			array(
+				'post_type'              => $meeting_post_type,
+				'numberposts'            => $numberposts,
+				'meta_key'               => 'priority',
+				'orderby'                => 'meta_value_num',
+				'order'                  => 'ASC',
+				'update_post_term_cache' => false,
+				'cache_results'          => false,
+			)
+		);
+
+		if ( ! empty( $meetings ) ) :
 			foreach ( $meetings as $meeting ) :
 				$meeting_title = get_the_title( $meeting->ID );
 				$day_hour      = get_field( 'day_hour', $meeting->ID );
@@ -84,10 +76,17 @@ $meetings = get_posts(
 			<p><?php esc_html_e( 'Brak dostępnych spotkań.', 'custom-block-package' ); ?></p>
 		<?php endif; ?>
 	</div>
-</div>
-<?php
+	<?php
+	$cached_output = ob_get_clean();
+	set_transient( $cache_key, $cached_output, $cache_expire );
+}
 
-// Get buffered HTML and save to transient cache.
-$output = ob_get_clean();
-set_transient( $cache_key, $output, $cache_expire );
-echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+// Wrapper rendered outside cache so anchor id is always present.
+$wrapper_extra = array( 'class' => 'meetings' );
+if ( ! empty( $attributes['anchor'] ) ) {
+	$wrapper_extra['id'] = $attributes['anchor'];
+}
+?>
+<div <?php echo get_block_wrapper_attributes( $wrapper_extra ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<?php echo $cached_output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+</div>

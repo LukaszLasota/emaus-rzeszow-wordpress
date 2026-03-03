@@ -17,6 +17,12 @@ if ( ! trim( $content ) ) {
 }
 ?>
 
-<div <?php echo get_block_wrapper_attributes( array( 'class' => 'cbp-block' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Returns pre-escaped HTML. ?>>
+<?php
+$wrapper_extra = array( 'class' => 'cbp-block' );
+if ( ! empty( $attributes['anchor'] ) ) {
+	$wrapper_extra['id'] = $attributes['anchor'];
+}
+?>
+<div <?php echo get_block_wrapper_attributes( $wrapper_extra ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Returns pre-escaped HTML. ?>>
 	<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner blocks are already escaped by WordPress. ?>
 </div>

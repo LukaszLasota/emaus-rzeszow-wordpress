@@ -23,11 +23,11 @@ $post_url = $attributes['postURL'] ?? [
 $full_width = ! empty( $attributes['fullWidth'] );
 $classes    = 'about-one' . ( $full_width ? ' about-one--full' : '' );
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	[
-		'class' => $classes,
-	]
-);
+$wrapper_extra = [ 'class' => $classes ];
+if ( ! empty( $attributes['anchor'] ) ) {
+	$wrapper_extra['id'] = $attributes['anchor'];
+}
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 
 $link_url    = $post_url['url'] ?? '';
 $link_target = ! empty( $post_url['opensInNewTab'] ) ? '_blank' : '';

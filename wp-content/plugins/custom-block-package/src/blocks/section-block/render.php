@@ -84,12 +84,14 @@ if ( 'flex' === $layout_type ) {
 
 $style_string = implode( ';', $styles );
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class' => implode( ' ', $classes ),
-		'style' => $style_string,
-	)
+$wrapper_extra = array(
+	'class' => implode( ' ', $classes ),
+	'style' => $style_string,
 );
+if ( ! empty( $attributes['anchor'] ) ) {
+	$wrapper_extra['id'] = $attributes['anchor'];
+}
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes is pre-escaped by get_block_wrapper_attributes(), $content is pre-rendered inner blocks.
 printf(
