@@ -10,7 +10,8 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; }
+	exit;
+}
 
 $desktop_images = $attributes['desktopImages'] ?? [];
 $mobile_images  = $attributes['mobileImages'] ?? [];

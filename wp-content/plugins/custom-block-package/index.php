@@ -8,12 +8,13 @@
  * Author:            Łukasz Lasota
  * Author URI:        https://github.com/LukaszLasota
  * Text Domain:       custom-block-package
+ * License:           GPL-2.0-or-later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  *
  * @package CustomBlockPackage
  */
 
-if ( ! function_exists( 'add_action' ) ) {
-	echo 'Wygląda na to, że trafiłeś tu przez przypadek. 😛';
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 

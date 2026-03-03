@@ -10,7 +10,8 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; }
+	exit;
+}
 
 $text     = $attributes['text'] ?? '';
 $img_id   = $attributes['imgID'] ?? 0;

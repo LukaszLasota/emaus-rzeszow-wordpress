@@ -10,7 +10,8 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; }
+	exit;
+}
 
 $img_desktop_id = isset( $attributes['imgDesktopID'] ) ? (int) $attributes['imgDesktopID'] : 0;
 $img_tablet_id  = isset( $attributes['imgTabletID'] ) ? (int) $attributes['imgTabletID'] : 0;

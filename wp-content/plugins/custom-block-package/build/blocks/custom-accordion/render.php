@@ -10,6 +10,8 @@
  * @var string $content    Inner blocks HTML.
  */
 
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 if ( ! trim( $content ) ) {
 	return;
 }

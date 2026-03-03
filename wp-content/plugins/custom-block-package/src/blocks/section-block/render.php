@@ -10,7 +10,8 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; }
+	exit;
+}
 
 $allowed_tags = [ 'div', 'section', 'article', 'main', 'header', 'footer', 'aside' ];
 $tag_name     = in_array( $attributes['tagName'] ?? 'div', $allowed_tags, true ) ? $attributes['tagName'] : 'div';

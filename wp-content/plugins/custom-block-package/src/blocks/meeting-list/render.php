@@ -8,7 +8,8 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; }
+	exit;
+}
 
 // Generate unique cache key based on attributes.
 $cache_key    = 'meeting_list_' . md5( wp_json_encode( $attributes ) );
@@ -30,11 +31,13 @@ $block_title       = isset( $attributes['blockTitle'] ) ? $attributes['blockTitl
 
 $meetings = get_posts(
 	array(
-		'post_type'   => $meeting_post_type,
-		'numberposts' => $numberposts,
-		'meta_key'    => 'priority',
-		'orderby'     => 'meta_value_num',
-		'order'       => 'ASC',
+		'post_type'             => $meeting_post_type,
+		'numberposts'           => $numberposts,
+		'meta_key'              => 'priority',
+		'orderby'               => 'meta_value_num',
+		'order'                 => 'ASC',
+		'update_post_term_cache' => false,
+		'cache_results'         => false,
 	)
 );
 

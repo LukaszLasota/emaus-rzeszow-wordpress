@@ -8,7 +8,8 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; }
+	exit;
+}
 
 $latitude        = isset( $attributes['latitude'] ) ? (float) $attributes['latitude'] : 50.031562;
 $longitude       = isset( $attributes['longitude'] ) ? (float) $attributes['longitude'] : 21.997937;

@@ -7,13 +7,16 @@
  * @var array $attributes Block attributes
  */
 
-// Generate unique cache key based on attributes.
-$cache_key        = 'meeting_list_' . md5( serialize( $attributes ) );
-$cache_group      = 'emaus_blocks';
-$cache_expiration = 15 * MINUTE_IN_SECONDS;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-// Try to get from cache.
-$cached_output = wp_cache_get( $cache_key, $cache_group );
+// Generate unique cache key based on attributes.
+$cache_key    = 'meeting_list_' . md5( wp_json_encode( $attributes ) );
+$cache_expire = 30 * MINUTE_IN_SECONDS;
+
+// Try to get from transient cache.
+$cached_output = get_transient( $cache_key );
 if ( false !== $cached_output ) {
 	echo $cached_output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	return;
@@ -28,11 +31,13 @@ $block_title       = isset( $attributes['blockTitle'] ) ? $attributes['blockTitl
 
 $meetings = get_posts(
 	array(
-		'post_type'   => $meeting_post_type,
-		'numberposts' => $numberposts,
-		'meta_key'    => 'priority',
-		'orderby'     => 'meta_value_num',
-		'order'       => 'ASC',
+		'post_type'             => $meeting_post_type,
+		'numberposts'           => $numberposts,
+		'meta_key'              => 'priority',
+		'orderby'               => 'meta_value_num',
+		'order'                 => 'ASC',
+		'update_post_term_cache' => false,
+		'cache_results'         => false,
 	)
 );
 
@@ -82,7 +87,7 @@ $meetings = get_posts(
 </div>
 <?php
 
-// Get buffered HTML and save to cache.
+// Get buffered HTML and save to transient cache.
 $output = ob_get_clean();
-wp_cache_set( $cache_key, $output, $cache_group, $cache_expiration );
+set_transient( $cache_key, $output, $cache_expire );
 echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

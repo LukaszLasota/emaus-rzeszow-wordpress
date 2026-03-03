@@ -8,7 +8,8 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; }
+	exit;
+}
 
 // Generate unique cache key based on attributes.
 $cache_key    = 'emaus_news_slider_' . md5( wp_json_encode( $attributes ) );
