@@ -74,7 +74,7 @@ add_action(
 			__( 'Import danych', 'comparison-of-religions' ),
 			'manage_options',
 			'cor-import',
-			'cor_import_page'
+			'comparison_of_religions_import_page'
 		);
 	}
 );
@@ -87,7 +87,7 @@ add_action(
  *   2. Export current data as downloadable JSON file
  *   3. Run built-in hardcoded data import (one-time seeding)
  */
-function cor_import_page(): void {
+function comparison_of_religions_import_page(): void {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		wp_die( esc_html__( 'Brak uprawnień.', 'comparison-of-religions' ) );
 	}
@@ -96,7 +96,7 @@ function cor_import_page(): void {
 
 	// Handle JSON export — streams a .json file download to the browser.
 	if ( isset( $_POST['cor_export_json'] ) && check_admin_referer( 'cor_import_nonce' ) ) {
-		$data = cor_export_comparison_data();
+		$data = comparison_of_religions_export_data();
 		$json = wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
 
 		header( 'Content-Type: application/json; charset=utf-8' );
@@ -109,7 +109,7 @@ function cor_import_page(): void {
 	// Handle built-in hardcoded data import (seeds the database with default comparison data).
 	if ( isset( $_POST['cor_run_import'] ) && check_admin_referer( 'cor_import_nonce' ) ) {
 		echo '<div class="wrap"><h1>' . esc_html__( 'Import danych', 'comparison-of-religions' ) . '</h1><pre>';
-		cor_run_import();
+		comparison_of_religions_run_import();
 		echo '</pre><p><strong>' . esc_html__( 'Import zakończony.', 'comparison-of-religions' ) . '</strong></p></div>';
 		return;
 	}
@@ -129,7 +129,7 @@ function cor_import_page(): void {
 			if ( null === $data || ! is_array( $data ) ) {
 				echo esc_html__( 'ERROR: Nieprawidłowy format JSON.', 'comparison-of-religions' ) . "\n";
 			} else {
-				cor_run_json_import( $data );
+				comparison_of_religions_run_json_import( $data );
 			}
 		}
 
@@ -195,7 +195,7 @@ function cor_import_page(): void {
  * Uses direct DB query to bulk-delete all transients matching the prefix,
  * which is more efficient than deleting them one by one.
  */
-function cor_flush_block_cache(): void {
+function comparison_of_religions_flush_block_cache(): void {
 	global $wpdb;
 	$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		"DELETE FROM {$wpdb->options}
@@ -203,10 +203,10 @@ function cor_flush_block_cache(): void {
 		    OR option_name LIKE '_transient_timeout_cor_accordion_%'"
 	);
 }
-add_action( 'save_post_comparison_topic', 'cor_flush_block_cache' );
-add_action( 'edited_comparison_category', 'cor_flush_block_cache' );
-add_action( 'created_comparison_category', 'cor_flush_block_cache' );
-add_action( 'delete_comparison_category', 'cor_flush_block_cache' );
+add_action( 'save_post_comparison_topic', 'comparison_of_religions_flush_block_cache' );
+add_action( 'edited_comparison_category', 'comparison_of_religions_flush_block_cache' );
+add_action( 'created_comparison_category', 'comparison_of_religions_flush_block_cache' );
+add_action( 'delete_comparison_category', 'comparison_of_religions_flush_block_cache' );
 
 // On activation: register CPT + taxonomy early, then flush rewrite rules
 // so that any REST API endpoints become immediately available.

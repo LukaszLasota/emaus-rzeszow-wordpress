@@ -2,8 +2,8 @@
 /**
  * Data import helpers for Comparison of Religions.
  *
- * Contains cor_run_import() for hardcoded initial data and
- * cor_run_json_import() for importing from uploaded JSON files.
+ * Contains comparison_of_religions_run_import() for hardcoded initial data and
+ * comparison_of_religions_run_json_import() for importing from uploaded JSON files.
  *
  * Usage (WP-CLI only):
  *   wp eval-file wp-content/plugins/comparison-of-religions/tools/import-html-data.php
@@ -17,13 +17,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Allow running directly via WP-CLI (skip if loaded via require).
 if ( defined( 'WP_CLI' ) && WP_CLI && ! defined( 'COR_REIMPORT' ) ) {
-	cor_run_import();
+	comparison_of_religions_run_import();
 }
 
 /**
  * Run the full data import.
  */
-function cor_run_import(): void {
+function comparison_of_religions_run_import(): void {
 	$taxonomy  = 'comparison_category';
 	$post_type = 'comparison_topic';
 
@@ -85,7 +85,7 @@ function cor_run_import(): void {
 	}
 
 	// ── 2. Define all comparison data ──
-	$data = cor_get_comparison_data();
+	$data = comparison_of_religions_get_data();
 
 	// ── 3. Create CPT posts ──
 	$created = 0;
@@ -128,7 +128,7 @@ function cor_run_import(): void {
  *
  * Each entry: [category, title, sort_order, churches => [{church_name, description}]]
  */
-function cor_get_comparison_data(): array {
+function comparison_of_religions_get_data(): array {
 	$k = 'Kościół Rzymskokatolicki';
 	$z = 'Kościół Zielonoświątkowy';
 
@@ -726,7 +726,7 @@ function cor_get_comparison_data(): array {
  *
  * @param array $json_data Decoded JSON data.
  */
-function cor_run_json_import( array $json_data ): void {
+function comparison_of_religions_run_json_import( array $json_data ): void {
 	$taxonomy  = 'comparison_category';
 	$post_type = 'comparison_topic';
 
@@ -813,7 +813,7 @@ function cor_run_json_import( array $json_data ): void {
  *
  * @return array Data suitable for json_encode().
  */
-function cor_export_comparison_data(): array {
+function comparison_of_religions_export_data(): array {
 	$taxonomy  = 'comparison_category';
 	$post_type = 'comparison_topic';
 
