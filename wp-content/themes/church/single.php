@@ -13,19 +13,10 @@ get_header(); ?>
 
 <main id="primary" class="site-main single-post news">
 
-<?php
-	$show_header = get_field( 'show_header' );
-
-if ( 'Tak' === $show_header ) :
-	?>
+	<div class="single-post__content-container section-block">
 		<header class="single-post__header">
 			<h1 class="single-post__title"><?php single_post_title(); ?></h1>
 		</header>
-	<?php else : ?>
-		<h1 class="visually-hidden"><?php single_post_title(); ?></h1>
-	<?php endif; ?>
-
-	<div class="single-post__content-container section-block">
 		<?php
 		if ( have_posts() ) :
 			while ( have_posts() ) :

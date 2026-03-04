@@ -2,10 +2,10 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/sass/backend.scss":
-/*!*******************************!*\
-  !*** ./src/sass/backend.scss ***!
-  \*******************************/
+/***/ "./src/sass/editor.scss":
+/*!******************************!*\
+  !*** ./src/sass/editor.scss ***!
+  \******************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -56,15 +56,15 @@ __webpack_require__.r(__webpack_exports__);
 var __webpack_exports__ = {};
 // This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
 (() => {
-/*!************************!*\
-  !*** ./src/backend.ts ***!
-  \************************/
+/*!***********************!*\
+  !*** ./src/editor.ts ***!
+  \***********************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _sass_backend_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sass/backend.scss */ "./src/sass/backend.scss");
+/* harmony import */ var _sass_editor_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sass/editor.scss */ "./src/sass/editor.scss");
 
 
 })();
 
 /******/ })()
 ;
-//# sourceMappingURL=backend.js.map?d986ecbcb2fb4823a628
+//# sourceMappingURL=editor.js.map?5b9e6c8b4f7a433c1000

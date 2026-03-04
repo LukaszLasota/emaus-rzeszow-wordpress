@@ -68,6 +68,8 @@ class Setup implements ActionHookInterface {
 
 		add_theme_support( 'editor-styles' );
 
+		add_editor_style( 'assets/css/editor.css' );
+
 		add_theme_support( 'wp-block-styles' );
 	}
 }

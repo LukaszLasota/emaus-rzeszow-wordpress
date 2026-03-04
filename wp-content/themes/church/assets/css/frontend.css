@@ -334,11 +334,11 @@ template {
 }
 @media (max-width: 600px) {
   .single-post__content-container, .page__content-container {
-    padding: 60px 1.2rem;
+    padding: 30px 1.2rem;
   }
 }
 .single-post__content-container h1, .single-post__content-container h2, .single-post__content-container h3, .page__content-container h1, .page__content-container h2, .page__content-container h3 {
-  padding: 50px 0 0;
+  padding: 20px 0 20px;
   text-transform: uppercase;
   -webkit-background: linear-gradient(to right, #008089 0%, #002432 100%);
   -moz-background: linear-gradient(to right, #008089 0%, #002432 100%);
@@ -598,7 +598,7 @@ img {
   width: 100%;
   max-width: var(--wp--custom--content-width-desktop);
   margin: 0 auto;
-  padding: 4rem 1rem 1rem;
+  padding: 5rem 1rem 1rem;
 }
 @media (max-width: 767px) {
   .news {
@@ -766,7 +766,7 @@ img {
   }
 }
 .page-hero > section h1, .page-hero > section h2, .page-hero > section h3 {
-  padding: 50px 0 0;
+  padding: 20px 0 20px;
   text-transform: uppercase;
   -webkit-background: linear-gradient(to right, #008089 0%, #002432 100%);
   -moz-background: linear-gradient(to right, #008089 0%, #002432 100%);
@@ -830,7 +830,7 @@ img {
   margin-inline: auto;
 }
 .single-post__title {
-  padding: 60px 0px 30px;
+  padding: 20px 20px 30px;
   margin-bottom: 0;
   letter-spacing: 2px;
   text-transform: uppercase;

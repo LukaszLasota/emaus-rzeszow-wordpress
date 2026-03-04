@@ -45,6 +45,7 @@ module.exports = {
 	entry: {
 		'frontend': path.resolve(__dirname, './src/frontend.ts'),
 		'backend': path.resolve(__dirname, './src/backend.ts'),
+		'editor': path.resolve(__dirname, './src/editor.ts'),
 		'print': path.resolve(__dirname, './src/print.ts'),
 		...getPatternEntries(),
 	},

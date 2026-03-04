@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</div>
 					<?php endif; ?>
 					<div class="news__body">
-						<h3 class="news__title"><?php the_title(); ?></h3>
+						<h2 class="news__title"><?php the_title(); ?></h2>
 						<p class="news__text">
 							<?php echo esc_html( wp_trim_words( get_the_content(), 20, '...' ) ); ?>
 						</p>
