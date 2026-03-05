@@ -34,7 +34,7 @@
 											$logo_url = get_option( 'my_custom_logo_setting' );
 					}
 					?>
-					<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" class="site-logo__image"
+					<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" class="site-logo__image" fetchpriority="high" decoding="async"
 					<?php
 					if ( $logo_width && $logo_height ) {
 						echo 'width="' . esc_attr( (string) $logo_width ) . '" height="' . esc_attr( (string) $logo_height ) . '"';}

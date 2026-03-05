@@ -152,7 +152,6 @@ class RegisterAssets implements ActionHookInterface {
 	 */
 	public function register_church_admin_assets(): void {
 		$this->enqueue_asset( 'style', 'church-admin-style', "/assets/css/backend{$this->suffix}.css" );
-		$this->enqueue_asset( 'script', 'church-script-backend', "/assets/js/backend{$this->suffix}.js" );
 	}
 
 	/**

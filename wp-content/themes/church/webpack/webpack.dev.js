@@ -7,7 +7,9 @@ module.exports = merge(common, {
 	mode: 'development',
 	output: {
 		path: path.resolve(__dirname, '../assets'),
+		publicPath: 'auto',
 		filename: 'js/[name].js?[chunkhash]',
+		chunkFilename: 'js/[name].js?[chunkhash]',
 		assetModuleFilename: '[name][ext][query]'
 	},
 	plugins: [

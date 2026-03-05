@@ -1,8 +1,13 @@
 import './sass/frontend.scss';
 import { HamburgerMenu } from './js/menu/menu';
-import './js/masonry/masonry.js';
 
 new HamburgerMenu();
+
+// Lazy-load masonry only on pages with .news container (blog/archive/search).
+if (document.querySelector('.news')) {
+  // @ts-expect-error masonry.js is a side-effect script, not a module
+  import(/* webpackChunkName: "masonry" */ './js/masonry/masonry.js');
+}
 
 // Prevent browser native jump to anchor on cross-page navigation.
 if (window.location.hash) {

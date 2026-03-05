@@ -1,4 +1,5 @@
-document.addEventListener("DOMContentLoaded", function () {
+// Self-invoking: DOM is already ready when loaded via dynamic import.
+(function () {
     const masonryContainer = document.querySelector(".news");
 
     if (!masonryContainer) return;
@@ -39,4 +40,4 @@ document.addEventListener("DOMContentLoaded", function () {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(initMasonry, 250);
     });
-});
+})();

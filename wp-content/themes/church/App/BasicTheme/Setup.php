@@ -71,5 +71,7 @@ class Setup implements ActionHookInterface {
 		add_editor_style( 'assets/css/editor.css' );
 
 		add_theme_support( 'wp-block-styles' );
+
+		add_image_size( 'blog-card', 600, 400, false );
 	}
 }

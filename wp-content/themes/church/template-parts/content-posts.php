@@ -13,24 +13,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<a href="<?php the_permalink(); ?>" class="news__link">
 					<?php
 					if ( has_post_thumbnail() ) :
-						$thumbnail_id   = (int) get_post_thumbnail_id();
-						$thumbnail_meta = wp_get_attachment_metadata( $thumbnail_id );
-						$alt_text       = get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true );
-						$width          = is_array( $thumbnail_meta ) ? $thumbnail_meta['width'] : 0;
-						$height         = is_array( $thumbnail_meta ) ? $thumbnail_meta['height'] : 0;
+						$thumbnail_id = (int) get_post_thumbnail_id();
+						$alt_text     = get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true );
 						?>
-						<div class="news__image-wrapper" style="aspect-ratio: <?php echo esc_attr( (string) $width ); ?>/<?php echo esc_attr( (string) $height ); ?>;">
+						<div class="news__image-wrapper">
 							<?php
 							echo wp_get_attachment_image(
 								$thumbnail_id,
-								'full',
+								'blog-card',
 								false,
 								array(
 									'class'   => 'news__image',
 									'alt'     => $alt_text,
 									'loading' => 'lazy',
-									'width'   => $width,
-									'height'  => $height,
 								)
 							);
 							?>
