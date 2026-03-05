@@ -16,7 +16,7 @@ $numberposts       = isset( $attributes['numberposts'] ) ? (int) $attributes['nu
 $block_title       = isset( $attributes['blockTitle'] ) ? $attributes['blockTitle'] : __( 'Nasze spotkania', 'custom-block-package' );
 
 // Cache inner content only; wrapper is rendered fresh for anchor support.
-$cache_key    = 'meeting_v2_' . md5( wp_json_encode( $attributes ) );
+$cache_key    = 'meeting_v4_' . md5( wp_json_encode( $attributes ) );
 $cache_expire = 30 * MINUTE_IN_SECONDS;
 
 $cached_output = get_transient( $cache_key );
@@ -64,6 +64,7 @@ if ( false === $cached_output ) {
 							<?php else : ?>
 								<p><?php esc_html_e( 'Brak miejsca', 'custom-block-package' ); ?></p>
 							<?php endif; ?>
+							<p class="flipping-cards__more"><?php esc_html_e( 'Zobacz więcej', 'custom-block-package' ); ?></p>
 						</div>
 
 						<div class="flipping-cards__card-back" aria-hidden="true">

@@ -112,6 +112,15 @@
         }
     }
 
+    &__more {
+        display: none;
+        text-decoration: underline;
+
+        @media (max-width: 1024px) {
+            display: block;
+        }
+    }
+
     &__card-back {
         transform: rotateY(180deg);
         align-items: start;
