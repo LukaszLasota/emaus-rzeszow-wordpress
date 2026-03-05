@@ -24,6 +24,7 @@
 .pattern-hello-section-main-page__image img {
   max-height: 300px;
   width: auto;
+  aspect-ratio: 1;
 }
 .pattern-hello-section-main-page__title, .pattern-hello-section-main-page__text {
   width: 100%;

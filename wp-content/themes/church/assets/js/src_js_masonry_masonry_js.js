@@ -1,14 +1,13 @@
-"use strict";
 (self["webpackChunkchurch"] = self["webpackChunkchurch"] || []).push([["src_js_masonry_masonry_js"],{
 
 /***/ "./src/js/masonry/masonry.js":
 /*!***********************************!*\
   !*** ./src/js/masonry/masonry.js ***!
   \***********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ (() => {
 
-__webpack_require__.r(__webpack_exports__);
-document.addEventListener("DOMContentLoaded", function () {
+// Self-invoking: DOM is already ready when loaded via dynamic import.
+(function () {
   var masonryContainer = document.querySelector(".news");
   if (!masonryContainer) return;
 
@@ -44,12 +43,9 @@ document.addEventListener("DOMContentLoaded", function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(initMasonry, 250);
   });
-});
-
-// Make this file an ES module for dynamic import
-
+})();
 
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_masonry_masonry_js.js.map?8e9bd1fbf84f12a81867
+//# sourceMappingURL=src_js_masonry_masonry_js.js.map?464f2e3c561693f01db6
