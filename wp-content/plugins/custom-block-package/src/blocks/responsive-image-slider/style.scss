@@ -98,6 +98,14 @@
         cursor: pointer;
         transition: all 0.3s ease-in-out;
         box-shadow: 0 0.25em 0.5em 0 rgba(0, 0, 0, 0.1);
+        position: relative;
+
+        // Enlarge touch target to 48px without changing visual size.
+        &::before {
+            content: '';
+            position: absolute;
+            inset: -18px;
+        }
         margin: 0 0.25em;
 
         &:focus-visible {

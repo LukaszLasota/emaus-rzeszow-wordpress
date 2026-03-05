@@ -37,6 +37,7 @@ export class HamburgerMenu {
         this.hamburger.classList.toggle('hamburger--active');
         const expanded = this.hamburger.classList.contains('hamburger--active');
         this.hamburger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        this.siteNavNavigation.setAttribute('aria-hidden', expanded ? 'false' : 'true');
         const isActive = this.siteNavNavigation.classList.toggle('site-nav__navigation--active');
         this.siteNavContainer.classList.toggle('site-header__container--active');
 
@@ -101,6 +102,7 @@ export class HamburgerMenu {
     private resetMenu(): void {
         this.hamburger.classList.remove('hamburger--active');
         this.hamburger.setAttribute('aria-expanded', 'false');
+        this.siteNavNavigation.setAttribute('aria-hidden', 'true');
         this.siteNavNavigation.classList.remove('site-nav__navigation--active');
         this.siteNavContainer.classList.remove('site-header__container--active');
     }

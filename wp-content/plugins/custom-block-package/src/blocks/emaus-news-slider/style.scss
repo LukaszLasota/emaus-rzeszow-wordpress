@@ -92,6 +92,14 @@ $shadow-medium: rgba(0, 0, 0, 0.15);
     padding: 0;
     cursor: pointer;
     transition: background 0.3s;
+    position: relative;
+
+    // Enlarge touch target to 48px without changing visual size.
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -17px;
+    }
 
     &--active,
     &:hover {
@@ -108,6 +116,7 @@ $shadow-medium: rgba(0, 0, 0, 0.15);
     width: 15px;
     height: 15px;
     border-radius: 50%;
+    // Touch target already ~48px with padding from parent gap.
     background: var(--wp--preset--color--site-color, #333);
     border: none;
     cursor: pointer;

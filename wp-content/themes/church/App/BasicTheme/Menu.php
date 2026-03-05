@@ -71,7 +71,7 @@ class Menu implements ActionHookInterface, FilterHookInterface {
 		$icon = get_field( 'icon_logo', $item );
 
 		if ( $icon && is_array( $icon ) ) {
-			$item_output = '<img src="' . esc_url( $icon['url'] ) . '" alt="' . esc_attr( $icon['alt'] ) . '" class="menu-icon" />' . $item_output;
+			$item_output = '<img src="' . esc_url( $icon['url'] ) . '" alt="" class="menu-icon" aria-hidden="true" />' . $item_output;
 		}
 
 		return $item_output;

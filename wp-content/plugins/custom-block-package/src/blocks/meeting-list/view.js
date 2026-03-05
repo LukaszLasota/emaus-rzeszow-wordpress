@@ -1,6 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
     const flipCards = document.querySelectorAll(".flipping-cards__card");
 
+    function setFocusable(container, enabled) {
+        container.querySelectorAll("a, button, input, select, textarea, [tabindex]").forEach(function (el) {
+            el.setAttribute("tabindex", enabled ? "0" : "-1");
+        });
+    }
+
     function toggleCard(card) {
         const innerCard = card.querySelector(".flipping-cards__card-inner");
         const front = card.querySelector(".flipping-cards__card-front");
@@ -13,11 +19,21 @@ document.addEventListener("DOMContentLoaded", function () {
         card.setAttribute("aria-expanded", isFlipped ? "true" : "false");
 
         // Hide the non-visible side from assistive technologies.
-        if (front) front.setAttribute("aria-hidden", isFlipped ? "true" : "false");
-        if (back) back.setAttribute("aria-hidden", isFlipped ? "false" : "true");
+        if (front) {
+            front.setAttribute("aria-hidden", isFlipped ? "true" : "false");
+            setFocusable(front, !isFlipped);
+        }
+        if (back) {
+            back.setAttribute("aria-hidden", isFlipped ? "false" : "true");
+            setFocusable(back, isFlipped);
+        }
     }
 
     flipCards.forEach((card) => {
+        // Disable focus on hidden back-side links at init.
+        const back = card.querySelector(".flipping-cards__card-back");
+        if (back) setFocusable(back, false);
+
         // Click support
         card.addEventListener("click", () => toggleCard(card));
 
