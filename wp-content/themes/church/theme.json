@@ -60,7 +60,29 @@
 				{
 					"fontFamily": "'Raleway', sans-serif",
 					"name": "Raleway",
-					"slug": "raleway"
+					"slug": "raleway",
+					"fontFace": [
+						{
+							"fontFamily": "Raleway",
+							"fontWeight": "400",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/webfont/raleway-v37-latin-ext.woff2",
+								"file:./assets/webfont/raleway-v37-latin.woff2"
+							]
+						},
+						{
+							"fontFamily": "Raleway",
+							"fontWeight": "700",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/webfont/raleway-v37-latin-ext.woff2",
+								"file:./assets/webfont/raleway-v37-latin.woff2"
+							]
+						}
+					]
 				}
 			],
 			"fontSizes": [
