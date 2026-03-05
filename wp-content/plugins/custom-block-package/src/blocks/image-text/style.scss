@@ -13,14 +13,25 @@
         width: 100%;
     }
 
-    &:hover {
+    @media (max-width: 1024px) {
         .about-one__caption {
             opacity: 1;
             color: white;
         }
         .about-one__overlay {
             opacity: 0.6;
-             color: white;
+        }
+    }
+
+    @media (min-width: 1025px) {
+        &:hover {
+            .about-one__caption {
+                opacity: 1;
+                color: white;
+            }
+            .about-one__overlay {
+                opacity: 0.6;
+            }
         }
     }
 
