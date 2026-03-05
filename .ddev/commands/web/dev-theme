@@ -1,0 +1,7 @@
+#!/bin/bash
+
+## Description: Run theme webpack watcher
+## Usage: dev-theme
+## Example: ddev dev-theme
+
+cd /var/www/html/wp-content/themes/church/webpack && npm run watch

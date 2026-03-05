@@ -1,0 +1,12 @@
+#!/bin/bash
+
+## Description: Run all watchers (theme, blocks, comparison) concurrently
+## Usage: dev-all
+## Example: ddev dev-all
+
+cd /var/www/html
+
+npx concurrently -n theme,blocks,comp -c blue,green,yellow \
+  "cd wp-content/themes/church/webpack && npm run watch" \
+  "cd wp-content/plugins/custom-block-package && npm start" \
+  "cd wp-content/plugins/comparison-of-religions && npm start"

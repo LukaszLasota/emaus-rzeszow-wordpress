@@ -1,0 +1,20 @@
+#!/bin/bash
+
+## Description: Build all assets (theme, blocks, comparison)
+## Usage: build-all
+## Example: ddev build-all
+
+cd /var/www/html
+
+echo "Building theme..."
+cd wp-content/themes/church/webpack && npm run prod
+cd /var/www/html
+
+echo "Building blocks..."
+cd wp-content/plugins/custom-block-package && npm run build
+cd /var/www/html
+
+echo "Building comparison..."
+cd wp-content/plugins/comparison-of-religions && npm run build
+
+echo "All builds complete!"

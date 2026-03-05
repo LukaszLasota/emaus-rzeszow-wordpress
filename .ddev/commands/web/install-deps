@@ -1,0 +1,20 @@
+#!/bin/bash
+
+## Description: Install npm dependencies for all projects
+## Usage: install-deps
+## Example: ddev install-deps
+
+cd /var/www/html
+
+echo "Installing theme dependencies..."
+cd wp-content/themes/church/webpack && npm install
+cd /var/www/html
+
+echo "Installing blocks dependencies..."
+cd wp-content/plugins/custom-block-package && npm install
+cd /var/www/html
+
+echo "Installing comparison dependencies..."
+cd wp-content/plugins/comparison-of-religions && npm install
+
+echo "All dependencies installed!"
