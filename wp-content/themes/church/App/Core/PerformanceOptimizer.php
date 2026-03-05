@@ -40,6 +40,22 @@ class PerformanceOptimizer implements ActionHookInterface {
 	);
 
 	/**
+	 * Forminator CSS handle prefixes to defer.
+	 *
+	 * These stylesheets are below-the-fold (form section) and safe to
+	 * load asynchronously using the media="print" swap technique.
+	 *
+	 * @var array<string>
+	 */
+	private const FORMINATOR_STYLES = array(
+		'forminator-forms-',
+		'forminator-grid-',
+		'forminator-icons',
+		'forminator-utilities',
+		'buttons',
+	);
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -56,6 +72,7 @@ class PerformanceOptimizer implements ActionHookInterface {
 		add_action( 'wp_enqueue_scripts', array( $this, 'defer_recaptcha' ), 999 );
 		add_action( 'init', array( $this, 'disable_emoji' ) );
 		add_filter( 'eio_lazy_exclusions', array( $this, 'skip_lazy_for_priority_images' ) );
+		add_filter( 'style_loader_tag', array( $this, 'defer_forminator_styles' ), 10, 2 );
 	}
 
 	/**
@@ -132,6 +149,33 @@ class PerformanceOptimizer implements ActionHookInterface {
 		);
 
 		wp_add_inline_script( 'forminator-front-scripts', $inline_js );
+	}
+
+	/**
+	 * Defer Forminator CSS to prevent render-blocking.
+	 *
+	 * Forminator forms are below the fold, so their CSS doesn't need to block
+	 * initial rendering. Uses the media="print" swap technique: the browser
+	 * downloads the stylesheet without blocking, then switches to media="all"
+	 * once loaded.
+	 *
+	 * @param string $html   The link tag HTML.
+	 * @param string $handle The stylesheet handle.
+	 * @return string
+	 */
+	public function defer_forminator_styles( string $html, string $handle ): string {
+		foreach ( self::FORMINATOR_STYLES as $prefix ) {
+			if ( str_starts_with( $handle, $prefix ) ) {
+				$html = str_replace(
+					"media='all'",
+					"media='print' onload=\"this.media='all'\"",
+					$html
+				);
+				break;
+			}
+		}
+
+		return $html;
 	}
 
 	/**

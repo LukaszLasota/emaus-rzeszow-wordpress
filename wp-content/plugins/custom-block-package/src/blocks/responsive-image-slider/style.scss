@@ -4,6 +4,21 @@
     position: relative;
     box-sizing: border-box;
 
+    // Reserve space for slider to prevent CLS.
+    .glide__slide {
+        aspect-ratio: 2560 / 1200;
+
+        @media (max-width: 767px) {
+            aspect-ratio: 743 / 1024;
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
     .glide__arrows {
         position: absolute;
         top: 0;

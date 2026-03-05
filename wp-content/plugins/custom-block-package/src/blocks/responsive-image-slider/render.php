@@ -65,10 +65,16 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 	<?php else : ?>
 		<div class="glide__track" data-glide-el="track">
 			<div class="glide__slides">
-				<?php foreach ( $valid_slides as $slide ) : ?>
+				<?php
+				$slide_index = 0;
+				foreach ( $valid_slides as $slide ) :
+				?>
 					<?php
-					$desktop_id = $slide['desktop_id'];
-					$mobile_id  = $slide['mobile_id'];
+					$desktop_id    = $slide['desktop_id'];
+					$mobile_id     = $slide['mobile_id'];
+					$is_first      = 0 === $slide_index;
+					$loading_attr  = $is_first ? 'eager' : 'lazy';
+					$priority_attr = $is_first ? ' fetchpriority="high"' : '';
 
 					// Fallback ID if one of them doesn't exist.
 					$fallback_id = $desktop_id ?: $mobile_id;
@@ -113,19 +119,24 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 
 								if ( $img_src ) {
 									printf(
-										'<img src="%s" srcset="%s" alt="%s" width="%s" height="%s" loading="lazy" decoding="async" style="width: 100%%; height: auto; display: block;">',
+										'<img src="%s" srcset="%s" alt="%s" width="%s" height="%s" loading="%s" decoding="async"%s style="width: 100%%; height: auto; display: block;">',
 										esc_url( $img_src ),
 										esc_attr( $img_srcset ),
 										esc_attr( $img_alt ),
 										esc_attr( (string) $img_width ),
-										esc_attr( (string) $img_height )
+										esc_attr( (string) $img_height ),
+										esc_attr( $loading_attr ),
+										$priority_attr // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static string.
 									);
 								}
 							}
 							?>
 						</picture>
 					</div>
-				<?php endforeach; ?>
+				<?php
+				++$slide_index;
+				endforeach;
+				?>
 			</div>
 		</div>
 
