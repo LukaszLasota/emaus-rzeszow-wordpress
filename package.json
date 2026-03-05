@@ -15,7 +15,7 @@
     "build:comparison": "cd wp-content/plugins/comparison-of-religions && npm run build",
     "build:all": "npm run build:theme && npm run build:blocks && npm run build:comparison",
     "dev:all": "concurrently -n theme,blocks,comp -c blue,green,yellow \"npm run dev:theme\" \"npm run dev:blocks\" \"npm run dev:comparison\"",
-    "postinstall": "npm run install:all"
+    "postinstall": "git config core.hooksPath .githooks && npm run install:all"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

@@ -6,7 +6,8 @@
 	"license": "GPL-2.0-or-later",
 	"scripts": {
 		"build": "wp-scripts build",
-		"start": "wp-scripts start"
+		"start": "wp-scripts start",
+		"postinstall": "cd ../../../ && git config core.hooksPath .githooks"
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^27.9.0"

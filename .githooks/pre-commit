@@ -1,0 +1,87 @@
+#!/bin/bash
+#
+# Pre-commit hook: block commit if build assets are older than source files.
+# Covers theme (.min files) and plugins (build/ directory).
+# Tolerates up to 5 seconds difference (Docker mount timing).
+#
+# Install: git config core.hooksPath .githooks
+
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+TOLERANCE=5
+errors=0
+
+# Get newest mtime (seconds) among files matching pattern in a directory.
+newest_mtime() {
+    local dir="$1"
+    shift
+    find "$dir" -type f \( "$@" \) -printf '%T@\n' 2>/dev/null | sort -rn | head -1 | cut -d. -f1
+}
+
+# Get file mtime in seconds.
+file_mtime() {
+    stat -c '%Y' "$1" 2>/dev/null || echo 0
+}
+
+# --- Theme: .min assets must be newer than webpack/src/ ---
+THEME_SRC="wp-content/themes/church/webpack/src"
+THEME_MIN_JS="wp-content/themes/church/assets/js/frontend.min.js"
+THEME_MIN_CSS="wp-content/themes/church/assets/css/frontend.min.css"
+
+if [ -d "$THEME_SRC" ]; then
+    ref="$THEME_MIN_JS"
+    [ ! -f "$ref" ] && ref="$THEME_MIN_CSS"
+
+    if [ -f "$ref" ]; then
+        src_time=$(newest_mtime "$THEME_SRC" -name "*.ts" -o -name "*.js" -o -name "*.scss")
+        build_time=$(file_mtime "$ref")
+
+        if [ -n "$src_time" ] && [ $(( src_time - build_time )) -gt $TOLERANCE ]; then
+            echo -e "${RED}✗ Theme: .min assets are older than source${NC}"
+            errors=1
+        fi
+    else
+        echo -e "${RED}✗ Theme: .min assets not found${NC}"
+        errors=1
+    fi
+fi
+
+# --- Plugins: build/ must be newer than src/ ---
+for plugin_dir in \
+    wp-content/plugins/custom-block-package \
+    wp-content/plugins/comparison-of-religions; do
+
+    [ ! -d "$plugin_dir/src" ] && continue
+    [ ! -d "$plugin_dir/build" ] && continue
+
+    plugin_name=$(basename "$plugin_dir")
+
+    src_time=$(newest_mtime "$plugin_dir/src" -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.scss" -o -name "*.php")
+    build_time=$(newest_mtime "$plugin_dir/build" -name "*.js")
+
+    if [ -z "$build_time" ]; then
+        echo -e "${RED}✗ Plugin '${plugin_name}': no build files found${NC}"
+        errors=1
+        continue
+    fi
+
+    if [ -n "$src_time" ] && [ $(( src_time - build_time )) -gt $TOLERANCE ]; then
+        echo -e "${RED}✗ Plugin '${plugin_name}': build/ is older than src/${NC}"
+        errors=1
+    fi
+done
+
+# --- Result ---
+if [ $errors -ne 0 ]; then
+    echo ""
+    echo -e "${YELLOW}Commit blocked. Build all assets and re-stage:${NC}"
+    echo -e "${YELLOW}  ddev build-all       (with DDEV)${NC}"
+    echo -e "${YELLOW}  npm run build:all    (without DDEV)${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✓ All assets up-to-date${NC}"
+exit 0

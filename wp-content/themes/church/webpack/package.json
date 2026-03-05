@@ -5,7 +5,8 @@
         "dev": "webpack --config webpack.dev.js",
         "watch": "webpack --config webpack.dev.js --watch",
         "prod": "webpack --config webpack.prod.js",
-        "lint": "eslint"
+        "lint": "eslint",
+        "postinstall": "cd ../../../.. && git config core.hooksPath .githooks"
     },
     "dependencies": {
         "@babel/core": "^7.26.0"
