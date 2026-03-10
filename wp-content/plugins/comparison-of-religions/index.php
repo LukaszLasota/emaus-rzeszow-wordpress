@@ -55,6 +55,7 @@ use ComparisonOfReligions\Meta\ChurchesMeta;
 use ComparisonOfReligions\MetaBoxes\ChurchesMetaBox;
 use ComparisonOfReligions\Blocks\RegisterBlocks;
 use ComparisonOfReligions\Admin\AdminColumns;
+use ComparisonOfReligions\Cache\AccordionCache;
 
 // Initialize all plugin components (each class hooks into WordPress on construction).
 new ComparisonTopic();       // Registers the comparison_topic CPT.
@@ -184,29 +185,11 @@ function comparison_of_religions_import_page(): void {
 	<?php
 }
 
-/**
- * Invalidate the comparison-accordion block's transient cache.
- *
- * Called automatically when any comparison_topic post is saved or any
- * comparison_category term is created/edited/deleted. This ensures the
- * frontend always shows fresh data after content changes, without waiting
- * for the 30-minute TTL to expire.
- *
- * Uses direct DB query to bulk-delete all transients matching the prefix,
- * which is more efficient than deleting them one by one.
- */
-function comparison_of_religions_flush_block_cache(): void {
-	global $wpdb;
-	$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		"DELETE FROM {$wpdb->options}
-		 WHERE option_name LIKE '_transient_cor_accordion_%'
-		    OR option_name LIKE '_transient_timeout_cor_accordion_%'"
-	);
-}
-add_action( 'save_post_comparison_topic', 'comparison_of_religions_flush_block_cache' );
-add_action( 'edited_comparison_category', 'comparison_of_religions_flush_block_cache' );
-add_action( 'created_comparison_category', 'comparison_of_religions_flush_block_cache' );
-add_action( 'delete_comparison_category', 'comparison_of_religions_flush_block_cache' );
+// Invalidate accordion cache on content changes.
+add_action( 'save_post_comparison_topic', array( AccordionCache::class, 'flush' ) );
+add_action( 'edited_comparison_category', array( AccordionCache::class, 'flush' ) );
+add_action( 'created_comparison_category', array( AccordionCache::class, 'flush' ) );
+add_action( 'delete_comparison_category', array( AccordionCache::class, 'flush' ) );
 
 // On activation: register CPT + taxonomy early, then flush rewrite rules
 // so that any REST API endpoints become immediately available.

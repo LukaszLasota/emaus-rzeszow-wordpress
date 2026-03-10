@@ -37,6 +37,7 @@ comparison-of-religions/
 │   ├── MetaBoxes/meta-box.js          # Repeater JS: add/remove rows, TinyMCE init
 │   ├── MetaBoxes/meta-box.css         # Repeater styles
 │   ├── Blocks/RegisterBlocks.php      # Auto-discovers blocks from build/blocks/
+│   ├── Cache/AccordionCache.php       # Transient cache helper (key prefix, TTL, flush)
 │   └── Admin/AdminColumns.php         # Custom columns: church count, sort order (sortable)
 ├── src/blocks/comparison-accordion/   # Gutenberg block source
 │   ├── block.json                     # Block metadata
@@ -113,11 +114,9 @@ Accordion toggle with WCAG 2.1 AA compliance:
 
 ### Cache Invalidation
 
-Automatic via hooks in `index.php`:
-- `save_post_comparison_topic`
-- `created_comparison_category` / `edited_comparison_category` / `delete_comparison_category`
-
-Direct DB query deletes all `cor_accordion_*` transients.
+Managed by `AccordionCache` class (`app/Cache/AccordionCache.php`). Key prefix and TTL defined as class constants — single source of truth for both render template and flush logic. Caches cleared automatically via hooks:
+- `save_post_comparison_topic` → `AccordionCache::flush()`
+- `created_comparison_category` / `edited_comparison_category` / `delete_comparison_category` → `AccordionCache::flush()`
 
 ## Data Import/Export
 

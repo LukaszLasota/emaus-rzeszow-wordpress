@@ -42,8 +42,8 @@ $selected_categories = $attributes['selectedCategories'] ?? [];
 // Skip cache during REST requests (editor preview via ServerSideRender)
 // so the editor always shows fresh data when topics are edited.
 $is_rest      = defined( 'REST_REQUEST' ) && REST_REQUEST;
-$cache_key    = 'cor_accordion_' . md5( wp_json_encode( $attributes ) );
-$cache_expire = 30 * MINUTE_IN_SECONDS;
+$cache_key    = \ComparisonOfReligions\Cache\AccordionCache::key( $attributes );
+$cache_expire = \ComparisonOfReligions\Cache\AccordionCache::TTL;
 
 if ( ! $is_rest ) {
 	$cached = get_transient( $cache_key );

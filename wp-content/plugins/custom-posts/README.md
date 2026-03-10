@@ -16,15 +16,15 @@ Plugin for registering custom post types and taxonomies using reusable builder c
 custom-posts/
 ├── custom-posts.php           # Plugin entry: autoloader, init RegisterPosts + CustomColumns
 └── src/
-    ├── core/
+    ├── Core/
     │   ├── CptBuilder.php     # Reusable CPT registration builder
     │   └── TaxBuilder.php     # Reusable taxonomy registration builder
-    └── posts/
+    └── Posts/
         ├── RegisterPosts.php  # Registers the meetings CPT
         └── CustomColumns.php  # Custom admin columns for meetings
 ```
 
-PSR-4 autoloader maps `CustomPostsPlugin\` namespace to `src/`. Classes initialized on `plugins_loaded` hook.
+PSR-4 autoloader maps `CustomPostsPlugin\` namespace to `src/`. Classes initialized on `init` hook (required for proper textdomain loading).
 
 ## Builder Classes
 
