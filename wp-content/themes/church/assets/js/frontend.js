@@ -53,6 +53,7 @@ class HamburgerMenu {
         this.hamburger.classList.toggle('hamburger--active');
         const expanded = this.hamburger.classList.contains('hamburger--active');
         this.hamburger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        this.siteNavNavigation.setAttribute('aria-hidden', expanded ? 'false' : 'true');
         const isActive = this.siteNavNavigation.classList.toggle('site-nav__navigation--active');
         this.siteNavContainer.classList.toggle('site-header__container--active');
         if (this.scrollPos < 10) {
@@ -109,6 +110,7 @@ class HamburgerMenu {
     resetMenu() {
         this.hamburger.classList.remove('hamburger--active');
         this.hamburger.setAttribute('aria-expanded', 'false');
+        this.siteNavNavigation.setAttribute('aria-hidden', 'true');
         this.siteNavNavigation.classList.remove('site-nav__navigation--active');
         this.siteNavContainer.classList.remove('site-header__container--active');
     }
@@ -137,7 +139,7 @@ class HamburgerMenu {
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -147,33 +149,15 @@ class HamburgerMenu {
 /******/ 	__webpack_require__.m = __webpack_modules__;
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/create fake namespace object */
+/******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
-/******/ 		var getProto = Object.getPrototypeOf ? (obj) => (Object.getPrototypeOf(obj)) : (obj) => (obj.__proto__);
-/******/ 		var leafPrototypes;
-/******/ 		// create a fake namespace object
-/******/ 		// mode & 1: value is a module id, require it
-/******/ 		// mode & 2: merge all properties of value into the ns
-/******/ 		// mode & 4: return value when already ns object
-/******/ 		// mode & 16: return value when it's Promise-like
-/******/ 		// mode & 8|1: behave like require
-/******/ 		__webpack_require__.t = function(value, mode) {
-/******/ 			if(mode & 1) value = this(value);
-/******/ 			if(mode & 8) return value;
-/******/ 			if(typeof value === 'object' && value) {
-/******/ 				if((mode & 4) && value.__esModule) return value;
-/******/ 				if((mode & 16) && typeof value.then === 'function') return value;
-/******/ 			}
-/******/ 			var ns = Object.create(null);
-/******/ 			__webpack_require__.r(ns);
-/******/ 			var def = {};
-/******/ 			leafPrototypes = leafPrototypes || [null, getProto({}), getProto([]), getProto(getProto)];
-/******/ 			for(var current = mode & 2 && value; typeof current == 'object' && !~leafPrototypes.indexOf(current); current = getProto(current)) {
-/******/ 				Object.getOwnPropertyNames(current).forEach((key) => (def[key] = () => (value[key])));
-/******/ 			}
-/******/ 			def['default'] = () => (value);
-/******/ 			__webpack_require__.d(ns, def);
-/******/ 			return ns;
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -207,7 +191,7 @@ class HamburgerMenu {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "js/" + chunkId + ".js?" + "464f2e3c561693f01db6" + "";
+/******/ 			return "js/" + chunkId + ".js?" + {"vendors-node_modules_imagesloaded_imagesloaded_js-node_modules_masonry-layout_masonry_js":"d5286812fdb431a43662","src_js_masonry_masonry_js":"5e4e30a4da71cc95e5e2"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -421,7 +405,7 @@ __webpack_require__.r(__webpack_exports__);
 
 new _js_menu_menu__WEBPACK_IMPORTED_MODULE_1__.HamburgerMenu();
 if (document.querySelector('.news')) {
-    __webpack_require__.e(/*! import() */ "src_js_masonry_masonry_js").then(__webpack_require__.t.bind(__webpack_require__, /*! ./js/masonry/masonry.js */ "./src/js/masonry/masonry.js", 23));
+    Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_imagesloaded_imagesloaded_js-node_modules_masonry-layout_masonry_js"), __webpack_require__.e("src_js_masonry_masonry_js")]).then(__webpack_require__.bind(__webpack_require__, /*! ./js/masonry/masonry.js */ "./src/js/masonry/masonry.js"));
 }
 if (window.location.hash) {
     history.scrollRestoration = 'manual';
@@ -443,4 +427,4 @@ window.addEventListener('load', () => {
 
 /******/ })()
 ;
-//# sourceMappingURL=frontend.js.map?46cff2089138a80e44e2
+//# sourceMappingURL=frontend.js.map?4f472b318d1a231e68a9

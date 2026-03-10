@@ -1,43 +1,87 @@
-// Self-invoking: DOM is already ready when loaded via dynamic import.
+import Masonry from 'masonry-layout';
+import imagesLoaded from 'imagesloaded';
+
 (function () {
     const masonryContainer = document.querySelector(".news");
 
-    if (!masonryContainer) return;
-
-    // Feature detection
-    if (typeof Masonry === 'undefined' || typeof imagesLoaded === 'undefined') {
-        console.warn('Masonry or imagesLoaded not loaded');
-        return;
-    }
+    if (!masonryContainer || !masonryContainer.querySelector('.news__card')) return;
 
     let msnry = null;
 
-    function initMasonry() {
-        const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    function getCSSVar(name, fallback) {
+        const val = getComputedStyle(document.documentElement).getPropertyValue(name);
+        return parseInt(val, 10) || fallback;
+    }
 
-        if (isDesktop && !msnry) {
-            // Initialize masonry - minimal config
+    function getColumns() {
+        const width = window.innerWidth;
+        if (width >= 1024) return getCSSVar('--masonry-columns-1024', 3);
+        if (width >= 600) return getCSSVar('--masonry-columns-600', 2);
+        return 1;
+    }
+
+    function getColumnWidth(columns) {
+        const gap = getCSSVar('--masonry-gap', 25);
+        const style = getComputedStyle(masonryContainer);
+        const innerWidth = masonryContainer.clientWidth
+            - parseFloat(style.paddingLeft)
+            - parseFloat(style.paddingRight);
+        return Math.floor((innerWidth - gap * (columns - 1)) / columns);
+    }
+
+    function setCardWidths(width) {
+        const cards = masonryContainer.querySelectorAll('.news__card');
+        cards.forEach(function(card) {
+            card.style.width = width + 'px';
+        });
+    }
+
+    function resetCardWidths() {
+        const cards = masonryContainer.querySelectorAll('.news__card');
+        cards.forEach(function(card) {
+            card.style.width = '';
+        });
+    }
+
+    function initMasonry() {
+        var columns = getColumns();
+
+        if (columns > 1 && !msnry) {
+            var colWidth = getColumnWidth(columns);
+            var gap = getCSSVar('--masonry-gap', 25);
+
+            setCardWidths(colWidth);
+
             msnry = new Masonry(masonryContainer, {
                 itemSelector: '.news__card',
-                gutter: 25
+                columnWidth: colWidth,
+                gutter: gap
             });
 
-            // Wait for images to load before layout
             imagesLoaded(masonryContainer, function() {
                 msnry.layout();
             });
-        } else if (!isDesktop && msnry) {
+        } else if (columns <= 1 && msnry) {
             msnry.destroy();
             msnry = null;
+            resetCardWidths();
         }
     }
 
     initMasonry();
 
-    // Reinit on window resize
     let resizeTimer;
-    window.addEventListener('resize', function() {
+    function handleResize() {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(initMasonry, 250);
-    });
+        resizeTimer = setTimeout(function() {
+            if (msnry) {
+                msnry.destroy();
+                msnry = null;
+            }
+            initMasonry();
+        }, 250);
+    }
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
 })();

@@ -1,6 +1,9 @@
 {
     "name": "church",
-    "sideEffects": ["*.scss", "*.css"],
+    "sideEffects": [
+        "*.scss",
+        "*.css"
+    ],
     "scripts": {
         "dev": "webpack --config webpack.dev.js",
         "watch": "webpack --config webpack.dev.js --watch",
@@ -9,7 +12,9 @@
         "postinstall": "cd ../../../.. && git config core.hooksPath .githooks"
     },
     "dependencies": {
-        "@babel/core": "^7.26.0"
+        "@babel/core": "^7.26.0",
+        "imagesloaded": "^5.0.0",
+        "masonry-layout": "^4.2.2"
     },
     "devDependencies": {
         "@babel/preset-env": "^7.26.0",

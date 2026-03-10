@@ -648,18 +648,12 @@ img {
   }
 }
 .news__card {
-  width: calc(50% - 30px);
-  margin-bottom: 25px;
+  width: 100%;
+  margin-bottom: var(--masonry-gap, 25px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   border: 1px solid #008089;
   overflow: hidden;
-}
-@media (max-width: 767px) {
-  .news__card {
-    width: 100%;
-    margin-bottom: 25px;
-  }
 }
 .news__image {
   width: 100%;

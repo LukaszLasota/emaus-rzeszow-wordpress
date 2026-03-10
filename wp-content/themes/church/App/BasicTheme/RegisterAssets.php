@@ -64,7 +64,7 @@ class RegisterAssets implements ActionHookInterface {
 	public function register_add_action(): void {
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_church_assets' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_church_admin_assets' ) );
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_masonry_settings' ) );
+		// Masonry is now bundled via webpack - no need to enqueue WP scripts.
 	}
 
 	/**
