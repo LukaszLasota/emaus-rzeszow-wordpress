@@ -80,8 +80,8 @@ if ( ! $news_page_url ) {
 }
 
 // Cache inner content only; wrapper is rendered fresh for anchor support.
-$cache_key    = 'news_slider_v2_' . md5( wp_json_encode( $attributes ) );
-$cache_expire = 30 * MINUTE_IN_SECONDS;
+$cache_key    = \CustomBlockPackage\Cache\BlockCache::key( \CustomBlockPackage\Cache\BlockCache::NEWS_SLIDER_PREFIX, $attributes );
+$cache_expire = \CustomBlockPackage\Cache\BlockCache::TTL;
 
 $cached_output = get_transient( $cache_key );
 if ( false === $cached_output ) {

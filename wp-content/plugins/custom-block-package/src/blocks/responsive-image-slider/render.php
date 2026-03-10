@@ -68,7 +68,7 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 				<?php
 				$slide_index = 0;
 				foreach ( $valid_slides as $slide ) :
-				?>
+					?>
 					<?php
 					$desktop_id    = $slide['desktop_id'];
 					$mobile_id     = $slide['mobile_id'];
@@ -133,8 +133,8 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 							?>
 						</picture>
 					</div>
-				<?php
-				++$slide_index;
+					<?php
+					++$slide_index;
 				endforeach;
 				?>
 			</div>

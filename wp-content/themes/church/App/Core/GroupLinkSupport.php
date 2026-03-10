@@ -145,7 +145,7 @@ class GroupLinkSupport implements ActionHookInterface, FilterHookInterface {
 		// Use DOMDocument to parse and modify HTML.
 		$dom = new \DOMDocument();
 		libxml_use_internal_errors( true );
-		$dom->loadHTML( mb_convert_encoding( $block_content, 'HTML-ENTITIES', 'UTF-8' ), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+		$dom->loadHTML( '<?xml encoding="UTF-8">' . $block_content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
 		libxml_clear_errors();
 
 		// Find the outer container (article/div with wp-block-group class).
@@ -173,6 +173,13 @@ class GroupLinkSupport implements ActionHookInterface, FilterHookInterface {
 
 		$result = $dom->saveHTML();
 
-		return false !== $result ? wp_kses_post( $result ) : $block_content;
+		if ( false === $result ) {
+			return $block_content;
+		}
+
+		// Remove the XML encoding declaration added for UTF-8 support.
+		$result = str_replace( '<?xml encoding="UTF-8">', '', $result );
+
+		return wp_kses_post( $result );
 	}
 }

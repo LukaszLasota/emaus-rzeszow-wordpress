@@ -32,7 +32,7 @@ spl_autoload_register(
 );
 
 add_action(
-	'plugins_loaded',
+	'init',
 	function () {
 		if ( class_exists( '\CustomPostsPlugin\Posts\RegisterPosts' ) ) {
 			new \CustomPostsPlugin\Posts\RegisterPosts();

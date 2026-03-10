@@ -16,8 +16,8 @@ $numberposts       = isset( $attributes['numberposts'] ) ? (int) $attributes['nu
 $block_title       = isset( $attributes['blockTitle'] ) ? $attributes['blockTitle'] : __( 'Nasze spotkania', 'custom-block-package' );
 
 // Cache inner content only; wrapper is rendered fresh for anchor support.
-$cache_key    = 'meeting_v4_' . md5( wp_json_encode( $attributes ) );
-$cache_expire = 30 * MINUTE_IN_SECONDS;
+$cache_key    = \CustomBlockPackage\Cache\BlockCache::key( \CustomBlockPackage\Cache\BlockCache::MEETING_LIST_PREFIX, $attributes );
+$cache_expire = \CustomBlockPackage\Cache\BlockCache::TTL;
 
 $cached_output = get_transient( $cache_key );
 if ( false === $cached_output ) {
