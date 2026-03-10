@@ -50,16 +50,17 @@ class LogoSettings implements ActionHookInterface {
 	}
 
 	/**
-	 * Add logo settings page to WordPress admin menu.
+	 * Add logo settings page as subpage of Theme Settings.
 	 *
 	 * @return void
 	 */
 	public function add_logo_settings_page(): void {
-		add_options_page(
-			'Ustawienia Logo',
+		add_submenu_page(
+			ThemeSettingsPage::MENU_SLUG,
 			'Logo Strony',
+			'Logo',
 			'manage_options',
-			'my-custom-logo',
+			'church-logo',
 			array( $this, 'display_logo_settings_page' )
 		);
 	}
@@ -178,7 +179,7 @@ class LogoSettings implements ActionHookInterface {
 	 */
 	public function enqueue_media_uploader( string $hook ): void {
 		// Only load on our settings page.
-		if ( 'settings_page_my-custom-logo' !== $hook ) {
+		if ( 'ustawienia-motywu_page_church-logo' !== $hook ) {
 			return;
 		}
 

@@ -38,16 +38,19 @@ class Theme {
 		Core\PatternAssets::class,
 		Core\GroupLinkSupport::class,
 		Core\PerformanceOptimizer::class,
+		Admin\MasonrySettings::class,
 	);
 
 	/**
 	 * Admin-only components.
 	 *
 	 * These are loaded only when is_admin() is true to optimize frontend performance.
+	 * Order matters: ThemeSettingsPage must be before its subpages (Logo, Masonry).
 	 *
 	 * @var array<string>
 	 */
 	private array $admin_components = array(
+		Admin\ThemeSettingsPage::class,
 		Admin\LogoSettings::class,
 		Core\SvgSupport::class,
 	);
