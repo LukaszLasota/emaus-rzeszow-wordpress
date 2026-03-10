@@ -40,21 +40,25 @@ class CptBuilder {
 	private $archive;
 
 	/**
-	 * Post type labels.
+	 * Post type labels array or callable that returns labels.
 	 *
-	 * @var array<string, string>
+	 * Using a callable defers __() calls until the 'init' hook,
+	 * when the textdomain is already loaded — avoiding the
+	 * _load_textdomain_just_in_time warning in WP 6.7+.
+	 *
+	 * @var array<string, string>|callable(): array<string, string>
 	 */
-	private array $labels;
+	private $labels;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param string                $slug     Post type slug.
-	 * @param array<string, string> $labels   Translated labels array.
-	 * @param int                   $position Menu position.
-	 * @param string|bool           $archive  Archive slug or false.
+	 * @param string                                                  $slug     Post type slug.
+	 * @param array<string, string>|callable(): array<string, string> $labels   Labels array or callable returning labels.
+	 * @param int                                                     $position Menu position.
+	 * @param string|bool                                             $archive  Archive slug or false.
 	 */
-	public function __construct( string $slug, array $labels, int $position = 5, $archive = false ) {
+	public function __construct( string $slug, $labels, int $position = 5, $archive = false ) {
 		$this->type     = $slug;
 		$this->labels   = $labels;
 		$this->position = $position;
@@ -69,8 +73,10 @@ class CptBuilder {
 	 * @return void
 	 */
 	public function register(): void {
+		$resolved_labels = is_callable( $this->labels ) ? ( $this->labels )() : $this->labels;
+
 		$args = [
-			'labels'             => $this->labels,
+			'labels'             => $resolved_labels,
 			'public'             => true,
 			'publicly_queryable' => true,
 			'show_ui'            => true,

@@ -33,7 +33,14 @@ class TaxBuilder {
 	private string $post_type;
 
 	/**
-	 * Taxonomy arguments.
+	 * Taxonomy labels array or callable that returns labels.
+	 *
+	 * @var array<string, string>|callable(): array<string, string>
+	 */
+	private $labels;
+
+	/**
+	 * Optional extra arguments.
 	 *
 	 * @var array<string, mixed>
 	 */
@@ -42,26 +49,16 @@ class TaxBuilder {
 	/**
 	 * Constructor.
 	 *
-	 * @param string                $slug      Taxonomy slug.
-	 * @param string                $post_type Associated post type slug.
-	 * @param array<string, string> $labels    Translated labels array.
-	 * @param array<string, mixed>  $args      Optional extra arguments.
+	 * @param string                                                  $slug      Taxonomy slug.
+	 * @param string                                                  $post_type Associated post type slug.
+	 * @param array<string, string>|callable(): array<string, string> $labels    Labels array or callable returning labels.
+	 * @param array<string, mixed>                                    $args      Optional extra arguments.
 	 */
-	public function __construct( string $slug, string $post_type, array $labels, array $args = [] ) {
+	public function __construct( string $slug, string $post_type, $labels, array $args = [] ) {
 		$this->slug      = $slug;
 		$this->post_type = $post_type;
-
-		$this->args = array_merge(
-			[
-				'hierarchical'      => true,
-				'labels'            => $labels,
-				'show_ui'           => true,
-				'show_admin_column' => true,
-				'query_var'         => true,
-				'rewrite'           => [ 'slug' => $this->slug ],
-			],
-			$args
-		);
+		$this->labels    = $labels;
+		$this->args      = $args;
 
 		add_action( 'init', [ $this, 'register' ] );
 	}
@@ -72,6 +69,20 @@ class TaxBuilder {
 	 * @return void
 	 */
 	public function register(): void {
-		register_taxonomy( $this->slug, [ $this->post_type ], $this->args );
+		$resolved_labels = is_callable( $this->labels ) ? ( $this->labels )() : $this->labels;
+
+		$tax_args = array_merge(
+			[
+				'hierarchical'      => true,
+				'labels'            => $resolved_labels,
+				'show_ui'           => true,
+				'show_admin_column' => true,
+				'query_var'         => true,
+				'rewrite'           => [ 'slug' => $this->slug ],
+			],
+			$this->args
+		);
+
+		register_taxonomy( $this->slug, [ $this->post_type ], $tax_args );
 	}
 }

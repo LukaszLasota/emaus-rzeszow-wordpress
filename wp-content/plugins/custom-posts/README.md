@@ -24,7 +24,7 @@ custom-posts/
         └── CustomColumns.php  # Custom admin columns for meetings
 ```
 
-PSR-4 autoloader maps `CustomPostsPlugin\` namespace to `src/`. Classes initialized on `init` hook (required for proper textdomain loading).
+PSR-4 autoloader maps `CustomPostsPlugin\` namespace to `src/`. Classes initialized on `plugins_loaded` hook — CptBuilder internally hooks `register()` on `init`, so it must be instantiated before `init` fires. CptBuilder accepts labels as a callable (deferred) to avoid `_load_textdomain_just_in_time` warnings — `__()` calls execute on `init` when the textdomain is loaded.
 
 ## Builder Classes
 
